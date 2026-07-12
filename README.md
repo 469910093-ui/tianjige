@@ -1,3 +1,17 @@
+# 今天吃什么 · 天机食鉴
+
+## 在线预览（HTML）
+
+> 说明：`*.github.io` 在国内常无法打开，已改用 ShipStatic 托管。
+
+- **体验地址：** https://holo-filament-hb5p7p3.shipstatic.com/
+- 认领永久保留（3 日内）：https://my.shipstatic.com/claim/72ed9998767f63e2c8566820d0eaa9d4dd5ff79c59d85c01184738e24297221d
+- 代码仓库：https://github.com/469910093-ui/tianjige
+
+本地预览：打开 `docs/ui-mockup.html`，或 `python -m http.server 8765 --directory docs`。
+
+---
+
 # projects
 
 这是一个基于 [Next.js 16](https://nextjs.org) + [shadcn/ui](https://ui.shadcn.com) 的全栈应用项目，由扣子编程 CLI 创建。
