@@ -623,14 +623,14 @@
           <button type="button" data-p="6">6人</button>
           <button type="button" data-p="8">8人</button>
         </div>
-        <label>最低评分 <span id="minRatingLabel">≥ 4.5</span></label>
-        <input type="range" id="minRatingRange" min="0" max="5" step="0.1" value="4.5" style="width:100%;accent-color:var(--color-tertiary);margin:4px 0 12px" />
-        <p class="sub" id="ratingFilterHint" style="margin:-4px 0 12px">默认 ≥4.5；拖动即时筛选</p>
+        <label>最低评分 <span id="minRatingLabel">不限（完整排名）</span></label>
+        <input type="range" id="minRatingRange" min="0" max="5" step="0.1" value="0" style="width:100%;accent-color:var(--color-tertiary);margin:4px 0 12px" />
+        <p class="sub" id="ratingFilterHint" style="margin:-4px 0 12px">仓南广场 3 公里内按评分降序；拖动可提高门槛</p>
         <label>排序</label>
         <div class="seg" id="merchantSortSeg">
-          <button type="button" class="on" data-sort="recommend">综合推荐</button>
+          <button type="button" class="on" data-sort="rating">评分最高</button>
+          <button type="button" data-sort="recommend">综合推荐</button>
           <button type="button" data-sort="distance">距离最近</button>
-          <button type="button" data-sort="rating">评分最高</button>
         </div>
         <div id="merchantList" style="margin-top:16px"></div>
         <div class="card-title" style="margin-top:24px">
@@ -1001,8 +1001,8 @@
     let iceScene = 'table';
     let adultOk = false;
     let gameSeed = 1;
-    let merchantSort = 'recommend';
-    let minRating = 4.5;
+    let merchantSort = 'rating';
+    let minRating = 0;
     let liveMerchants = []; // {name,category,rating,price,min,max,addr,dist,source,uid,meituan,dianping,baidu}
     let merchantSource = 'loading'; // loading | baidu | virtual | error
     let merchantNote = '';
@@ -1140,16 +1140,16 @@
       }
 
       let list = (liveMerchants.length ? liveMerchants : VIRTUAL_POOL)
+        .filter(p => (p.dist || 0) <= 3000)
         .filter(p => partyPeople >= (p.min || 1) && partyPeople <= (p.max || 30));
       if (minRating > 0) {
         list = list.filter(p => p.rating != null && Number(p.rating) >= minRating);
+      } else {
+        // 评分榜：无评分的排后面/默认不进完整排名
+        list = list.filter(p => p.rating != null);
       }
-      if (!list.length && liveMerchants.length) {
-        // 门槛过高时不回退到低分店，只提示调低分数
-        list = [];
-      } else if (!list.length) {
-        list = (liveMerchants.length ? [...liveMerchants] : [...VIRTUAL_POOL])
-          .filter(p => minRating <= 0 || (p.rating != null && Number(p.rating) >= minRating));
+      if (!list.length && !liveMerchants.length) {
+        list = [...VIRTUAL_POOL].filter(p => p.rating != null && (minRating <= 0 || p.rating >= minRating));
       }
       const maxDist = 3000;
       list = [...list].sort((a, b) => {
@@ -1166,19 +1166,21 @@
         if (sb !== sa) return sb - sa;
         return a.dist - b.dist;
       });
-      const use = list.slice(0, 8);
+      const use = list.slice(0, 12);
       const isVirt = merchantSource !== 'baidu';
-      const ratingHint = minRating > 0 ? `评分 ≥${minRating.toFixed(1)} · 共 ${list.length} 家` : `不限评分 · 共 ${list.length} 家`;
+      const ratingHint = minRating > 0
+        ? `评分 ≥${minRating.toFixed(1)} · 共 ${list.length} 家`
+        : `3公里内有评分 · 共 ${list.length} 家 · 评分降序`;
       const head = !list.length
         ? `<div class="warn" style="margin-bottom:12px"><strong>无匹配</strong>：当前 ${ratingHint}。请下调最低评分。</div>`
         : isVirt
         ? `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：${merchantNote || '请用本机 http://127.0.0.1:5000/ui-mockup.html'} · ${ratingHint}</div>`
-        : `<div class="warn" style="margin-bottom:12px"><strong>杭州真实餐厅</strong>：${merchantNote || userCity} · ${ratingHint}</div>`;
+        : `<div class="warn" style="margin-bottom:12px"><strong>仓南广场 · 3公里美食评分榜</strong>：${merchantNote || userCity} · ${ratingHint}</div>`;
 
       const ratingLabel = document.getElementById('minRatingLabel');
-      if (ratingLabel) ratingLabel.textContent = minRating <= 0 ? '不限' : `≥ ${minRating.toFixed(1)}`;
+      if (ratingLabel) ratingLabel.textContent = minRating <= 0 ? '不限（完整排名）' : `≥ ${minRating.toFixed(1)}`;
       const hintEl = document.getElementById('ratingFilterHint');
-      if (hintEl) hintEl.textContent = `默认 ≥4.5；拖动即时筛选 · 当前展示 ${use.length}/${list.length} 家`;
+      if (hintEl) hintEl.textContent = `仓南广场 3 公里 · 评分降序 · 展示 ${use.length}/${list.length} 家`;
 
       if (!list.length) {
         box.innerHTML = head;
@@ -1187,10 +1189,10 @@
 
       box.innerHTML = head + use.map((m, idx) => `
         <div class="m-card">
-          <div class="name">${m.name}${merchantSort === 'recommend' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">最推荐</span>' : ''}${merchantSort === 'recommend' && idx > 0 && idx < 3 ? `<span class="tag-v">推荐 ${idx + 1}</span>` : ''}<span class="tag-v">${isVirt ? '虚拟' : '百度'}</span></div>
+          <div class="name"><span class="tag-v" style="${idx < 3 ? 'background:var(--color-tertiary);color:var(--color-on-tertiary)' : ''}">#${idx + 1}</span> ${m.name}${merchantSort === 'rating' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">评分第1</span>' : ''}<span class="tag-v">${isVirt ? '虚拟' : '百度'}</span></div>
           <div class="meta">${m.category || '美食'}${m.rating != null ? ' · 评分 ' + m.rating : ' · 暂无评分'}${m.price ? ' · 人均¥' + m.price : ''} · ${m.dist}m</div>
           <div class="meta">${isVirt ? '（虚拟）' : ''}${m.addr || ''}${m.hours ? ' · 营业 ' + m.hours : ''}</div>
-          <div class="bl">按 ${partyPeople} 人聚餐挑的${isVirt ? ' · 虚拟示例店' : ' · 真实 POI'}</div>
+          <div class="bl">仓南广场 3 公里内 · 按评分排名</div>
           ${!isVirt ? `<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
             <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.meituan}" target="_blank" rel="noreferrer">美团搜店</a>
             <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.dianping}" target="_blank" rel="noreferrer">点评搜店</a>
@@ -1203,12 +1205,8 @@
       merchantSource = 'loading';
       renderMerchants();
       const locate = () => new Promise((resolve) => {
-        if (!navigator.geolocation) return resolve({ lat: userLat, lng: userLng, note: '浏览器不支持定位，用杭州仓南广场坐标' });
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, note: '' }),
-          () => resolve({ lat: userLat, lng: userLng, note: '定位未授权，用杭州仓南广场坐标' }),
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-        );
+        // 默认直接用仓南广场，不抢定位授权
+        resolve({ lat: userLat, lng: userLng, note: '仓南广场 3 公里美食评分榜' });
       });
       const loc = await locate();
       userLat = loc.lat; userLng = loc.lng;

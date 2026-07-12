@@ -95,21 +95,42 @@ export function tencentKeywordForPartySize(people: number, cuisineHint?: string)
   return '自助餐';
 }
 
-/** 语义检索自然语言（百度 Agent Plan） */
+/** 语义检索自然语言（百度 Agent Plan）— 默认按评分优先、限定半径 */
 export function partyRawRequest(people: number, radiusM: number, cuisineHint?: string): string {
-  const km = Math.max(0.5, Math.round(radiusM) / 1000);
+  const km = Math.max(0.5, Math.round((radiusM || 3000) / 1000) || 3);
   const cuisine = (cuisineHint || '').trim();
   const taste = cuisine ? `，口味偏向${cuisine}` : '';
+  return `查找我附近${km}公里内适合${people}人就餐的美食餐厅${taste}，按评分从高到低排序，优先评分高的店`;
+}
+
+/** 多路检索关键词，用于凑齐 3km 内可排名的美食 POI */
+export function nearbyRatingSearchQueries(people: number, cuisineHint?: string): string[] {
+  const hint = (cuisineHint || '')
+    .trim()
+    .split(/[、,，/\s]+/)
+    .filter(Boolean)
+    .slice(0, 2);
+  if (hint.length) {
+    return hint.map((h) => `附近3公里内高分${h}餐厅，按评分从高到低`);
+  }
   if (people <= 2) {
-    return `离我最近的适合${people}人的咖啡馆或小馆${taste}，评分不低于4.5，优先高分，${km}公里内`;
+    return [
+      '附近3公里内高分咖啡馆小馆，按评分从高到低',
+      '附近3公里内高分私房菜餐厅，按评分从高到低',
+    ];
   }
   if (people <= 4) {
-    return `离我最近的适合${people}人吃饭的餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
+    return [
+      '附近3公里内高分美食餐厅，按评分从高到低',
+      '附近3公里内高分杭帮菜中餐厅，按评分从高到低',
+      '附近3公里内高分火锅店，按评分从高到低',
+    ];
   }
-  if (people <= 8) {
-    return `离我最近的适合${people}人聚餐的火锅或中餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
-  }
-  return `离我最近的适合${people}人聚餐的自助餐或宴会餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
+  return [
+    '附近3公里内高分火锅聚餐，按评分从高到低',
+    '附近3公里内高分中餐厅，按评分从高到低',
+    '附近3公里内高分自助餐，按评分从高到低',
+  ];
 }
 
 /**

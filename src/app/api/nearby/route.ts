@@ -3,8 +3,8 @@ import {
   blameLineFor,
   estimatePeopleRange,
   keywordForPartySize,
+  nearbyRatingSearchQueries,
   partyRawRequest,
-  recommendScore,
   tencentKeywordForPartySize,
   type NearbyMerchant,
 } from '@/lib/nearby-merchants';
@@ -204,33 +204,41 @@ async function fetchBaiduAgent(opts: {
   const ac = revJson.result?.addressComponent;
   const region = ac?.city || ac?.district || ac?.province || '全国';
 
-  const placeUrl = new URL('https://api.map.baidu.com/agent_plan/v1/place');
-  placeUrl.searchParams.set(
-    'user_raw_request',
-    partyRawRequest(opts.people, opts.radius, opts.cuisine)
-  );
-  placeUrl.searchParams.set('region', region);
-  placeUrl.searchParams.set('center', center);
-  placeUrl.searchParams.set('sort', 'distance');
+  const queries = [
+    partyRawRequest(opts.people, opts.radius, opts.cuisine),
+    ...nearbyRatingSearchQueries(opts.people, opts.cuisine),
+  ].slice(0, 4);
 
-  const placeRes = await fetch(placeUrl.toString(), { headers: auth, cache: 'no-store' });
-  if (!placeRes.ok) throw new Error(`百度 Agent 地点检索 HTTP ${placeRes.status}`);
-  const placeJson = (await placeRes.json()) as {
-    status?: number;
-    message?: string;
-    results?: BaiduPlaceItem[];
-  };
-  if (placeJson.status !== 0) {
-    throw new Error(placeJson.message || `百度 Agent 地点检索 status=${placeJson.status}`);
+  const batches = await Promise.all(
+    queries.map(async (q) => {
+      const placeUrl = new URL('https://api.map.baidu.com/agent_plan/v1/place');
+      placeUrl.searchParams.set('user_raw_request', q);
+      placeUrl.searchParams.set('region', region);
+      placeUrl.searchParams.set('center', center);
+      placeUrl.searchParams.set('sort', 'distance');
+      const placeRes = await fetch(placeUrl.toString(), { headers: auth, cache: 'no-store' });
+      if (!placeRes.ok) return [] as NearbyMerchant[];
+      const placeJson = (await placeRes.json()) as {
+        status?: number;
+        results?: BaiduPlaceItem[];
+      };
+      if (placeJson.status !== 0) return [];
+      return mapBaiduItems(placeJson.results || [], opts.people, gcj, '百度地图', region);
+    })
+  );
+
+  const byId = new Map<string, NearbyMerchant>();
+  for (const list of batches) {
+    for (const m of list) {
+      if (m.distanceM > clampRadius(opts.radius) * 1.05) continue;
+      const prev = byId.get(m.id);
+      if (!prev || (m.rating ?? -1) > (prev.rating ?? -1)) byId.set(m.id, m);
+    }
   }
 
-  const merchants = mapBaiduItems(
-    placeJson.results || [],
-    opts.people,
-    gcj,
-    '百度地图',
-    region
-  ).filter((m) => m.distanceM <= clampRadius(opts.radius) * 1.2);
+  const merchants = [...byId.values()].sort(
+    (a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.distanceM - b.distanceM
+  );
 
   return { merchants, city: region };
 }
@@ -402,11 +410,9 @@ export async function GET(req: NextRequest) {
   }
 
   const radiusCap = clampRadius(radius);
+  // 默认按评分降序（仓南广场 3km 美食榜），同分看距离
   merchants = [...merchants].sort(
-    (a, b) =>
-      recommendScore(b, radiusCap) - recommendScore(a, radiusCap) ||
-      a.distanceM - b.distanceM ||
-      (b.rating ?? 0) - (a.rating ?? 0)
+    (a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.distanceM - b.distanceM
   );
 
   const origin = req.headers.get('origin') || '*';
@@ -426,7 +432,7 @@ export async function GET(req: NextRequest) {
       city: city || undefined,
       count: merchants.length,
       merchants,
-      sort: 'recommend',
+      sort: 'rating',
       virtual: provider === 'virtual',
       platforms: {
         poi: provider === 'virtual' ? 'virtual' : 'baidu',
@@ -438,9 +444,7 @@ export async function GET(req: NextRequest) {
           ? `未查到真实商家，已给出虚拟推荐（仅供参考）${errors.length ? '；原因：' + errors.slice(0, 2).join('；') : ''}`
           : provider === 'tencent'
             ? '腾讯地点搜索不返回评分；建议配置 BAIDU_MAP_AUTH_TOKEN。美团/点评为搜店深链。'
-            : provider === 'baidu-agent'
-              ? '已用百度地图检索真实餐厅；可点「美团搜店 / 点评搜店」查看团购与评价'
-              : '已用百度地点检索；可点美团/点评搜同名店',
+            : `已按评分降序列出附近${Math.round(radiusCap / 1000)}公里美食（同分看距离）；可点美团/点评搜同名店`,
     },
     { headers: cors }
   );
