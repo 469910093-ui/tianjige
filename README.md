@@ -4,8 +4,8 @@
 
 > 说明：`*.github.io` 在国内常无法打开，已改用 ShipStatic 托管。
 
-- **体验地址：** https://intense-blaze-ao6ni35.shipstatic.com/
-- 认领永久保留（3 日内）：https://my.shipstatic.com/claim/0055da1ba6f94ee66a8b7aa2efddd4cb468f1df1fc5c1868f52bc69e804e5c2c
+- **体验地址：** https://ghosted-trail-n621r4m.shipstatic.com/
+- 认领永久保留（3 日内）：https://my.shipstatic.com/claim/3a0a2088d0d0d724f1285100f2a6fc09362fe1183c1c2c5aa0d673322adfdf3d
 - GitHub Pages（国内可能打不开）：https://469910093-ui.github.io/tianjige/
 - 代码仓库：https://github.com/469910093-ui/tianjige
 
