@@ -1,15 +1,14 @@
 # 今天吃什么 · 天机食鉴
 
-## 在线预览（HTML）
+## 在线预览
 
-> 说明：`*.github.io` 在国内常无法打开，已改用 ShipStatic 托管。
+> Cloudflare 隧道指向本机 Next（可走真实附近店 API）。隧道重启后域名会变，需重新更新此处。
 
-- **体验地址：** https://ghosted-trail-n621r4m.shipstatic.com/
-- 认领永久保留（3 日内）：https://my.shipstatic.com/claim/3a0a2088d0d0d724f1285100f2a6fc09362fe1183c1c2c5aa0d673322adfdf3d
-- GitHub Pages（国内可能打不开）：https://469910093-ui.github.io/tianjige/
+- **体验地址：** https://fragrances-influence-chemistry-tampa.trycloudflare.com/
+- GitHub Pages（静态 HTML，国内可能打不开）：https://469910093-ui.github.io/tianjige/
 - 代码仓库：https://github.com/469910093-ui/tianjige
 
-本地预览：打开 `docs/ui-mockup.html`，或 `http://127.0.0.1:5000/ui-mockup.html`（可走真实附近店）。
+本地预览：`pnpm dev` 后打开 [http://127.0.0.1:5000](http://127.0.0.1:5000)，或打开 `docs/ui-mockup.html`。
 
 ---
 
