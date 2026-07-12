@@ -1,25 +1,36 @@
 # 今天吃什么 · 天机食鉴
 
-## 正式对外链接（请用这个）
+## 正式对外链接（请用这个，不要换）
 
 **https://fused-fog-x4f4urx.shipstatic.com/**
 
-> 边缘静态托管，不依赖本机开机，外部用户可稳定打开。  
-> **必须完成一次「认领」**，否则约 3 天后过期。认领后该链接永久有效。
+> 边缘静态托管，不依赖本机开机。对外只发这一条，更新内容时**不换域名**。  
+> 未认领会约 3 天过期；认领后永久有效。
 
-### 认领永久（现在就做，约 1 分钟）
+### 认领永久（若还没做过）
 
 1. 打开：  
    **https://my.shipstatic.com/claim/097753667af2799a3fecee70ae87864fbc96fa1c6dd873a1328de188db1265d8**
 2. 注册 / 登录 ShipStatic（免费）→ 完成认领  
-3. 认领成功后，继续对外分享：  
+3. 继续对外分享：  
    **https://fused-fog-x4f4urx.shipstatic.com/**
 
-以后要更新页面且**不换链接**：在 [my.shipstatic.com](https://my.shipstatic.com) 复制 `SHIP_API_KEY` 发给我，或加到仓库 Secrets。
+### 更新页面且不换链接（需要 API Key）
+
+1. 打开 [my.shipstatic.com](https://my.shipstatic.com) → Settings → 复制 `SHIP_API_KEY`  
+2. 发给我，或本地执行：
+
+```powershell
+$env:SHIP_API_KEY="ship-你的key"
+node scripts/deploy-shipstatic.mjs
+```
+
+脚本会把最新 `docs/` 挂到 **fused-fog-x4f4urx**，对外网址不变。
 
 ### 不要再对外发
 
-- `*.trycloudflare.com`（临时隧道，关机或过期即 DNS 报错）
+- `*.trycloudflare.com`（临时隧道）
+- 其它 `*.shipstatic.com` 临时部署名（会过期、会换名）
 
 ### 备份
 
