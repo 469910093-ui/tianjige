@@ -28,6 +28,9 @@ import {
 
 type LocState = 'idle' | 'locating' | 'loading' | 'ready' | 'denied' | 'error';
 
+/** 定位失败时的默认中心：杭州仓南广场（余杭景兴路 636 号） */
+const FALLBACK_LOC = { name: '杭州仓南广场', lat: 30.27258, lng: 120.0057 };
+
 export default function NearbyMerchants({
   defaultPeople = 4,
   cuisineHint,
@@ -42,10 +45,10 @@ export default function NearbyMerchants({
   const [provider, setProvider] = useState<string>('');
   const [isVirtual, setIsVirtual] = useState(false);
   const [apiNote, setApiNote] = useState('');
-  const [minRating, setMinRating] = useState(0);
-  const [maxDistanceM, setMaxDistanceM] = useState(1500);
+  const [minRating, setMinRating] = useState(4.5);
+  const [maxDistanceM, setMaxDistanceM] = useState(3000);
   const [people, setPeople] = useState(defaultPeople);
-  const [onlyRated, setOnlyRated] = useState(false);
+  const [onlyRated, setOnlyRated] = useState(true);
   const [sort, setSort] = useState<NearbySort>('recommend');
   const [errorMsg, setErrorMsg] = useState('');
   const [scene, setScene] = useState<IceScene>('table');
@@ -58,7 +61,7 @@ export default function NearbyMerchants({
     setRaw(list);
     setProvider('虚拟推荐');
     setIsVirtual(true);
-    setApiNote(reason || '未查到真实商家，已切换虚拟推荐（仅供参考）');
+    setApiNote(reason || '');
     setLocState('ready');
   }, []);
 
@@ -73,6 +76,7 @@ export default function NearbyMerchants({
         radius: String(radius),
         people: String(partySize),
       });
+      if (cuisineHint?.trim()) qs.set('cuisine', cuisineHint.trim());
       const res = await fetch(`/api/nearby?${qs.toString()}`);
       const json = await res.json();
       if (!res.ok || !json.ok || !json.merchants?.length) {
@@ -89,17 +93,17 @@ export default function NearbyMerchants({
             ? '百度地图'
             : '腾讯地图'
       );
-      setApiNote(json.note || '');
+      setApiNote(json.note || json.platforms?.note || '');
       setLocState('ready');
     } catch {
-      applyVirtual(lat, lng, partySize, radius, '地图服务暂不可用，已切换虚拟推荐');
+      applyVirtual(lat, lng, partySize, radius, '');
     }
-  }, [applyVirtual]);
+  }, [applyVirtual, cuisineHint]);
 
   const requestLocation = useCallback(() => {
     if (!navigator.geolocation) {
-      applyVirtual(30.242, 120.1485, people, maxDistanceM, '浏览器不支持定位，已用杭州示例坐标生成虚拟推荐');
-      setCoords({ lat: 30.242, lng: 120.1485 });
+      void fetchNearby(FALLBACK_LOC.lat, FALLBACK_LOC.lng, people, maxDistanceM);
+      setErrorMsg(`浏览器不支持定位，已用${FALLBACK_LOC.name}附近真实店`);
       return;
     }
     setLocState('locating');
@@ -109,17 +113,14 @@ export default function NearbyMerchants({
         void fetchNearby(pos.coords.latitude, pos.coords.longitude, people, maxDistanceM);
       },
       (err) => {
+        void fetchNearby(FALLBACK_LOC.lat, FALLBACK_LOC.lng, people, maxDistanceM);
         if (err.code === err.PERMISSION_DENIED) {
-          setLocState('denied');
-          setErrorMsg('定位被拒绝。可授权定位，或点下方城市示例（无真实结果时自动虚拟推荐）。');
-        } else {
-          applyVirtual(30.242, 120.1485, people, maxDistanceM, '定位失败，已用示例坐标生成虚拟推荐');
-          setCoords({ lat: 30.242, lng: 120.1485 });
+          setErrorMsg(`未授权定位，已用${FALLBACK_LOC.name}附近真实店`);
         }
       },
       { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
     );
-  }, [fetchNearby, people, maxDistanceM, applyVirtual]);
+  }, [fetchNearby, people, maxDistanceM]);
 
   useEffect(() => {
     requestLocation();
@@ -132,7 +133,7 @@ export default function NearbyMerchants({
       void fetchNearby(coords.lat, coords.lng, people, maxDistanceM);
     }, 400);
     return () => clearTimeout(t);
-  }, [people, maxDistanceM]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [people, maxDistanceM, cuisineHint]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const list = useMemo(
     () =>
@@ -159,6 +160,7 @@ export default function NearbyMerchants({
   const hostScript = useMemo(() => composeHostScript(games, people), [games, people]);
 
   const demoCities = [
+    { name: '杭州仓南广场', lat: FALLBACK_LOC.lat, lng: FALLBACK_LOC.lng },
     { name: '上海人民广场', lat: 31.2337, lng: 121.4762 },
     { name: '北京国贸', lat: 39.9087, lng: 116.4604 },
     { name: '杭州西湖', lat: 30.242, lng: 120.1485 },
@@ -181,12 +183,8 @@ export default function NearbyMerchants({
         <div>
           <h2 className="text-base md:text-lg font-semibold text-foreground flex items-center gap-2">
             <MapPin className="w-4 h-4 text-primary" />
-            今天吃什么
+            附近
           </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            默认按「距离 + 评分」综合最推荐；可切换纯距离或纯评分
-            {cuisineHint ? ` · 综合口味倾向：${cuisineHint}` : ''}
-          </p>
         </div>
         <button
           type="button"
@@ -224,23 +222,9 @@ export default function NearbyMerchants({
 
       {(locState === 'ready' || raw.length > 0) && (
         <>
-          {coords && (
-            <div className="text-[11px] text-muted-foreground">
-              位置约 {coords.lat.toFixed(4)}, {coords.lng.toFixed(4)}
-              {provider && (
-                <span
-                  className={`ml-2 inline-block px-2 py-0.5 rounded-full border ${
-                    isVirtual
-                      ? 'border-amber-500/40 text-amber-700 dark:text-amber-300'
-                      : 'border-outline-variant/40'
-                  }`}
-                >
-                  来源：{provider}{isVirtual ? '·非真实 POI' : '·真实 POI'}
-                </span>
-              )}
-            </div>
+          {coords && isVirtual && (
+            <div className="text-[11px] text-muted-foreground">示例店</div>
           )}
-          {apiNote && <p className="text-[11px] text-amber-700/90 dark:text-amber-300/90">{apiNote}</p>}
 
           <div className="rounded-lg bg-muted/40 p-3 space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -270,16 +254,23 @@ export default function NearbyMerchants({
             </div>
 
             <label className="block text-xs text-muted-foreground">
-              最低评分：{minRating <= 0 ? '不限' : minRating.toFixed(1)}
+              最低评分：{minRating <= 0 ? '不限' : `≥ ${minRating.toFixed(1)}`}
               <input
                 type="range"
                 min={0}
                 max={5}
                 step={0.1}
                 value={minRating}
-                onChange={(e) => setMinRating(Number(e.target.value))}
-                className="w-full mt-1 accent-[#d4af37]"
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  setMinRating(v);
+                  if (v > 0) setOnlyRated(true);
+                }}
+                className="w-full mt-1 accent-[#B8945A]"
               />
+              <span className="mt-1 block text-[11px] opacity-80">
+                默认 ≥4.5；拖动滑条即时筛选，当前 {list.length} 家
+              </span>
             </label>
 
             <label className="flex items-center gap-2 text-xs text-muted-foreground min-h-[44px]">
@@ -342,6 +333,10 @@ export default function NearbyMerchants({
             </div>
           ) : (
             <ul className="space-y-2">
+              <li className="text-[11px] text-muted-foreground list-none px-0.5">
+                {provider || '附近'} · 评分 ≥{minRating > 0 ? minRating.toFixed(1) : '不限'} · 共 {list.length} 家
+                {raw.length > list.length ? `（已从 ${raw.length} 家筛出）` : ''}
+              </li>
               {list.map((m, idx) => (
                 <li
                   key={m.id}
@@ -351,52 +346,90 @@ export default function NearbyMerchants({
                       : 'border-outline-variant/25'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="font-semibold text-foreground text-sm flex items-center gap-1.5 flex-wrap">
-                        <span className="truncate">{m.name}</span>
-                        {sort === 'recommend' && idx === 0 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent-foreground text-primary shrink-0 font-semibold tracking-[0.06em]">
-                            最推荐
-                          </span>
-                        )}
-                        {sort === 'recommend' && idx > 0 && idx < 3 && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-border text-accent-foreground shrink-0">
-                            推荐 {idx + 1}
-                          </span>
-                        )}
-                        {m.sourceLabel === '虚拟推荐' && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 shrink-0">
-                            虚拟
-                          </span>
-                        )}
-                        {m.detailUrl && (
-                          <a
-                            href={m.detailUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-primary shrink-0"
-                            aria-label="查看详情"
-                          >
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </a>
-                        )}
+                  <div className="flex items-start gap-3">
+                    {m.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={m.image}
+                        alt=""
+                        className="w-16 h-16 rounded-md object-cover shrink-0 bg-muted"
+                      />
+                    ) : null}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-foreground text-sm flex items-center gap-1.5 flex-wrap">
+                            <span className="truncate">{m.name}</span>
+                            {sort === 'recommend' && idx === 0 && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent-foreground text-primary shrink-0 font-semibold tracking-[0.06em]">
+                                最推荐
+                              </span>
+                            )}
+                            {sort === 'recommend' && idx > 0 && idx < 3 && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full border border-border text-accent-foreground shrink-0">
+                                推荐 {idx + 1}
+                              </span>
+                            )}
+                            {m.sourceLabel === '虚拟推荐' && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 shrink-0">
+                                虚拟
+                              </span>
+                            )}
+                            {m.sourceLabel === '百度地图' && (
+                              <span className="text-[10px] px-1.5 py-0.5 rounded border border-border text-muted-foreground shrink-0">
+                                百度
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5">
+                            {m.category}
+                            {m.price ? ` · 人均¥${m.price}` : ''}
+                            {m.commentNum != null ? ` · ${m.commentNum}条评价` : ''}
+                            {` · 约${m.minPeople}-${m.maxPeople}人`}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-0.5 truncate">{m.address}</div>
+                          {m.shopHours && (
+                            <div className="text-xs text-muted-foreground mt-0.5">营业 {m.shopHours}</div>
+                          )}
+                          {m.heatHint && (
+                            <div className="text-xs text-accent-foreground mt-0.5">{m.heatHint}</div>
+                          )}
+                          <div className="text-xs text-primary mt-1">{m.blameLine}</div>
+                          {m.actions && m.actions.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                              {m.actions
+                                .filter((a) => a.platform === 'meituan' || a.platform === 'dianping' || a.label === '百度详情' || a.label === '百度导航')
+                                .slice(0, 4)
+                                .map((a) => (
+                                  <a
+                                    key={`${m.id}-${a.platform}-${a.label}`}
+                                    href={a.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    title={a.hint}
+                                    className={`inline-flex items-center gap-1 min-h-[32px] px-2.5 rounded-sm text-[11px] font-semibold tracking-[0.04em] border ${
+                                      a.platform === 'meituan'
+                                        ? 'border-[#FFC300]/40 bg-[#FFC300]/15 text-foreground'
+                                        : a.platform === 'dianping'
+                                          ? 'border-orange-400/40 bg-orange-400/10 text-foreground'
+                                          : 'border-border text-muted-foreground'
+                                    }`}
+                                  >
+                                    {a.label}
+                                    <ExternalLink className="w-3 h-3 opacity-70" />
+                                  </a>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
+                            <Star className="w-3.5 h-3.5 text-accent-foreground fill-accent-foreground" />
+                            {m.rating != null ? m.rating.toFixed(1) : '暂无'}
+                          </div>
+                          <div className="text-xs text-muted-foreground mt-1">{formatDistance(m.distanceM)}</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
-                        {m.category}
-                        {m.price ? ` · 人均${m.price}` : ''}
-                        {` · 约${m.minPeople}-${m.maxPeople}人`}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-0.5 truncate">{m.address}</div>
-                      {m.tel && <div className="text-xs text-muted-foreground mt-0.5">{m.tel}</div>}
-                      <div className="text-xs text-primary mt-1">{m.blameLine}</div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <div className="inline-flex items-center gap-1 text-sm font-semibold text-foreground">
-                        <Star className="w-3.5 h-3.5 text-accent-foreground fill-accent-foreground" />
-                        {m.rating != null ? m.rating.toFixed(1) : '暂无'}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">{formatDistance(m.distanceM)}</div>
                     </div>
                   </div>
                 </li>
@@ -409,7 +442,7 @@ export default function NearbyMerchants({
             <div className="flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Gamepad2 className="w-4 h-4 text-primary" />
-                破冰游戏 · {people} 人
+                破冰 · {people} 人
               </h3>
               <button
                 type="button"

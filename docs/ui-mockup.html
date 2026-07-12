@@ -490,63 +490,33 @@
       <div class="hero-wheel" aria-hidden="true">
         <svg viewBox="0 0 120 120" width="160" height="160"><use href="#i-wheel"/></svg>
       </div>
-      <p class="eyebrow label-caps">天机食鉴 · Social Dining</p>
       <h1>今天吃什么</h1>
-      <p>把生辰摆上桌，把合盘当成开场白。七派同算给出白话宜忌，再配附近店与破冰游戏——让「吃什么」变成今晚的社交仪式。</p>
-      <div class="social-strip">
-        <span class="badge-tag">多人合盘</span>
-        <span class="badge-meta" style="margin-left:24px">Party · Table</span>
-      </div>
+      <p>合盘 · 定今晚</p>
       <div class="cta-row">
         <button class="btn-primary" type="button" onclick="document.getElementById('formPanel').scrollIntoView({behavior:'smooth'})">
           <svg width="16" height="16" viewBox="0 0 24 24"><use href="#i-lotus"/></svg>
-          起一卦 · 定今晚
+          起卦
         </button>
-        <a class="btn-secondary" href="#socialRitual">
-          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#i-bowl"/></svg>
-          聚会怎么玩
-        </a>
       </div>
     </section>
-
-    <div class="oracle-quote">
-      <blockquote>「席未定，先问天机；人已齐，再定今晚。」</blockquote>
-      <cite>天机食鉴 · 合席签</cite>
-    </div>
 
     <div class="vibe-grid" aria-hidden="false">
       <div class="vibe-cell">
         <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bagua"/></svg></div>
         <strong>金线合盘</strong>
-        <span>八字五行对坐，宜忌一句说清，不堆术语</span>
       </div>
       <div class="vibe-cell">
         <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg></div>
         <strong>席间破冰</strong>
-        <span>饭桌 / 酒桌两套游戏，把沉默变成话题</span>
       </div>
       <div class="vibe-cell">
         <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
         <strong>今日食签</strong>
-        <span>适合吃 / 暂缓吃，像拆开一张轻盈签文</span>
       </div>
       <div class="vibe-cell">
         <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-compass"/></svg></div>
         <strong>附近落座</strong>
-        <span>按定位推荐真实商家；无密钥时诚实标虚拟</span>
       </div>
-    </div>
-
-    <div class="social-band" id="socialRitual" style="margin-top:24px">
-      <p class="eyebrow label-caps">社交饭局仪式</p>
-      <h3>聚齐 · 测算 · 分享</h3>
-      <p>三人即可开局——合盘是破冰，推荐是续航，游戏是高潮</p>
-      <ol class="social-steps">
-        <li><span>Gather · 聚齐</span>把同伴生辰与 MBTI 加进来，主测人像「主位」一样先落座填写</li>
-        <li><span>Cast · 起卦</span>七派同算 → 群体今日饮食宜忌 + 各人白话签，像拆开一桌合席签</li>
-        <li><span>Share · 落座</span>附近商家候选 + 桌面破冰游戏，把天机落到真实饭局</li>
-      </ol>
-      <p class="party-hint">今晚建议人数 <em>3–8</em> · 先合盘再点菜 · 酒桌需成年确认</p>
     </div>
 
     <div class="divider"></div>
@@ -555,23 +525,22 @@
       <div class="card">
         <div class="card-title">
           <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bagua"/></svg></span>
-          <h2>填写生辰信息</h2>
+          <h2>填写生辰</h2>
         </div>
-        <p class="sub">主测人如「主位」先落座；可添加同伴生辰与 MBTI，合盘后再定今晚吃什么</p>
 
         <div id="guestList"></div>
-        <button class="btn-ghost" type="button" id="addGuestBtn" style="width:100%;justify-content:center;margin:12px 0 8px">＋ 添加同伴</button>
+        <button class="btn-secondary" type="button" id="addGuestBtn" style="width:100%;justify-content:center;margin:12px 0 16px">＋ 添加同伴</button>
 
-        <label>主测 · 性别</label>
+        <label>性别</label>
         <div class="seg" id="genderSeg">
           <button type="button" class="on" data-g="男">男</button>
           <button type="button" data-g="女">女</button>
         </div>
 
-        <label>主测 · 出生日期</label>
+        <label>出生日期</label>
         <input type="date" id="birthDate" value="1998-07-12" />
 
-        <label>主测 · 出生时辰</label>
+        <label>出生时辰</label>
         <select id="shichen">
           <option value="0">子时 (23-1点)</option>
           <option value="1">丑时 (1-3点)</option>
@@ -587,7 +556,7 @@
           <option value="11">亥时 (21-23点)</option>
         </select>
 
-        <label>主测 · 出生地</label>
+        <label>出生地</label>
         <div class="row">
           <select id="province">
             <option>浙江</option><option>上海</option><option>北京</option><option>广东</option><option>江苏</option><option>四川</option>
@@ -595,11 +564,11 @@
           <input type="text" id="city" value="杭州" placeholder="城市" />
         </div>
 
-        <label>主测 · MBTI <span style="font-weight:400">（选填）</span></label>
-        <input type="text" id="mbti" placeholder="如 INFP，也可不填" maxlength="16" />
+        <label>MBTI</label>
+        <input type="text" id="mbti" placeholder="选填" maxlength="16" />
         <div class="chips" id="mbtiChips"></div>
 
-        <button class="btn-primary" id="submitBtn" type="button" style="width:100%;margin-top:28px">合盘起卦 · 定今晚</button>
+        <button class="btn-primary" id="submitBtn" type="button" style="width:100%;margin-top:28px">合盘起卦</button>
       </div>
     </section>
 
@@ -611,13 +580,13 @@
         </span></div>
         <div class="card-title">
           <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-moon"/></svg></span>
-          <h2>测算结果</h2>
+          <h2>结果</h2>
         </div>
-        <p class="sub" id="reportSub">白话四 Tab：概况 / 今日 / 本月 / 今年</p>
+        <p class="sub" id="reportSub"></p>
         <div class="food-summary hidden" id="foodSummary">
           <div class="label">
             <svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg>
-            一句重点 · 合席食签
+            今晚
           </div>
           <p id="foodSummaryText"></p>
         </div>
@@ -638,9 +607,15 @@
       <div class="card">
         <div class="card-title">
           <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg></span>
-          <h2>附近落座</h2>
+          <h2>附近</h2>
         </div>
-        <p class="sub">合盘之后落座：默认「距离 + 评分」综合最推荐；可切换纯距离 / 纯评分</p>
+        <div id="mapConfig" class="warn" style="margin-bottom:12px">
+          <div class="row" style="margin-top:0;gap:8px;align-items:center">
+            <input type="text" id="apiBaseInput" placeholder="API 地址（本机可留空）" style="flex:1" />
+            <button type="button" class="btn-secondary" id="saveApiBtn" style="min-height:44px;padding:8px 14px;white-space:nowrap">刷新</button>
+          </div>
+          <span id="mapConfigStatus" class="sub" style="display:block;margin-top:8px"></span>
+        </div>
         <label>就餐人数</label>
         <div class="seg" id="peopleSeg">
           <button type="button" data-p="2">2人</button>
@@ -648,6 +623,9 @@
           <button type="button" data-p="6">6人</button>
           <button type="button" data-p="8">8人</button>
         </div>
+        <label>最低评分 <span id="minRatingLabel">≥ 4.5</span></label>
+        <input type="range" id="minRatingRange" min="0" max="5" step="0.1" value="4.5" style="width:100%;accent-color:var(--color-tertiary);margin:4px 0 12px" />
+        <p class="sub" id="ratingFilterHint" style="margin:-4px 0 12px">默认 ≥4.5；拖动即时筛选</p>
         <label>排序</label>
         <div class="seg" id="merchantSortSeg">
           <button type="button" class="on" data-sort="recommend">综合推荐</button>
@@ -672,7 +650,7 @@
       </div>
     </section>
 
-    <p class="disclaimer">☆ 仅供娱乐参考 · 不构成任何决策建议 ☆</p>
+    <p class="disclaimer">仅供娱乐</p>
   </div>
 
   <script>
@@ -850,7 +828,7 @@
     function renderGuestEditor() {
       const box = document.getElementById('guestList');
       if (!companions.length) {
-        box.innerHTML = '<p class="sub" style="margin:0">暂无同伴，可点下方添加（主测人在下面填写）</p>';
+        box.innerHTML = '';
         return;
       }
       box.innerHTML = companions.map((g, i) => `
@@ -898,10 +876,11 @@
       });
     }
 
-    document.getElementById('addGuestBtn').onclick = () => {
+    function addCompanion() {
       if (companions.length >= 10) return;
+      const id = 'c' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
       companions.push({
-        id: 'c' + Date.now(),
+        id,
         name: '同伴' + (companions.length + 1),
         gender: '男',
         date: '1995-03-08',
@@ -909,7 +888,20 @@
         mbti: '',
       });
       renderGuestEditor();
-    };
+      // 新同伴卡插入在按钮上方，滚入视口，避免「点了没反应」的错觉
+      requestAnimationFrame(() => {
+        const row = document.querySelector(`#guestList .guest-row[data-id="${id}"]`);
+        if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+    const addGuestBtn = document.getElementById('addGuestBtn');
+    if (addGuestBtn) {
+      addGuestBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addCompanion();
+      });
+    }
     renderGuestEditor();
 
     function wxFromYear(year, seed) {
@@ -986,12 +978,11 @@
         `${people.length}人聚餐 · ${date} · ${province}${city}`;
       reportSet = buildReport({ date, shichen, province, city, mbti });
       reportSet.foodSummary = synth.groupFood;
-      document.getElementById('reportSub').textContent =
-        synth.mbtiNote + '已按多人八字/MBTI 综合（预览简化排盘；正式环境走真实八字引擎）。';
+      document.getElementById('reportSub').textContent = '';
       document.getElementById('foodSummaryText').textContent = synth.groupFood;
       document.getElementById('foodSummary').classList.remove('hidden');
       const pc = document.getElementById('partyCards');
-      pc.innerHTML = '<p class="sub">各位八字摘要</p>' + synth.cardsHtml;
+      pc.innerHTML = synth.cardsHtml;
       pc.classList.remove('hidden');
       showTab('overview');
       document.getElementById('resultPanel').classList.remove('hidden');
@@ -1005,20 +996,28 @@
       document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth' });
     };
 
-    /* —— 虚拟商家 + 破冰游戏（HTML 预览无真实地图） —— */
+    /* —— 附近落座：优先百度真实店 + 美团/点评深链；失败才虚拟 —— */
     let partyPeople = 4;
     let iceScene = 'table';
     let adultOk = false;
     let gameSeed = 1;
     let merchantSort = 'recommend';
+    let minRating = 4.5;
+    let liveMerchants = []; // {name,category,rating,price,min,max,addr,dist,source,uid,meituan,dianping,baidu}
+    let merchantSource = 'loading'; // loading | baidu | virtual | error
+    let merchantNote = '';
+    let userLat = 30.27258;
+    let userLng = 120.0057;
+    let userCity = '杭州市';
+
     const VIRTUAL_POOL = [
-      { name: '云海小厨·家常', category: '家常菜', rating: 4.5, price: '68', min: 2, max: 8, addr: '示例路 12 号', dist: 320 },
-      { name: '半盏火锅局', category: '火锅', rating: 4.6, price: '98', min: 3, max: 12, addr: '示例街 88 号', dist: 480 },
-      { name: '青灯烧烤铺', category: '烧烤', rating: 4.3, price: '75', min: 3, max: 10, addr: '示例巷 6 号', dist: 560 },
-      { name: '月白咖啡馆', category: '咖啡', rating: 4.7, price: '42', min: 1, max: 4, addr: '示例广场 B1', dist: 210 },
-      { name: '同袍私房菜', category: '私房菜', rating: 4.8, price: '128', min: 2, max: 6, addr: '示例里 3 弄', dist: 390 },
-      { name: '聚气自助涮', category: '自助涮', rating: 4.2, price: '99', min: 2, max: 20, addr: '示例大道 168 号', dist: 720 },
-      { name: '团圆大宴楼', category: '宴会', rating: 4.3, price: '120', min: 8, max: 30, addr: '示例会展馆', dist: 880 },
+      { name: '云海小厨·家常', category: '家常菜', rating: 4.5, price: '68', min: 2, max: 8, addr: '示例路 12 号', dist: 320, source: 'virtual' },
+      { name: '半盏火锅局', category: '火锅', rating: 4.6, price: '98', min: 3, max: 12, addr: '示例街 88 号', dist: 480, source: 'virtual' },
+      { name: '青灯烧烤铺', category: '烧烤', rating: 4.3, price: '75', min: 3, max: 10, addr: '示例巷 6 号', dist: 560, source: 'virtual' },
+      { name: '月白咖啡馆', category: '咖啡', rating: 4.7, price: '42', min: 1, max: 4, addr: '示例广场 B1', dist: 210, source: 'virtual' },
+      { name: '同袍私房菜', category: '私房菜', rating: 4.8, price: '128', min: 2, max: 6, addr: '示例里 3 弄', dist: 390, source: 'virtual' },
+      { name: '聚气自助涮', category: '自助涮', rating: 4.2, price: '99', min: 2, max: 20, addr: '示例大道 168 号', dist: 720, source: 'virtual' },
+      { name: '团圆大宴楼', category: '宴会', rating: 4.3, price: '120', min: 8, max: 30, addr: '示例会展馆', dist: 880, source: 'virtual' },
     ];
     const GAMES = [
       { id: '1', name: '命运关键词接龙', scene: 'table', minutes: 5, rule: '每人抽关键词讲一件小事，下一位接上一个词结尾。', host: '今晚别先聊业绩——从关键词接龙开始。', minP: 3, maxP: 10 },
@@ -1031,6 +1030,75 @@
       { id: '8', name: '干杯话题轮盘', scene: 'drink', minutes: 5, rule: '抽话题干杯，可随时换成无酒精。', host: '抽个轻松话题干杯。', minP: 3, maxP: 10, adult: true },
     ];
 
+    function getApiBase() {
+      const q = new URLSearchParams(location.search).get('api');
+      if (q) {
+        try { localStorage.setItem('NEARBY_API_BASE', q.replace(/\/$/, '')); } catch (_) {}
+        return q.replace(/\/$/, '');
+      }
+      try {
+        const saved = (localStorage.getItem('NEARBY_API_BASE') || '').trim().replace(/\/$/, '');
+        if (saved) return saved;
+      } catch (_) {}
+      // 纯静态预览（如 python http.server :8765）没有 /api → 默认打本机 Next
+      const port = location.port;
+      const host = location.hostname;
+      if ((host === '127.0.0.1' || host === 'localhost') && port && port !== '5000') {
+        return 'http://127.0.0.1:5000';
+      }
+      // 同源 Next（localhost:5000 / 隧道域名）用相对路径
+      return '';
+    }
+
+    function meituanUrl(name, city) {
+      const q = (name || '').replace(/[（(].*?[）)]/g, '').trim() || name;
+      const c = (city || '').replace(/市$/, '');
+      return `https://m.meituan.com/s/?q=${encodeURIComponent(c ? c + ' ' + q : q)}`;
+    }
+    function dianpingUrl(name) {
+      const q = (name || '').replace(/[（(].*?[）)]/g, '').trim() || name;
+      return `https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=${encodeURIComponent(q)}`;
+    }
+
+    async function fetchNearbyApi(lat, lng, people) {
+      const base = getApiBase();
+      const qs = new URLSearchParams({
+        lat: String(lat),
+        lng: String(lng),
+        radius: '3000',
+        people: String(people),
+      });
+      const url = `${base}/api/nearby?${qs}`;
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error('接口 HTTP ' + res.status);
+      const json = await res.json();
+      if (!json.ok || !json.merchants?.length) throw new Error(json.error || json.note || '无结果');
+      if (json.virtual || json.provider === 'virtual') {
+        const err = new Error(json.note || '服务端仍返回虚拟店（请检查 BAIDU_MAP_AUTH_TOKEN）');
+        err.code = 'API_VIRTUAL';
+        err.merchants = json.merchants;
+        throw err;
+      }
+      if (json.city) userCity = json.city;
+      return json.merchants.map(m => ({
+        name: m.name,
+        category: m.category,
+        rating: m.rating,
+        price: m.price || '',
+        min: m.minPeople || 1,
+        max: m.maxPeople || 30,
+        addr: m.address || '',
+        dist: m.distanceM || 0,
+        source: 'baidu',
+        uid: m.uid || '',
+        hours: m.shopHours || '',
+        image: m.image || '',
+        meituan: (m.actions || []).find(a => a.platform === 'meituan')?.url || meituanUrl(m.name, json.city),
+        dianping: (m.actions || []).find(a => a.platform === 'dianping')?.url || dianpingUrl(m.name),
+        baidu: m.detailUrl || '',
+      }));
+    }
+
     function recommendScore(m, maxDist) {
       const ratingPart = Math.min(Math.max((m.rating ?? 3.6) / 5, 0), 1);
       const distPart = 1 - Math.min(Math.max(m.dist, 0) / Math.max(maxDist, 1), 1);
@@ -1038,33 +1106,117 @@
     }
 
     function renderMerchants() {
-      let list = VIRTUAL_POOL.filter(p => partyPeople >= p.min && partyPeople <= p.max);
-      if (!list.length) list = [...VIRTUAL_POOL];
-      const maxDist = 1500;
+      const box = document.getElementById('merchantList');
+      const statusEl = document.getElementById('mapConfigStatus');
+      const base = getApiBase();
+      if (statusEl) {
+        statusEl.textContent =
+          merchantSource === 'baidu' ? '· 已加载百度真实餐厅'
+          : merchantSource === 'loading' ? '· 正在经服务端检索…'
+          : base ? `· API：${base}`
+          : '· 使用当前站点 /api/nearby';
+      }
+      if (merchantSource === 'loading') {
+        box.innerHTML = '<div class="warn">正在经服务端调用百度地图检索真实餐厅…</div>';
+        return;
+      }
+
+      let list = (liveMerchants.length ? liveMerchants : VIRTUAL_POOL)
+        .filter(p => partyPeople >= (p.min || 1) && partyPeople <= (p.max || 30));
+      if (minRating > 0) {
+        list = list.filter(p => p.rating != null && Number(p.rating) >= minRating);
+      }
+      if (!list.length && liveMerchants.length) {
+        // 门槛过高时不回退到低分店，只提示调低分数
+        list = [];
+      } else if (!list.length) {
+        list = (liveMerchants.length ? [...liveMerchants] : [...VIRTUAL_POOL])
+          .filter(p => minRating <= 0 || (p.rating != null && Number(p.rating) >= minRating));
+      }
+      const maxDist = 3000;
       list = [...list].sort((a, b) => {
         if (merchantSort === 'rating') {
-          if (b.rating !== a.rating) return b.rating - a.rating;
+          if ((b.rating ?? -1) !== (a.rating ?? -1)) return (b.rating ?? -1) - (a.rating ?? -1);
           return a.dist - b.dist;
         }
         if (merchantSort === 'distance') {
           if (a.dist !== b.dist) return a.dist - b.dist;
-          return b.rating - a.rating;
+          return (b.rating ?? 0) - (a.rating ?? 0);
         }
         const sa = recommendScore(a, maxDist);
         const sb = recommendScore(b, maxDist);
         if (sb !== sa) return sb - sa;
         return a.dist - b.dist;
       });
-      const use = list.slice(0, 5);
-      document.getElementById('merchantList').innerHTML =
-        `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：预览页无真实地图 Key 时展示示例店。排序：评分 60% + 距离 40%（可切换）。</div>` +
-        use.map((m, idx) => `
-          <div class="m-card">
-            <div class="name">${m.name}${merchantSort === 'recommend' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">最推荐</span>' : ''}${merchantSort === 'recommend' && idx > 0 && idx < 3 ? `<span class="tag-v">推荐 ${idx + 1}</span>` : ''}<span class="tag-v">虚拟</span></div>
-            <div class="meta">${m.category} · 评分 ${m.rating} · 人均¥${m.price} · ${m.dist}m · 约${m.min}-${m.max}人</div>
-            <div class="meta">（虚拟）${m.addr}</div>
-            <div class="bl">按 ${partyPeople} 人聚餐挑的 · 虚拟示例店</div>
-          </div>`).join('');
+      const use = list.slice(0, 8);
+      const isVirt = merchantSource !== 'baidu';
+      const ratingHint = minRating > 0 ? `评分 ≥${minRating.toFixed(1)} · 共 ${list.length} 家` : `不限评分 · 共 ${list.length} 家`;
+      const head = !list.length
+        ? `<div class="warn" style="margin-bottom:12px"><strong>无匹配</strong>：当前 ${ratingHint}。请下调最低评分。</div>`
+        : isVirt
+        ? `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：${merchantNote || '请用本机 http://127.0.0.1:5000/ui-mockup.html'} · ${ratingHint}</div>`
+        : `<div class="warn" style="margin-bottom:12px"><strong>杭州真实餐厅</strong>：${merchantNote || userCity} · ${ratingHint}</div>`;
+
+      const ratingLabel = document.getElementById('minRatingLabel');
+      if (ratingLabel) ratingLabel.textContent = minRating <= 0 ? '不限' : `≥ ${minRating.toFixed(1)}`;
+      const hintEl = document.getElementById('ratingFilterHint');
+      if (hintEl) hintEl.textContent = `默认 ≥4.5；拖动即时筛选 · 当前展示 ${use.length}/${list.length} 家`;
+
+      if (!list.length) {
+        box.innerHTML = head;
+        return;
+      }
+
+      box.innerHTML = head + use.map((m, idx) => `
+        <div class="m-card">
+          <div class="name">${m.name}${merchantSort === 'recommend' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">最推荐</span>' : ''}${merchantSort === 'recommend' && idx > 0 && idx < 3 ? `<span class="tag-v">推荐 ${idx + 1}</span>` : ''}<span class="tag-v">${isVirt ? '虚拟' : '百度'}</span></div>
+          <div class="meta">${m.category || '美食'}${m.rating != null ? ' · 评分 ' + m.rating : ' · 暂无评分'}${m.price ? ' · 人均¥' + m.price : ''} · ${m.dist}m</div>
+          <div class="meta">${isVirt ? '（虚拟）' : ''}${m.addr || ''}${m.hours ? ' · 营业 ' + m.hours : ''}</div>
+          <div class="bl">按 ${partyPeople} 人聚餐挑的${isVirt ? ' · 虚拟示例店' : ' · 真实 POI'}</div>
+          ${!isVirt ? `<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+            <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.meituan}" target="_blank" rel="noreferrer">美团搜店</a>
+            <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.dianping}" target="_blank" rel="noreferrer">点评搜店</a>
+            ${m.baidu ? `<a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.baidu}" target="_blank" rel="noreferrer">百度详情</a>` : ''}
+          </div>` : ''}
+        </div>`).join('');
+    }
+
+    async function loadLiveMerchants() {
+      merchantSource = 'loading';
+      renderMerchants();
+      const locate = () => new Promise((resolve) => {
+        if (!navigator.geolocation) return resolve({ lat: userLat, lng: userLng, note: '浏览器不支持定位，用杭州仓南广场坐标' });
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, note: '' }),
+          () => resolve({ lat: userLat, lng: userLng, note: '定位未授权，用杭州仓南广场坐标' }),
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+      });
+      const loc = await locate();
+      userLat = loc.lat; userLng = loc.lng;
+      try {
+        const list = await fetchNearbyApi(userLat, userLng, partyPeople);
+        liveMerchants = list;
+        merchantSource = 'baidu';
+        const base = getApiBase() || location.origin;
+        merchantNote = (loc.note ? loc.note + ' · ' : '') + `经 ${base}/api/nearby · ${userCity || ''}`;
+      } catch (e) {
+        if (e && e.code === 'API_VIRTUAL' && e.merchants) {
+          liveMerchants = e.merchants.map(m => ({
+            name: m.name, category: m.category, rating: m.rating, price: m.price || '',
+            min: m.minPeople || 1, max: m.maxPeople || 30, addr: m.address || '', dist: m.distanceM || 0,
+            source: 'virtual', hours: '', image: '', meituan: '', dianping: '', baidu: '',
+          }));
+        } else {
+          liveMerchants = [];
+        }
+        merchantSource = 'virtual';
+        const msg = e && e.message ? e.message : String(e);
+        merchantNote = msg.includes('Failed to fetch')
+          ? '无法访问 /api/nearby。请先 pnpm next dev --port 5000，再打开 http://127.0.0.1:5000/ui-mockup.html（纯静态页无法直连百度）。'
+          : msg;
+      }
+      renderMerchants();
     }
 
     function renderGames() {
@@ -1096,7 +1248,7 @@
         document.querySelectorAll('#peopleSeg button').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
         partyPeople = Number(btn.dataset.p);
-        renderMerchants();
+        void loadLiveMerchants();
         renderGames();
       };
     });
@@ -1108,6 +1260,14 @@
         renderMerchants();
       };
     });
+    const ratingRange = document.getElementById('minRatingRange');
+    if (ratingRange) {
+      ratingRange.value = String(minRating);
+      ratingRange.oninput = () => {
+        minRating = Number(ratingRange.value);
+        renderMerchants();
+      };
+    }
     document.querySelectorAll('#sceneSeg button').forEach(btn => {
       btn.onclick = () => {
         document.querySelectorAll('#sceneSeg button').forEach(b => b.classList.remove('on'));
@@ -1124,7 +1284,19 @@
       gameSeed += 1;
       renderGames();
     };
-    renderMerchants();
+    document.getElementById('saveApiBtn').onclick = () => {
+      const v = (document.getElementById('apiBaseInput').value || '').trim().replace(/\/$/, '');
+      try {
+        if (v) localStorage.setItem('NEARBY_API_BASE', v);
+        else localStorage.removeItem('NEARBY_API_BASE');
+      } catch (_) {}
+      void loadLiveMerchants();
+    };
+    try {
+      const b = getApiBase();
+      if (b) document.getElementById('apiBaseInput').value = b;
+    } catch (_) {}
+    void loadLiveMerchants();
     renderGames();
   </script>
 </body>

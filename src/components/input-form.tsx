@@ -97,16 +97,20 @@ function WheelColumn({ items, selectedIndex, onChange, itemHeight = 44 }: {
 
   return (
     <div
-      className="relative h-[220px] overflow-hidden"
+      className="relative h-[220px] overflow-hidden rounded-md bg-background"
       style={{ touchAction: 'pan-y' }}
     >
-      {/* Top/bottom fade masks */}
-      <div className="absolute top-0 left-0 right-0 h-[88px] z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to bottom, #1e1e2a, transparent)' }} />
-      <div className="absolute bottom-0 left-0 right-0 h-[88px] z-10 pointer-events-none"
-        style={{ background: 'linear-gradient(to top, #1e1e2a, transparent)' }} />
+      {/* Top/bottom fade masks — 页面底色 */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[88px] z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to bottom, var(--background), transparent)' }}
+      />
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[88px] z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to top, var(--background), transparent)' }}
+      />
       {/* Selection indicator */}
-      <div className="absolute top-[88px] left-0 right-0 h-[44px] border-y border-[#5266eb]/40 rounded-md z-5 pointer-events-none" />
+      <div className="absolute top-[88px] left-0 right-0 h-[44px] border-y border-[#D4848A]/45 rounded-md z-5 pointer-events-none" />
       {/* Scrollable items */}
       <div
         ref={columnRef}
@@ -124,8 +128,8 @@ function WheelColumn({ items, selectedIndex, onChange, itemHeight = 44 }: {
             key={i}
             className={`flex items-center justify-center snap-center transition-all duration-150 cursor-pointer select-none ${
               i === selectedIndex
-                ? 'text-[#ededf3] font-[480] text-base'
-                : 'text-[#c3c3cc] text-sm'
+                ? 'text-[#D4848A] font-[480] text-base'
+                : 'text-[#D4848A]/45 text-sm'
             }`}
             style={{ height: itemHeight }}
             onClick={() => onChange(i)}
@@ -317,25 +321,21 @@ export default function InputForm({
         </div>
       )}
 
-      {/* MBTI — 选填，不做强校验 */}
+      {/* MBTI */}
       {showMbti && (
         <div className="bg-card rounded-[12px] p-4 md:p-8 mb-3">
-          <div className="flex items-center justify-between gap-2 mb-3">
-            <div className="flex items-center gap-2 text-ivory-text text-[16px] font-[480]">
-              <span className="text-[12px] tracking-[0.12px] text-ash-text">MBTI</span>
-              <span>性格类型</span>
-            </div>
-            <span className="text-[12px] text-ash-text">选填</span>
+          <div className="flex items-center gap-2 mb-3 text-ivory-text text-[16px] font-[480]">
+            <span>MBTI</span>
           </div>
           <input
             type="text"
             value={mbti}
             onChange={(e) => setMbti(e.target.value)}
-            placeholder="如 INFP，也可不填"
+            placeholder="选填"
             maxLength={16}
             className="w-full min-h-[48px] rounded-[32px] border border-mist-border/50 bg-transparent px-5 text-ivory-text placeholder:text-ash-text outline-none focus:border-primary"
             autoComplete="off"
-            aria-label="MBTI（选填）"
+            aria-label="MBTI"
           />
           <div className="mt-3 flex flex-wrap gap-2">
             {MBTI_OPTIONS.map((t) => (

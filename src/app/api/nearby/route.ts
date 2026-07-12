@@ -3,10 +3,12 @@ import {
   blameLineFor,
   estimatePeopleRange,
   keywordForPartySize,
+  partyRawRequest,
   recommendScore,
   tencentKeywordForPartySize,
   type NearbyMerchant,
 } from '@/lib/nearby-merchants';
+import { enrichMerchantActions } from '@/lib/merchant-links';
 import { buildVirtualMerchants } from '@/lib/virtual-merchants';
 
 export const runtime = 'nodejs';
@@ -62,18 +64,8 @@ function fmtCoord(n: number): string {
   return n.toFixed(6);
 }
 
-function partyRawRequest(people: number, radiusM: number): string {
-  const km = Math.max(0.5, Math.round(radiusM) / 1000);
-  if (people <= 2) {
-    return `离我最近的适合${people}人的咖啡馆或小馆，优先评分高，${km}公里内`;
-  }
-  if (people <= 4) {
-    return `离我最近的适合${people}人吃饭的餐厅，优先评分高，${km}公里内`;
-  }
-  if (people <= 8) {
-    return `离我最近的适合${people}人聚餐的火锅或中餐厅，优先评分高，${km}公里内`;
-  }
-  return `离我最近的适合${people}人聚餐的自助餐或宴会餐厅，优先评分高，${km}公里内`;
+function clampRadius(m: number): number {
+  return Math.max(200, Math.min(Math.round(m), 5000));
 }
 
 interface BaiduPlaceItem {
@@ -81,6 +73,7 @@ interface BaiduPlaceItem {
   uid?: string;
   address?: string;
   telephone?: string;
+  city?: string;
   location?: { lat: number; lng: number };
   detail_info?: {
     distance?: number | string;
@@ -91,6 +84,11 @@ interface BaiduPlaceItem {
     price?: string;
     overall_rating?: string;
     comment_num?: string | number;
+    brand?: string;
+    shop_hours?: string;
+    image?: string;
+    heat_trend?: string;
+    label?: string;
   };
 }
 
@@ -104,20 +102,35 @@ interface TencentPlaceItem {
   _distance?: number;
 }
 
-function clampRadius(m: number): number {
-  return Math.max(200, Math.min(Math.round(m), 5000));
+function attachActions(m: NearbyMerchant, city?: string): NearbyMerchant {
+  return {
+    ...m,
+    city: m.city || city,
+    actions: enrichMerchantActions({
+      name: m.name,
+      lat: m.lat,
+      lng: m.lng,
+      uid: m.uid,
+      detailUrl: m.detailUrl,
+      city: m.city || city,
+      address: m.address,
+      sourceLabel: m.sourceLabel,
+    }),
+  };
 }
 
 function mapBaiduItems(
   items: BaiduPlaceItem[],
   people: number,
   center?: { lat: number; lng: number },
-  sourceLabel: NearbyMerchant['sourceLabel'] = '百度地图'
+  sourceLabel: NearbyMerchant['sourceLabel'] = '百度地图',
+  cityHint?: string
 ): NearbyMerchant[] {
   return items
     .filter((p) => p.name && p.location)
     .map((p) => {
       const category =
+        p.detail_info?.label ||
         p.detail_info?.tag ||
         p.detail_info?.classified_poi_tag ||
         p.detail_info?.type ||
@@ -131,8 +144,10 @@ function mapBaiduItems(
       if ((!distanceM || !Number.isFinite(distanceM)) && center && p.location) {
         distanceM = haversineM(center.lat, center.lng, p.location.lat, p.location.lng);
       }
-      return {
+      const city = p.city || cityHint;
+      const base: NearbyMerchant = {
         id: p.uid || `bd-${p.name}-${p.location!.lat}`,
+        uid: p.uid,
         name: p.name!,
         category,
         rating: Number.isFinite(rating as number) ? (rating as number) : null,
@@ -151,7 +166,13 @@ function mapBaiduItems(
           p.detail_info?.comment_num != null
             ? Number(p.detail_info.comment_num)
             : undefined,
+        brand: p.detail_info?.brand,
+        shopHours: p.detail_info?.shop_hours,
+        image: p.detail_info?.image,
+        heatHint: p.detail_info?.heat_trend,
+        city,
       };
+      return attachActions(base, city);
     });
 }
 
@@ -162,12 +183,12 @@ async function fetchBaiduAgent(opts: {
   radius: number;
   people: number;
   token: string;
-}): Promise<NearbyMerchant[]> {
+  cuisine?: string;
+}): Promise<{ merchants: NearbyMerchant[]; city: string }> {
   const gcj = wgs84ToGcj02(opts.lat, opts.lng);
   const center = `${fmtCoord(gcj.lat)},${fmtCoord(gcj.lng)}`;
   const auth = { Authorization: `Bearer ${opts.token}` };
 
-  // 先逆地理拿城市，满足 place 的 region 必填
   const revUrl = new URL('https://api.map.baidu.com/agent_plan/v1/reverse_geocoding');
   revUrl.searchParams.set('location', center);
   const revRes = await fetch(revUrl.toString(), { headers: auth, cache: 'no-store' });
@@ -184,7 +205,10 @@ async function fetchBaiduAgent(opts: {
   const region = ac?.city || ac?.district || ac?.province || '全国';
 
   const placeUrl = new URL('https://api.map.baidu.com/agent_plan/v1/place');
-  placeUrl.searchParams.set('user_raw_request', partyRawRequest(opts.people, opts.radius));
+  placeUrl.searchParams.set(
+    'user_raw_request',
+    partyRawRequest(opts.people, opts.radius, opts.cuisine)
+  );
   placeUrl.searchParams.set('region', region);
   placeUrl.searchParams.set('center', center);
   placeUrl.searchParams.set('sort', 'distance');
@@ -200,7 +224,15 @@ async function fetchBaiduAgent(opts: {
     throw new Error(placeJson.message || `百度 Agent 地点检索 status=${placeJson.status}`);
   }
 
-  return mapBaiduItems(placeJson.results || [], opts.people, gcj, '百度地图');
+  const merchants = mapBaiduItems(
+    placeJson.results || [],
+    opts.people,
+    gcj,
+    '百度地图',
+    region
+  ).filter((m) => m.distanceM <= clampRadius(opts.radius) * 1.2);
+
+  return { merchants, city: region };
 }
 
 async function fetchBaidu(opts: {
@@ -209,9 +241,10 @@ async function fetchBaidu(opts: {
   radius: number;
   people: number;
   ak: string;
+  cuisine?: string;
 }): Promise<NearbyMerchant[]> {
   const radius = clampRadius(opts.radius);
-  const query = keywordForPartySize(opts.people);
+  const query = keywordForPartySize(opts.people, opts.cuisine);
   const params = new URLSearchParams({
     query,
     location: `${opts.lat},${opts.lng}`,
@@ -246,10 +279,11 @@ async function fetchTencent(opts: {
   radius: number;
   people: number;
   key: string;
+  cuisine?: string;
 }): Promise<NearbyMerchant[]> {
   const want = clampRadius(opts.radius);
   const apiRadius = Math.min(want, 1000);
-  const keyword = tencentKeywordForPartySize(opts.people);
+  const keyword = tencentKeywordForPartySize(opts.people, opts.cuisine);
   const gcj = wgs84ToGcj02(opts.lat, opts.lng);
   const params = new URLSearchParams({
     key: opts.key,
@@ -273,13 +307,12 @@ async function fetchTencent(opts: {
     throw new Error(json.message || `腾讯地图错误 status=${json.status}`);
   }
 
-  const items = json.data || [];
-  return items
+  return (json.data || [])
     .filter((p) => p.title && p.location)
     .map((p) => {
       const category = p.category || '美食';
       const range = estimatePeopleRange(p.title || '', category);
-      return {
+      const base: NearbyMerchant = {
         id: p.id || `qq-${p.title}-${p.location!.lat}`,
         name: p.title!,
         category,
@@ -290,16 +323,18 @@ async function fetchTencent(opts: {
         blameLine: blameLineFor(category, opts.people),
         lat: p.location!.lat,
         lng: p.location!.lng,
-        sourceLabel: '腾讯地图' as const,
+        sourceLabel: '腾讯地图',
         minPeople: range.min,
         maxPeople: range.max,
       };
+      return attachActions(base);
     });
 }
 
 /**
- * GET /api/nearby?lat=&lng=&radius=1500&people=6
- * 优先 BAIDU_MAP_AUTH_TOKEN（Agent Plan）→ BAIDU_MAP_AK → TENCENT_MAP_KEY
+ * GET /api/nearby?lat=&lng=&radius=1500&people=6&cuisine=火锅,川菜
+ * 优先 BAIDU_MAP_AUTH_TOKEN → BAIDU_MAP_AK → TENCENT_MAP_KEY
+ * 真实店附带美团/点评搜店深链（非美团官方 POI 接口）
  */
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
@@ -307,6 +342,7 @@ export async function GET(req: NextRequest) {
   const lng = Number(sp.get('lng'));
   const radius = Number(sp.get('radius') || 1500);
   const people = Math.max(1, Math.min(30, Number(sp.get('people') || 4)));
+  const cuisine = (sp.get('cuisine') || '').trim();
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return NextResponse.json({ ok: false, error: '缺少有效 lat/lng' }, { status: 400 });
@@ -319,10 +355,20 @@ export async function GET(req: NextRequest) {
   const errors: string[] = [];
   let provider: Provider | null = null;
   let merchants: NearbyMerchant[] = [];
+  let city = '';
 
   if (agentToken) {
     try {
-      merchants = await fetchBaiduAgent({ lat, lng, radius, people, token: agentToken });
+      const r = await fetchBaiduAgent({
+        lat,
+        lng,
+        radius,
+        people,
+        token: agentToken,
+        cuisine,
+      });
+      merchants = r.merchants;
+      city = r.city;
       if (merchants.length > 0) provider = 'baidu-agent';
       else errors.push('百度 Agent 无结果');
     } catch (e) {
@@ -332,7 +378,7 @@ export async function GET(req: NextRequest) {
 
   if ((!provider || merchants.length === 0) && baiduAk) {
     try {
-      merchants = await fetchBaidu({ lat, lng, radius, people, ak: baiduAk });
+      merchants = await fetchBaidu({ lat, lng, radius, people, ak: baiduAk, cuisine });
       if (merchants.length > 0) provider = 'baidu';
       else errors.push('百度 Place 无结果');
     } catch (e) {
@@ -342,7 +388,7 @@ export async function GET(req: NextRequest) {
 
   if ((!provider || merchants.length === 0) && tencentKey) {
     try {
-      merchants = await fetchTencent({ lat, lng, radius, people, key: tencentKey });
+      merchants = await fetchTencent({ lat, lng, radius, people, key: tencentKey, cuisine });
       if (merchants.length > 0) provider = 'tencent';
       else errors.push('腾讯地图无结果');
     } catch (e) {
@@ -350,13 +396,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // 查不到真实结果 → 虚拟推荐（诚实标签，不冒充真实 POI）
   if (!provider || merchants.length === 0) {
     merchants = buildVirtualMerchants({ lat, lng, people, radius: clampRadius(radius) });
     provider = 'virtual';
   }
 
-  // 默认按「评分 60% + 距离 40%」综合最推荐排序（前端仍可切换）
   const radiusCap = clampRadius(radius);
   merchants = [...merchants].sort(
     (a, b) =>
@@ -365,22 +409,52 @@ export async function GET(req: NextRequest) {
       (b.rating ?? 0) - (a.rating ?? 0)
   );
 
-  return NextResponse.json({
-    ok: true,
-    provider,
-    people,
-    radius: radiusCap,
-    count: merchants.length,
-    merchants,
-    sort: 'recommend',
-    virtual: provider === 'virtual',
-    note:
-      provider === 'virtual'
-        ? `未查到真实商家，已给出虚拟推荐（仅供参考）${errors.length ? '；原因：' + errors.slice(0, 2).join('；') : ''}`
-        : provider === 'tencent'
-          ? '腾讯地点搜索不返回评分；建议配置 BAIDU_MAP_AUTH_TOKEN'
-          : provider === 'baidu-agent'
-            ? '已使用百度地图 Agent Plan 真实检索'
-            : undefined,
+  const origin = req.headers.get('origin') || '*';
+  const cors = {
+    'Access-Control-Allow-Origin': origin === 'null' ? '*' : origin,
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+
+  return NextResponse.json(
+    {
+      ok: true,
+      provider,
+      people,
+      radius: radiusCap,
+      cuisine: cuisine || undefined,
+      city: city || undefined,
+      count: merchants.length,
+      merchants,
+      sort: 'recommend',
+      virtual: provider === 'virtual',
+      platforms: {
+        poi: provider === 'virtual' ? 'virtual' : 'baidu',
+        meituan: 'deeplink-search',
+        note: '店铺 POI 来自百度地图；美团/点评为同名店搜索深链，便于看团购与评价',
+      },
+      note:
+        provider === 'virtual'
+          ? `未查到真实商家，已给出虚拟推荐（仅供参考）${errors.length ? '；原因：' + errors.slice(0, 2).join('；') : ''}`
+          : provider === 'tencent'
+            ? '腾讯地点搜索不返回评分；建议配置 BAIDU_MAP_AUTH_TOKEN。美团/点评为搜店深链。'
+            : provider === 'baidu-agent'
+              ? '已用百度地图检索真实餐厅；可点「美团搜店 / 点评搜店」查看团购与评价'
+              : '已用百度地点检索；可点美团/点评搜同名店',
+    },
+    { headers: cors }
+  );
+}
+
+export async function OPTIONS(req: NextRequest) {
+  const origin = req.headers.get('origin') || '*';
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin === 'null' ? '*' : origin,
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400',
+    },
   });
 }

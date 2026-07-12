@@ -1,7 +1,9 @@
 /**
  * 附近真实商家：类型、筛选、人数适配启发式
- * 数据来自服务端 /api/nearby（百度优先，腾讯备选）
+ * 数据来自服务端 /api/nearby（百度优先；美团/点评为深链跳转）
  */
+
+import type { MerchantActionLink } from './merchant-links';
 
 export interface NearbyMerchant {
   id: string;
@@ -22,6 +24,20 @@ export interface NearbyMerchant {
   maxPeople: number;
   price?: string;
   commentNum?: number;
+  /** 品牌名（百度有则带回） */
+  brand?: string;
+  /** 营业时间文案 */
+  shopHours?: string;
+  /** 封面图 */
+  image?: string;
+  /** 百度热度等补充文案 */
+  heatHint?: string;
+  /** 城市（用于美团搜店） */
+  city?: string;
+  /** 百度 uid */
+  uid?: string;
+  /** 平台跳转：百度详情/导航 + 美团/点评搜店 */
+  actions?: MerchantActionLink[];
 }
 
 export type NearbySort = 'recommend' | 'distance' | 'rating';
@@ -50,7 +66,16 @@ export function recommendScore(
 }
 
 /** 按人数选择检索关键词（传给地图 API） */
-export function keywordForPartySize(people: number): string {
+export function keywordForPartySize(people: number, cuisineHint?: string): string {
+  const hint = (cuisineHint || '').trim();
+  if (hint) {
+    const parts = hint
+      .split(/[、,，/\s]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 3);
+    if (parts.length) return `${parts.join('$')}$餐厅$美食`;
+  }
   if (people <= 2) return '咖啡$小馆$私房菜$甜品';
   if (people <= 4) return '家常菜$餐厅$美食$中餐厅';
   if (people <= 8) return '火锅$聚餐$烧烤$中餐厅';
@@ -58,16 +83,37 @@ export function keywordForPartySize(people: number): string {
 }
 
 /** 腾讯地图 keyword（不支持 $ 并集时用单关键词） */
-export function tencentKeywordForPartySize(people: number): string {
+export function tencentKeywordForPartySize(people: number, cuisineHint?: string): string {
+  const hint = (cuisineHint || '')
+    .trim()
+    .split(/[、,，/\s]+/)
+    .filter(Boolean)[0];
+  if (hint) return hint;
   if (people <= 2) return '咖啡馆';
   if (people <= 4) return '美食';
   if (people <= 8) return '火锅';
   return '自助餐';
 }
 
+/** 语义检索自然语言（百度 Agent Plan） */
+export function partyRawRequest(people: number, radiusM: number, cuisineHint?: string): string {
+  const km = Math.max(0.5, Math.round(radiusM) / 1000);
+  const cuisine = (cuisineHint || '').trim();
+  const taste = cuisine ? `，口味偏向${cuisine}` : '';
+  if (people <= 2) {
+    return `离我最近的适合${people}人的咖啡馆或小馆${taste}，评分不低于4.5，优先高分，${km}公里内`;
+  }
+  if (people <= 4) {
+    return `离我最近的适合${people}人吃饭的餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
+  }
+  if (people <= 8) {
+    return `离我最近的适合${people}人聚餐的火锅或中餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
+  }
+  return `离我最近的适合${people}人聚餐的自助餐或宴会餐厅${taste}，评分不低于4.5，优先高分，${km}公里内`;
+}
+
 /**
  * 根据品类/店名估计适合人数区间（地图 API 无「可容纳人数」字段）
- * 用于客户端按人数筛选；检索关键词已按人数偏向
  */
 export function estimatePeopleRange(name: string, category: string): { min: number; max: number } {
   const text = `${name} ${category}`.toLowerCase();
@@ -95,30 +141,30 @@ export function filterAndSortMerchants(
     maxDistanceM: number;
     sort: NearbySort;
     people: number;
-    /** 无评分的店是否保留；默认保留但评分排序时靠后 */
     requireRating?: boolean;
   }
 ): NearbyMerchant[] {
-  const requireRating = opts.requireRating ?? false;
+  const requireRating = opts.requireRating ?? opts.minRating > 0;
   const filtered = items.filter((m) => {
     if (m.distanceM > opts.maxDistanceM) return false;
-    if (opts.people < m.minPeople || opts.people > m.maxPeople) return false;
+    // 虚拟店仍按人数区间筛；真实百度/腾讯店放宽，避免启发式过严导致「全被滤掉又像没接上」
+    if (m.sourceLabel === '虚拟推荐') {
+      if (opts.people < m.minPeople || opts.people > m.maxPeople) return false;
+    }
     if (requireRating) {
       if (m.rating == null || m.rating < opts.minRating) return false;
     } else if (m.rating != null && m.rating < opts.minRating) {
       return false;
     }
-    // 无评分：只要用户把最低分抬到 >0 且勾选「仅看有评分」才剔除；默认无评分也展示
-    if (m.rating == null && opts.minRating > 0 && requireRating) return false;
     return true;
   });
 
+  // 有评分门槛时不静默回退到未筛选列表，方便用户下调分数看到更多店
   return [...filtered].sort((a, b) => {
     if (opts.sort === 'recommend') {
       const sa = recommendScore(a, opts.maxDistanceM);
       const sb = recommendScore(b, opts.maxDistanceM);
       if (sb !== sa) return sb - sa;
-      // 同分：先更近，再更高分
       if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
       return (b.rating ?? 0) - (a.rating ?? 0);
     }
@@ -128,7 +174,6 @@ export function filterAndSortMerchants(
       if (br !== ar) return br - ar;
       return a.distanceM - b.distanceM;
     }
-    // distance
     if (a.distanceM !== b.distanceM) return a.distanceM - b.distanceM;
     return (b.rating ?? 0) - (a.rating ?? 0);
   });

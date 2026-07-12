@@ -8,14 +8,8 @@ export default function PartySynthPanel({ synth }: { synth: PartySynthResult }) 
   return (
     <section className="bg-card rounded-xl p-3 md:p-5 border border-primary/25 space-y-3">
       <div>
-        <h2 className="text-base font-semibold text-primary">多人综合 · 今晚怎么吃</h2>
+        <h2 className="text-base font-semibold text-primary">今晚怎么吃</h2>
         <p className="text-sm text-foreground mt-2 leading-relaxed font-medium">{synth.groupFoodSummary}</p>
-        {synth.mbtiFieldNote && (
-          <p className="text-xs text-muted-foreground mt-2 leading-relaxed">{synth.mbtiFieldNote}</p>
-        )}
-        {synth.baziConsensus && (
-          <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{synth.baziConsensus}</p>
-        )}
       </div>
 
       <ul className="space-y-2">

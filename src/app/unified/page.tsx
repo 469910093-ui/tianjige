@@ -168,10 +168,7 @@ export default function UnifiedPage() {
       <Navbar />
       <main className="max-w-6xl mx-auto px-3 md:px-6 py-4 md:py-8">
         <div className="mb-5 md:mb-8">
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">AI 一键算命</h1>
-          <p className="text-xs md:text-sm text-muted-foreground mt-1">
-            多人聚餐可填各位生辰与 MBTI，综合八字后再推荐吃什么与破冰
-          </p>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">填写生辰</h1>
         </div>
 
         {step === 'input' && (
@@ -185,9 +182,8 @@ export default function UnifiedPage() {
               showMbti={true}
               loading={formLoading}
               onSubmit={handleFormSubmit}
-              title="主测人生辰（同步为第一位）"
-              description="主测人信息会写入同行人列表第一位；可在上方继续添加同伴"
-              submitLabel="开始多人综合测算"
+              title="主测"
+              submitLabel="合盘起卦"
             />
           </div>
         )}
@@ -196,7 +192,7 @@ export default function UnifiedPage() {
           <div className="space-y-5 md:space-y-8">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-muted-foreground">
-                已按 {partySynth?.peopleCount || 1} 人综合测算
+                {partySynth?.peopleCount || 1} 人
               </p>
               <button
                 type="button"

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2, Users } from 'lucide-react';
 import { MBTI_OPTIONS, SHICHEN_LABELS, type DateSelection } from '@/components/input-form';
 import { defaultGuest, type PartyGuestInput } from '@/lib/party-synth';
@@ -36,8 +36,17 @@ export function syncHostAsFirstGuest(
   return [first, ...guests.slice(1)];
 }
 
-export default function PartyGuestsForm({ value, onChange, hostHint }: PartyGuestsFormProps) {
+export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProps) {
   const [openId, setOpenId] = useState<string | null>(value[0]?.id ?? null);
+  const pendingScrollId = useRef<string | null>(null);
+
+  useEffect(() => {
+    const id = pendingScrollId.current;
+    if (!id) return;
+    pendingScrollId.current = null;
+    const el = document.getElementById(`guest-${id}`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [value]);
 
   const update = (id: string, patch: Partial<PartyGuestInput>) => {
     onChange(value.map((g) => (g.id === id ? { ...g, ...patch } : g)));
@@ -45,7 +54,13 @@ export default function PartyGuestsForm({ value, onChange, hostHint }: PartyGues
 
   const addGuest = () => {
     if (value.length >= 12) return;
-    const g = defaultGuest({ name: `同伴${value.length}`, year: 1995, month: 3, day: 8 });
+    const g = defaultGuest({
+      name: `同伴${Math.max(1, value.length)}`,
+      year: 1995,
+      month: 3,
+      day: 8,
+    });
+    pendingScrollId.current = g.id;
     onChange([...value, g]);
     setOpenId(g.id);
   };
@@ -59,32 +74,20 @@ export default function PartyGuestsForm({ value, onChange, hostHint }: PartyGues
 
   return (
     <section className="bg-card rounded-xl p-3 md:p-5 border border-outline-variant/25 space-y-3">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
-            <Users className="w-4 h-4 text-primary" />
-            用餐同行人 · 多人八字 / MBTI
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            {hostHint || '可添加多位同伴；系统会综合八字与 MBTI 再推荐吃什么与破冰'}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={addGuest}
-          disabled={value.length >= 12}
-          className="inline-flex items-center gap-1 min-h-[40px] px-3 rounded-xl bg-primary/15 text-primary text-sm font-medium disabled:opacity-40"
-        >
-          <Plus className="w-4 h-4" />
-          加一人
-        </button>
-      </div>
+      <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+        <Users className="w-4 h-4 text-primary" />
+        同行
+      </h2>
 
       <ul className="space-y-2">
         {value.map((g, idx) => {
           const open = openId === g.id;
           return (
-            <li key={g.id} className="rounded-xl border border-outline-variant/30 bg-background/50 overflow-hidden">
+            <li
+              key={g.id}
+              id={`guest-${g.id}`}
+              className="rounded-xl border border-outline-variant/30 bg-background/50 overflow-hidden"
+            >
               <button
                 type="button"
                 className="w-full flex items-center justify-between gap-2 min-h-[48px] px-3 text-left"
@@ -202,6 +205,20 @@ export default function PartyGuestsForm({ value, onChange, hostHint }: PartyGues
           );
         })}
       </ul>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          addGuest();
+        }}
+        disabled={value.length >= 12}
+        className="w-full inline-flex items-center justify-center gap-1.5 min-h-[48px] px-3 rounded-xl border border-primary text-primary text-sm font-medium disabled:opacity-40 hover:bg-primary hover:text-primary-foreground transition-colors"
+      >
+        <Plus className="w-4 h-4" />
+        添加同伴
+      </button>
     </section>
   );
 }
