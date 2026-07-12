@@ -899,21 +899,13 @@
     let minRating = 0;
     let spiceFilter = 'any'; // any | spicy | mild
     let liveMerchants = []; // {name,category,rating,price,min,max,addr,dist,source,uid,meituan,dianping,baidu}
-    let merchantSource = 'loading'; // loading | baidu | virtual | error
+    let merchantSource = 'loading'; // loading | baidu | cache | virtual | error
     let merchantNote = '';
     let userLat = 30.27258;
     let userLng = 120.0057;
     let userCity = '杭州市';
-
-    const VIRTUAL_POOL = [
-      { name: '云海小厨·家常', category: '家常菜', rating: 4.5, price: '68', min: 2, max: 8, addr: '示例路 12 号', dist: 320, source: 'virtual' },
-      { name: '半盏火锅局', category: '火锅', rating: 4.6, price: '98', min: 3, max: 12, addr: '示例街 88 号', dist: 480, source: 'virtual' },
-      { name: '青灯烧烤铺', category: '烧烤', rating: 4.3, price: '75', min: 3, max: 10, addr: '示例巷 6 号', dist: 560, source: 'virtual' },
-      { name: '月白咖啡馆', category: '咖啡', rating: 4.7, price: '42', min: 1, max: 4, addr: '示例广场 B1', dist: 210, source: 'virtual' },
-      { name: '同袍私房菜', category: '私房菜', rating: 4.8, price: '128', min: 2, max: 6, addr: '示例里 3 弄', dist: 390, source: 'virtual' },
-      { name: '聚气自助涮', category: '自助涮', rating: 4.2, price: '99', min: 2, max: 20, addr: '示例大道 168 号', dist: 720, source: 'virtual' },
-      { name: '团圆大宴楼', category: '宴会', rating: 4.3, price: '120', min: 8, max: 30, addr: '示例会展馆', dist: 880, source: 'virtual' },
-    ];
+    /** 仓南广场百度快照（静态站打不到 /api 时用，按评分降序） */
+    let CANGNAN_CACHE = [];
     const GAMES = [
       { id: 'keyword-relay', name: '命运关键词接龙', scene: 'table', minutes: 5, rule: '每人抽关键词讲一件小事，下一位接上一个词结尾。', host: '今晚别先聊业绩——从关键词接龙开始。', minP: 3, maxP: 10 },
       { id: 'who-most-yi', name: '谁最像「今日宜」', scene: 'table', minutes: 4, rule: '主持人报词，全员指认最符合的人，被指最多者分享近况。', host: '我报一个词，你们指人。', minP: 3, maxP: 12 },
@@ -971,6 +963,46 @@
     function dianpingUrl(name) {
       const q = (name || '').replace(/[（(].*?[）)]/g, '').trim() || name;
       return `https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=${encodeURIComponent(q)}`;
+    }
+
+    function mapCacheMerchant(m) {
+      return {
+        name: m.name,
+        category: m.category || '美食',
+        rating: m.rating,
+        price: m.price || '',
+        min: m.minPeople || 1,
+        max: m.maxPeople || 30,
+        addr: m.address || '',
+        dist: m.distanceM || 0,
+        source: 'baidu',
+        uid: m.uid || '',
+        hours: m.shopHours || '',
+        image: m.image || '',
+        meituan: (m.actions || []).find(a => a.platform === 'meituan')?.url || meituanUrl(m.name, m.city || userCity),
+        dianping: (m.actions || []).find(a => a.platform === 'dianping')?.url || dianpingUrl(m.name),
+        baidu: m.detailUrl || '',
+      };
+    }
+
+    async function loadCangnanCache() {
+      if (CANGNAN_CACHE.length) return CANGNAN_CACHE;
+      const urls = ['./data/cangnan-restaurants.json', '/data/cangnan-restaurants.json'];
+      for (const u of urls) {
+        try {
+          const res = await fetch(u, { cache: 'no-store' });
+          if (!res.ok) continue;
+          const json = await res.json();
+          const list = (json.merchants || []).map(mapCacheMerchant)
+            .sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || a.dist - b.dist);
+          if (list.length) {
+            CANGNAN_CACHE = list;
+            if (json.city) userCity = json.city;
+            return CANGNAN_CACHE;
+          }
+        } catch (_) { /* try next */ }
+      }
+      return [];
     }
 
     async function fetchNearbyApi(lat, lng, people) {
@@ -1032,33 +1064,28 @@
       if (statusEl) {
         statusEl.textContent =
           merchantSource === 'baidu' ? '· 已加载百度真实餐厅'
-          : merchantSource === 'loading' ? '· 正在经服务端检索…'
+          : merchantSource === 'cache' ? '· 仓南广场评分榜快照（静态兜底）'
+          : merchantSource === 'loading' ? '· 正在加载…'
           : base ? `· API：${base}`
           : '· 使用当前站点 /api/nearby';
       }
       if (merchantSource === 'loading') {
-        box.innerHTML = '<div class="warn">正在经服务端调用百度地图检索真实餐厅…</div>';
+        box.innerHTML = '<div class="warn">正在加载仓南广场附近美食…</div>';
         return;
       }
 
-      let list = (liveMerchants.length ? liveMerchants : VIRTUAL_POOL)
-        .filter(p => (p.dist || 0) <= 3000)
-        .filter(p => partyPeople >= (p.min || 1) && partyPeople <= (p.max || 30));
+      const fallbackPool = CANGNAN_CACHE.length ? CANGNAN_CACHE : [];
+      let list = (liveMerchants.length ? liveMerchants : fallbackPool)
+        .filter(p => (p.dist || 0) <= 3000);
       if (minRating > 0) {
         list = list.filter(p => p.rating != null && Number(p.rating) >= minRating);
       } else {
-        // 评分榜：无评分的排后面/默认不进完整排名
         list = list.filter(p => p.rating != null);
       }
       if (spiceFilter === 'spicy') {
         list = list.filter(p => guessSpice(p.name, p.category) === 'spicy');
       } else if (spiceFilter === 'mild') {
         list = list.filter(p => guessSpice(p.name, p.category) !== 'spicy');
-      }
-      if (!list.length && !liveMerchants.length) {
-        list = [...VIRTUAL_POOL].filter(p => p.rating != null && (minRating <= 0 || p.rating >= minRating));
-        if (spiceFilter === 'spicy') list = list.filter(p => guessSpice(p.name, p.category) === 'spicy');
-        else if (spiceFilter === 'mild') list = list.filter(p => guessSpice(p.name, p.category) !== 'spicy');
       }
       const maxDist = 3000;
       list = [...list].sort((a, b) => {
@@ -1076,15 +1103,17 @@
         return a.dist - b.dist;
       });
       const use = list.slice(0, 12);
-      const isVirt = merchantSource !== 'baidu';
+      const isVirt = merchantSource === 'virtual';
+      const isReal = merchantSource === 'baidu' || merchantSource === 'cache';
+      const tagLabel = isVirt ? '虚拟' : (merchantSource === 'cache' ? '快照' : '百度');
       const ratingHint = minRating > 0
         ? `评分 ≥${minRating.toFixed(1)} · 共 ${list.length} 家`
         : `3公里内有评分 · 共 ${list.length} 家 · 评分降序`;
       const head = !list.length
         ? `<div class="warn" style="margin-bottom:12px"><strong>无匹配</strong>：当前 ${ratingHint}。请改口味或下调最低评分。</div>`
         : isVirt
-        ? `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：${merchantNote || '请用本机 http://127.0.0.1:5000/ui-mockup.html'} · ${ratingHint}</div>`
-        : `<div class="warn" style="margin-bottom:12px"><strong>仓南广场 · 3公里美食评分榜</strong>：${merchantNote || userCity} · ${ratingHint}</div>`;
+        ? `<div class="warn" style="margin-bottom:12px"><strong>暂无真实数据</strong>：${merchantNote || ''} · ${ratingHint}</div>`
+        : `<div class="warn" style="margin-bottom:12px"><strong>仓南广场 · 3公里美食评分榜</strong>：${merchantNote || userCity}${merchantSource === 'cache' ? '（离线快照）' : ''} · ${ratingHint}</div>`;
 
       const ratingLabel = document.getElementById('minRatingLabel');
       if (ratingLabel) ratingLabel.textContent = minRating <= 0 ? '不限（完整排名）' : `≥ ${minRating.toFixed(1)}`;
@@ -1098,11 +1127,11 @@
 
       box.innerHTML = head + use.map((m, idx) => `
         <div class="m-card">
-          <div class="name"><span class="tag-v" style="${idx < 3 ? 'background:var(--color-tertiary);color:var(--color-on-tertiary)' : ''}">#${idx + 1}</span> ${m.name}${merchantSort === 'rating' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">评分第1</span>' : ''}<span class="tag-v">${isVirt ? '虚拟' : '百度'}</span></div>
+          <div class="name"><span class="tag-v" style="${idx < 3 ? 'background:var(--color-tertiary);color:var(--color-on-tertiary)' : ''}">#${idx + 1}</span> ${m.name}${merchantSort === 'rating' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">评分第1</span>' : ''}<span class="tag-v">${tagLabel}</span></div>
           <div class="meta">${m.category || '美食'}${m.rating != null ? ' · 评分 ' + m.rating : ' · 暂无评分'}${m.price ? ' · 人均¥' + m.price : ''} · ${m.dist}m</div>
-          <div class="meta">${isVirt ? '（虚拟）' : ''}${m.addr || ''}${m.hours ? ' · 营业 ' + m.hours : ''}</div>
+          <div class="meta">${m.addr || ''}${m.hours ? ' · 营业 ' + m.hours : ''}</div>
           <div class="bl">仓南广场 3 公里内 · 按评分排名</div>
-          ${!isVirt ? `<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
+          ${isReal ? `<div class="row" style="margin-top:10px;gap:8px;flex-wrap:wrap">
             <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.meituan}" target="_blank" rel="noreferrer">美团搜店</a>
             <a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.dianping}" target="_blank" rel="noreferrer">点评搜店</a>
             ${m.baidu ? `<a class="btn-secondary" style="min-height:36px;padding:6px 12px;font-size:11px;text-decoration:none" href="${m.baidu}" target="_blank" rel="noreferrer">百度详情</a>` : ''}
@@ -1113,12 +1142,7 @@
     async function loadLiveMerchants() {
       merchantSource = 'loading';
       renderMerchants();
-      const locate = () => new Promise((resolve) => {
-        // 默认直接用仓南广场，不抢定位授权
-        resolve({ lat: userLat, lng: userLng, note: '仓南广场 3 公里美食评分榜' });
-      });
-      const loc = await locate();
-      userLat = loc.lat; userLng = loc.lng;
+      const loc = { lat: userLat, lng: userLng, note: '仓南广场 3 公里美食评分榜' };
       try {
         const list = await fetchNearbyApi(userLat, userLng, partyPeople);
         liveMerchants = list;
@@ -1126,20 +1150,28 @@
         const base = getApiBase() || location.origin;
         merchantNote = (loc.note ? loc.note + ' · ' : '') + `经 ${base}/api/nearby · ${userCity || ''}`;
       } catch (e) {
-        if (e && e.code === 'API_VIRTUAL' && e.merchants) {
+        // ponytail: 静态站无后端 → 仓南广场百度快照按评分降序
+        const cached = await loadCangnanCache();
+        if (cached.length) {
+          liveMerchants = cached;
+          merchantSource = 'cache';
+          merchantNote = '仓南广场 3 公里 · 百度评分降序快照（静态站无法直连地图 API）';
+        } else if (e && e.code === 'API_VIRTUAL' && e.merchants) {
           liveMerchants = e.merchants.map(m => ({
             name: m.name, category: m.category, rating: m.rating, price: m.price || '',
             min: m.minPeople || 1, max: m.maxPeople || 30, addr: m.address || '', dist: m.distanceM || 0,
             source: 'virtual', hours: '', image: '', meituan: '', dianping: '', baidu: '',
           }));
+          merchantSource = 'virtual';
+          merchantNote = e.message || '接口返回空结果';
         } else {
           liveMerchants = [];
+          merchantSource = 'virtual';
+          const msg = e && e.message ? e.message : String(e);
+          merchantNote = msg.includes('Failed to fetch')
+            ? '无法访问 /api/nearby，且本地快照未加载。'
+            : msg;
         }
-        merchantSource = 'virtual';
-        const msg = e && e.message ? e.message : String(e);
-        merchantNote = msg.includes('Failed to fetch')
-          ? '无法访问 /api/nearby。请先 pnpm next dev --port 5000，再打开 http://127.0.0.1:5000/ui-mockup.html（纯静态页无法直连百度）。'
-          : msg;
       }
       renderMerchants();
     }

@@ -59,7 +59,25 @@ export default function NearbyMerchants({
   const [gameSeed, setGameSeed] = useState(1);
   const [copyTip, setCopyTip] = useState('');
 
-  const applyVirtual = useCallback((lat: number, lng: number, partySize: number, radius: number, reason?: string) => {
+  const applyVirtual = useCallback(async (lat: number, lng: number, partySize: number, radius: number, reason?: string) => {
+    // ponytail: 无 API 时用仓南广场百度快照，不再展示虚构店名
+    try {
+      const res = await fetch('/data/cangnan-restaurants.json', { cache: 'no-store' });
+      if (res.ok) {
+        const json = await res.json();
+        const list = (json.merchants || []) as NearbyMerchant[];
+        if (list.length) {
+          setRaw(list);
+          setProvider('仓南广场快照');
+          setIsVirtual(false);
+          setApiNote(reason || json.note || '仓南广场 3 公里 · 百度评分降序快照');
+          setLocState('ready');
+          return;
+        }
+      }
+    } catch {
+      /* fall through */
+    }
     const list = buildVirtualMerchants({ lat, lng, people: partySize, radius });
     setRaw(list);
     setProvider('虚拟推荐');

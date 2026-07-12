@@ -1,0 +1,740 @@
+{
+  "city": "杭州市",
+  "center": {
+    "name": "杭州仓南广场",
+    "lat": 30.27258,
+    "lng": 120.0057,
+    "radius": 3000
+  },
+  "fetchedAt": "2026-07-12T11:36:10.756Z",
+  "source": "baidu-agent",
+  "note": "已按评分降序列出附近3公里美食（同分看距离）；可点美团/点评搜同名店",
+  "count": 15,
+  "merchants": [
+    {
+      "id": "4be8162445e1ee99b6f42f48",
+      "uid": "4be8162445e1ee99b6f42f48",
+      "name": "牛小花·秘制炭火烤牛肉(余杭未来科技城店)",
+      "category": "烤肉店",
+      "rating": 5,
+      "distanceM": 718,
+      "address": "景兴路666号西溪永乐城5幢2单元一楼110号（本地人推荐）",
+      "tel": "18072703956",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=4be8162445e1ee99b6f42f48&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.274357318120366,
+      "lng": 120.00478205371958,
+      "sourceLabel": "百度地图",
+      "minPeople": 3,
+      "maxPeople": 16,
+      "price": "92.4",
+      "commentNum": 5,
+      "brand": "牛小花",
+      "shopHours": "16:00-24:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/7d367883-9b88-3df6-8e05-258eeece6512.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=4be8162445e1ee99b6f42f48&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.274357318120366,120.00478205371958&title=%E7%89%9B%E5%B0%8F%E8%8A%B1%C2%B7%E7%A7%98%E5%88%B6%E7%82%AD%E7%81%AB%E7%83%A4%E7%89%9B%E8%82%89(%E4%BD%99%E6%9D%AD%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&content=%E7%89%9B%E5%B0%8F%E8%8A%B1%C2%B7%E7%A7%98%E5%88%B6%E7%82%AD%E7%81%AB%E7%83%A4%E7%89%9B%E8%82%89(%E4%BD%99%E6%9D%AD%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E7%89%9B%E5%B0%8F%E8%8A%B1%C2%B7%E7%A7%98%E5%88%B6%E7%82%AD%E7%81%AB%E7%83%A4%E7%89%9B%E8%82%89"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E7%89%9B%E5%B0%8F%E8%8A%B1%C2%B7%E7%A7%98%E5%88%B6%E7%82%AD%E7%81%AB%E7%83%A4%E7%89%9B%E8%82%89"
+        }
+      ]
+    },
+    {
+      "id": "305ed8995c8d79f6fda77806",
+      "uid": "305ed8995c8d79f6fda77806",
+      "name": "名家名菜·本味餐厅·佳宴(仓前店)",
+      "category": "浙菜",
+      "rating": 5,
+      "distanceM": 738,
+      "address": "景兴路666号西溪永乐城5幢（北门入口旁）",
+      "tel": "(0571)88653985",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=305ed8995c8d79f6fda77806&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.274717882775033,
+      "lng": 120.0048856901301,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 12,
+      "price": "237.6",
+      "commentNum": 6,
+      "shopHours": "09:30-13:30,16:30-20:30",
+      "image": "https://poi-pic-gz.cdn.bcebos.com/pic_f88eac389c6786468c1f3ce2087068c3.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=305ed8995c8d79f6fda77806&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.274717882775033,120.0048856901301&title=%E5%90%8D%E5%AE%B6%E5%90%8D%E8%8F%9C%C2%B7%E6%9C%AC%E5%91%B3%E9%A4%90%E5%8E%85%C2%B7%E4%BD%B3%E5%AE%B4(%E4%BB%93%E5%89%8D%E5%BA%97)&content=%E5%90%8D%E5%AE%B6%E5%90%8D%E8%8F%9C%C2%B7%E6%9C%AC%E5%91%B3%E9%A4%90%E5%8E%85%C2%B7%E4%BD%B3%E5%AE%B4(%E4%BB%93%E5%89%8D%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E5%90%8D%E5%AE%B6%E5%90%8D%E8%8F%9C%C2%B7%E6%9C%AC%E5%91%B3%E9%A4%90%E5%8E%85%C2%B7%E4%BD%B3%E5%AE%B4"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E5%90%8D%E5%AE%B6%E5%90%8D%E8%8F%9C%C2%B7%E6%9C%AC%E5%91%B3%E9%A4%90%E5%8E%85%C2%B7%E4%BD%B3%E5%AE%B4"
+        }
+      ]
+    },
+    {
+      "id": "92a1a5689c7d2b123fe23181",
+      "uid": "92a1a5689c7d2b123fe23181",
+      "name": "海煮叹鲜·粥底火锅·港式海鲜打边炉(赛银国际广场店)",
+      "category": "粥底火锅",
+      "rating": 5,
+      "distanceM": 1137,
+      "address": "电子路赛银国际商务中心1幢104-105室（地下停车场入口旁）",
+      "tel": "(0571)85857127",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=92a1a5689c7d2b123fe23181&output=html&source=placeapi_v3",
+      "blameLine": "人多热闹，适合破冰",
+      "lat": 30.274066121363894,
+      "lng": 120.02138382652183,
+      "sourceLabel": "百度地图",
+      "minPeople": 3,
+      "maxPeople": 16,
+      "price": "121.2",
+      "commentNum": 15,
+      "brand": "海煮叹鲜",
+      "shopHours": "11:00-23:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/b4314f79-3b45-3295-b97d-bb18343a150c.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=92a1a5689c7d2b123fe23181&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.274066121363894,120.02138382652183&title=%E6%B5%B7%E7%85%AE%E5%8F%B9%E9%B2%9C%C2%B7%E7%B2%A5%E5%BA%95%E7%81%AB%E9%94%85%C2%B7%E6%B8%AF%E5%BC%8F%E6%B5%B7%E9%B2%9C%E6%89%93%E8%BE%B9%E7%82%89(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%B9%BF%E5%9C%BA%E5%BA%97)&content=%E6%B5%B7%E7%85%AE%E5%8F%B9%E9%B2%9C%C2%B7%E7%B2%A5%E5%BA%95%E7%81%AB%E9%94%85%C2%B7%E6%B8%AF%E5%BC%8F%E6%B5%B7%E9%B2%9C%E6%89%93%E8%BE%B9%E7%82%89(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%B9%BF%E5%9C%BA%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E6%B5%B7%E7%85%AE%E5%8F%B9%E9%B2%9C%C2%B7%E7%B2%A5%E5%BA%95%E7%81%AB%E9%94%85%C2%B7%E6%B8%AF%E5%BC%8F%E6%B5%B7%E9%B2%9C%E6%89%93%E8%BE%B9%E7%82%89"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E6%B5%B7%E7%85%AE%E5%8F%B9%E9%B2%9C%C2%B7%E7%B2%A5%E5%BA%95%E7%81%AB%E9%94%85%C2%B7%E6%B8%AF%E5%BC%8F%E6%B5%B7%E9%B2%9C%E6%89%93%E8%BE%B9%E7%82%89"
+        }
+      ]
+    },
+    {
+      "id": "9850cb09f7c45a89223bf28e",
+      "uid": "9850cb09f7c45a89223bf28e",
+      "name": "千岛之味(赛银国际店)",
+      "category": "私房菜",
+      "rating": 5,
+      "distanceM": 1189,
+      "address": "高教路赛银国际广场",
+      "tel": "15658107979",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=9850cb09f7c45a89223bf28e&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.275439613653337,
+      "lng": 120.02123194512377,
+      "sourceLabel": "百度地图",
+      "minPeople": 1,
+      "maxPeople": 6,
+      "price": "98.6",
+      "commentNum": 5,
+      "brand": "千岛之味",
+      "shopHours": "10:30-14:00,17:00-21:30",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/e76ef5fa-eab8-3540-9689-d17d27dccc77.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=9850cb09f7c45a89223bf28e&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.275439613653337,120.02123194512377&title=%E5%8D%83%E5%B2%9B%E4%B9%8B%E5%91%B3(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%BA%97)&content=%E5%8D%83%E5%B2%9B%E4%B9%8B%E5%91%B3(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E5%8D%83%E5%B2%9B%E4%B9%8B%E5%91%B3"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E5%8D%83%E5%B2%9B%E4%B9%8B%E5%91%B3"
+        }
+      ]
+    },
+    {
+      "id": "d7ab8cedc59614daf7e73b52",
+      "uid": "d7ab8cedc59614daf7e73b52",
+      "name": "麦当劳(赛银国际广场店)",
+      "category": "汉堡店",
+      "rating": 5,
+      "distanceM": 1218,
+      "address": "创新基地高教路西侧",
+      "tel": "(0571)85464552",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=d7ab8cedc59614daf7e73b52&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.275464192822515,
+      "lng": 120.0215579821098,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "23.4",
+      "commentNum": 7,
+      "brand": "麦当劳",
+      "shopHours": "07:00-23:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/ccb581d6-68c4-30d2-81a3-8d0a154975cd.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=d7ab8cedc59614daf7e73b52&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.275464192822515,120.0215579821098&title=%E9%BA%A6%E5%BD%93%E5%8A%B3(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%B9%BF%E5%9C%BA%E5%BA%97)&content=%E9%BA%A6%E5%BD%93%E5%8A%B3(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%B9%BF%E5%9C%BA%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E9%BA%A6%E5%BD%93%E5%8A%B3"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E9%BA%A6%E5%BD%93%E5%8A%B3"
+        }
+      ]
+    },
+    {
+      "id": "a3151d0014f3014b5f0d02a7",
+      "uid": "a3151d0014f3014b5f0d02a7",
+      "name": "湘先生米小姐·现炒黄牛肉(EFC欧美广场店)",
+      "category": "湘菜",
+      "rating": 5,
+      "distanceM": 1527,
+      "address": "景兴路EFCLIVE欧美广场A区2楼（狐狸爱上椰子鸡旁边、喜茶楼上）",
+      "tel": "17376554018",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=a3151d0014f3014b5f0d02a7&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.281847302379006,
+      "lng": 120.00217470991234,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "46.8",
+      "commentNum": 1,
+      "brand": "湘先生米小姐",
+      "shopHours": "10:30-14:30,16:30-21:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/a40c4ca0-a0ec-38d2-87ba-20607a5a44e3.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=a3151d0014f3014b5f0d02a7&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.281847302379006,120.00217470991234&title=%E6%B9%98%E5%85%88%E7%94%9F%E7%B1%B3%E5%B0%8F%E5%A7%90%C2%B7%E7%8E%B0%E7%82%92%E9%BB%84%E7%89%9B%E8%82%89(EFC%E6%AC%A7%E7%BE%8E%E5%B9%BF%E5%9C%BA%E5%BA%97)&content=%E6%B9%98%E5%85%88%E7%94%9F%E7%B1%B3%E5%B0%8F%E5%A7%90%C2%B7%E7%8E%B0%E7%82%92%E9%BB%84%E7%89%9B%E8%82%89(EFC%E6%AC%A7%E7%BE%8E%E5%B9%BF%E5%9C%BA%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E6%B9%98%E5%85%88%E7%94%9F%E7%B1%B3%E5%B0%8F%E5%A7%90%C2%B7%E7%8E%B0%E7%82%92%E9%BB%84%E7%89%9B%E8%82%89"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E6%B9%98%E5%85%88%E7%94%9F%E7%B1%B3%E5%B0%8F%E5%A7%90%C2%B7%E7%8E%B0%E7%82%92%E9%BB%84%E7%89%9B%E8%82%89"
+        }
+      ]
+    },
+    {
+      "id": "eb6e223d10bdef7a5a3ac843",
+      "uid": "eb6e223d10bdef7a5a3ac843",
+      "name": "老头儿油爆虾(美瑭广场店)",
+      "category": "浙菜",
+      "rating": 5,
+      "distanceM": 1643,
+      "address": "仓前街道时代天元城19幢406、407、408、409号商铺",
+      "tel": "(0571)88323179",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=eb6e223d10bdef7a5a3ac843&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.282982984771326,
+      "lng": 120.00204928043377,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "68.4",
+      "commentNum": 1,
+      "brand": "老头儿油爆虾",
+      "shopHours": "09:30-21:30",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/99ab7149-30b7-3645-aa79-eab4ece8e29f.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=eb6e223d10bdef7a5a3ac843&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.282982984771326,120.00204928043377&title=%E8%80%81%E5%A4%B4%E5%84%BF%E6%B2%B9%E7%88%86%E8%99%BE(%E7%BE%8E%E7%91%AD%E5%B9%BF%E5%9C%BA%E5%BA%97)&content=%E8%80%81%E5%A4%B4%E5%84%BF%E6%B2%B9%E7%88%86%E8%99%BE(%E7%BE%8E%E7%91%AD%E5%B9%BF%E5%9C%BA%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E8%80%81%E5%A4%B4%E5%84%BF%E6%B2%B9%E7%88%86%E8%99%BE"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E8%80%81%E5%A4%B4%E5%84%BF%E6%B2%B9%E7%88%86%E8%99%BE"
+        }
+      ]
+    },
+    {
+      "id": "df3a34924a011c1ffe0eb05e",
+      "uid": "df3a34924a011c1ffe0eb05e",
+      "name": "锦西湖·海鲜小馆(未来科技城店)",
+      "category": "海鲜餐厅",
+      "rating": 5,
+      "distanceM": 1686,
+      "address": "创景路奥克斯中心3F",
+      "tel": "(0571)89306688,(0571)89308168",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=df3a34924a011c1ffe0eb05e&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.2806412771831,
+      "lng": 119.99779511960449,
+      "sourceLabel": "百度地图",
+      "minPeople": 3,
+      "maxPeople": 16,
+      "price": "235.2",
+      "commentNum": 7,
+      "brand": "无效品牌",
+      "shopHours": "11:00-14:00,17:00-21:30",
+      "image": "https://lbsugc.cdn.bcebos.com/images/B6073fe6b330361058b.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=df3a34924a011c1ffe0eb05e&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.2806412771831,119.99779511960449&title=%E9%94%A6%E8%A5%BF%E6%B9%96%C2%B7%E6%B5%B7%E9%B2%9C%E5%B0%8F%E9%A6%86(%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&content=%E9%94%A6%E8%A5%BF%E6%B9%96%C2%B7%E6%B5%B7%E9%B2%9C%E5%B0%8F%E9%A6%86(%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E9%94%A6%E8%A5%BF%E6%B9%96%C2%B7%E6%B5%B7%E9%B2%9C%E5%B0%8F%E9%A6%86"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E9%94%A6%E8%A5%BF%E6%B9%96%C2%B7%E6%B5%B7%E9%B2%9C%E5%B0%8F%E9%A6%86"
+        }
+      ]
+    },
+    {
+      "id": "ea1a8a84e10e14da8f1a898e",
+      "uid": "ea1a8a84e10e14da8f1a898e",
+      "name": "羊大爷·紫禁城·涮肉(杭州未来科技城杭师大云酒店)",
+      "category": "牛羊肉火锅",
+      "rating": 5,
+      "distanceM": 2301,
+      "address": "余杭塘路1999号海创绿谷西北角1",
+      "tel": "13735549003",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=ea1a8a84e10e14da8f1a898e&output=html&source=placeapi_v3",
+      "blameLine": "人多热闹，适合破冰",
+      "lat": 30.288877771094636,
+      "lng": 120.0209287206523,
+      "sourceLabel": "百度地图",
+      "minPeople": 3,
+      "maxPeople": 16,
+      "price": "108.0",
+      "commentNum": 6,
+      "brand": "无效品牌",
+      "shopHours": "10:00-14:00,16:30-22:00",
+      "image": "https://lbsugc.cdn.bcebos.com/images/B6645614c674b413979.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=ea1a8a84e10e14da8f1a898e&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.288877771094636,120.0209287206523&title=%E7%BE%8A%E5%A4%A7%E7%88%B7%C2%B7%E7%B4%AB%E7%A6%81%E5%9F%8E%C2%B7%E6%B6%AE%E8%82%89(%E6%9D%AD%E5%B7%9E%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E6%9D%AD%E5%B8%88%E5%A4%A7%E4%BA%91%E9%85%92%E5%BA%97)&content=%E7%BE%8A%E5%A4%A7%E7%88%B7%C2%B7%E7%B4%AB%E7%A6%81%E5%9F%8E%C2%B7%E6%B6%AE%E8%82%89(%E6%9D%AD%E5%B7%9E%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E6%9D%AD%E5%B8%88%E5%A4%A7%E4%BA%91%E9%85%92%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E7%BE%8A%E5%A4%A7%E7%88%B7%C2%B7%E7%B4%AB%E7%A6%81%E5%9F%8E%C2%B7%E6%B6%AE%E8%82%89"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E7%BE%8A%E5%A4%A7%E7%88%B7%C2%B7%E7%B4%AB%E7%A6%81%E5%9F%8E%C2%B7%E6%B6%AE%E8%82%89"
+        }
+      ]
+    },
+    {
+      "id": "5d7aed3cb29b27101e580023",
+      "uid": "5d7aed3cb29b27101e580023",
+      "name": "严陵滩·富阳味道·江·鲜(仓南里MEET636店)",
+      "category": "中餐馆",
+      "rating": 4.8,
+      "distanceM": 598,
+      "address": "仓前街道爱橙街与景兴路交叉口东北120米（停车5元/时|有包厢|宴请）",
+      "tel": "13855766331",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=5d7aed3cb29b27101e580023&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.272770695447093,
+      "lng": 120.00499311035851,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 12,
+      "price": "107.1",
+      "shopHours": "11:00-14:00,17:00-21:00",
+      "image": "https://poi-pic-gz.cdn.bcebos.com/pic_9152d20fe16a36fd52af116a95be6af9.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=5d7aed3cb29b27101e580023&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.272770695447093,120.00499311035851&title=%E4%B8%A5%E9%99%B5%E6%BB%A9%C2%B7%E5%AF%8C%E9%98%B3%E5%91%B3%E9%81%93%C2%B7%E6%B1%9F%C2%B7%E9%B2%9C(%E4%BB%93%E5%8D%97%E9%87%8CMEET636%E5%BA%97)&content=%E4%B8%A5%E9%99%B5%E6%BB%A9%C2%B7%E5%AF%8C%E9%98%B3%E5%91%B3%E9%81%93%C2%B7%E6%B1%9F%C2%B7%E9%B2%9C(%E4%BB%93%E5%8D%97%E9%87%8CMEET636%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E4%B8%A5%E9%99%B5%E6%BB%A9%C2%B7%E5%AF%8C%E9%98%B3%E5%91%B3%E9%81%93%C2%B7%E6%B1%9F%C2%B7%E9%B2%9C"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E4%B8%A5%E9%99%B5%E6%BB%A9%C2%B7%E5%AF%8C%E9%98%B3%E5%91%B3%E9%81%93%C2%B7%E6%B1%9F%C2%B7%E9%B2%9C"
+        }
+      ]
+    },
+    {
+      "id": "21b8e286edafbc8df603b837",
+      "uid": "21b8e286edafbc8df603b837",
+      "name": "食养八方正念餐厅(赛银国际店)",
+      "category": "韩国料理",
+      "rating": 4.6,
+      "distanceM": 1057,
+      "address": "高教路赛银国际10栋102商铺",
+      "tel": "(0571)86109920",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=21b8e286edafbc8df603b837&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.275049376637227,
+      "lng": 120.0198938647145,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 12,
+      "price": "46.4",
+      "shopHours": "09:00-21:30",
+      "image": "https://poi-pic-gz.cdn.bcebos.com/pic_8a8c1481fbd11f5155f547fabc57a337.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=21b8e286edafbc8df603b837&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.275049376637227,120.0198938647145&title=%E9%A3%9F%E5%85%BB%E5%85%AB%E6%96%B9%E6%AD%A3%E5%BF%B5%E9%A4%90%E5%8E%85(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%BA%97)&content=%E9%A3%9F%E5%85%BB%E5%85%AB%E6%96%B9%E6%AD%A3%E5%BF%B5%E9%A4%90%E5%8E%85(%E8%B5%9B%E9%93%B6%E5%9B%BD%E9%99%85%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E9%A3%9F%E5%85%BB%E5%85%AB%E6%96%B9%E6%AD%A3%E5%BF%B5%E9%A4%90%E5%8E%85"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E9%A3%9F%E5%85%BB%E5%85%AB%E6%96%B9%E6%AD%A3%E5%BF%B5%E9%A4%90%E5%8E%85"
+        }
+      ]
+    },
+    {
+      "id": "50cfb67ed5d13e83714b875c",
+      "uid": "50cfb67ed5d13e83714b875c",
+      "name": "悦江汇·江南家宴(亲橙park店)",
+      "category": "江浙菜",
+      "rating": 4.5,
+      "distanceM": 115,
+      "address": "未科阿里中心亲橙park.D10幢1楼（D8后面阿里公园旁）",
+      "tel": "13777419434",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=50cfb67ed5d13e83714b875c&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.270133548719855,
+      "lng": 120.00919915564917,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "72.0",
+      "brand": "悦江汇",
+      "shopHours": "10:30-21:00",
+      "image": "https://lbsugc.cdn.bcebos.com/images/B6a3a9a311dbf9138e8.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=50cfb67ed5d13e83714b875c&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.270133548719855,120.00919915564917&title=%E6%82%A6%E6%B1%9F%E6%B1%87%C2%B7%E6%B1%9F%E5%8D%97%E5%AE%B6%E5%AE%B4(%E4%BA%B2%E6%A9%99park%E5%BA%97)&content=%E6%82%A6%E6%B1%9F%E6%B1%87%C2%B7%E6%B1%9F%E5%8D%97%E5%AE%B6%E5%AE%B4(%E4%BA%B2%E6%A9%99park%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E6%82%A6%E6%B1%9F%E6%B1%87%C2%B7%E6%B1%9F%E5%8D%97%E5%AE%B6%E5%AE%B4"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E6%82%A6%E6%B1%9F%E6%B1%87%C2%B7%E6%B1%9F%E5%8D%97%E5%AE%B6%E5%AE%B4"
+        }
+      ]
+    },
+    {
+      "id": "60471044a482505595f08c8e",
+      "uid": "60471044a482505595f08c8e",
+      "name": "湖畔居茶楼·茶宴(未来科技城店)",
+      "category": "江浙菜",
+      "rating": 4.5,
+      "distanceM": 1644,
+      "address": "时代未来之城5幢5901室",
+      "tel": "0571-87811255",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=60471044a482505595f08c8e&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.280646231609207,
+      "lng": 119.998416155887,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "312.0",
+      "brand": "湖畔居茶楼",
+      "shopHours": "10:00-22:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/73d631e3-1265-3be0-88bb-277333165d97.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=60471044a482505595f08c8e&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.280646231609207,119.998416155887&title=%E6%B9%96%E7%95%94%E5%B1%85%E8%8C%B6%E6%A5%BC%C2%B7%E8%8C%B6%E5%AE%B4(%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&content=%E6%B9%96%E7%95%94%E5%B1%85%E8%8C%B6%E6%A5%BC%C2%B7%E8%8C%B6%E5%AE%B4(%E6%9C%AA%E6%9D%A5%E7%A7%91%E6%8A%80%E5%9F%8E%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E6%B9%96%E7%95%94%E5%B1%85%E8%8C%B6%E6%A5%BC%C2%B7%E8%8C%B6%E5%AE%B4"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E6%B9%96%E7%95%94%E5%B1%85%E8%8C%B6%E6%A5%BC%C2%B7%E8%8C%B6%E5%AE%B4"
+        }
+      ]
+    },
+    {
+      "id": "016b818a9b230a53a8f0cda5",
+      "uid": "016b818a9b230a53a8f0cda5",
+      "name": "東大方(杭州沙田国际店)",
+      "category": "浙菜",
+      "rating": 4.5,
+      "distanceM": 1851,
+      "address": "余杭塘路2699号2幢105室、2幢2层",
+      "tel": "(0571)86973977,19157803977",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=016b818a9b230a53a8f0cda5&output=html&source=placeapi_v3",
+      "blameLine": "按你附近真实商家推荐，适合约 4 人",
+      "lat": 30.281195409797945,
+      "lng": 119.99604416452121,
+      "sourceLabel": "百度地图",
+      "minPeople": 2,
+      "maxPeople": 10,
+      "price": "103.2",
+      "brand": "东大方",
+      "shopHours": "09:00-21:00",
+      "image": "https://poi-pic.cdn.bcebos.com/swd/d9d4d5dd-f128-333f-aabb-35cd0ac83f8d.jpg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=016b818a9b230a53a8f0cda5&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.281195409797945,119.99604416452121&title=%E6%9D%B1%E5%A4%A7%E6%96%B9(%E6%9D%AD%E5%B7%9E%E6%B2%99%E7%94%B0%E5%9B%BD%E9%99%85%E5%BA%97)&content=%E6%9D%B1%E5%A4%A7%E6%96%B9(%E6%9D%AD%E5%B7%9E%E6%B2%99%E7%94%B0%E5%9B%BD%E9%99%85%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E6%9D%B1%E5%A4%A7%E6%96%B9"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E6%9D%B1%E5%A4%A7%E6%96%B9"
+        }
+      ]
+    },
+    {
+      "id": "78e80f96e3c572f42a02e11e",
+      "uid": "78e80f96e3c572f42a02e11e",
+      "name": "关内牧羊人·涮滩羊·清真西北宴席(未来星宸店)",
+      "category": "牛羊肉火锅",
+      "rating": 4.4,
+      "distanceM": 2812,
+      "address": "余杭塘路未来星宸4幢103室（5号线永福地铁站D口斜对面）",
+      "tel": "15384021274,17376573833",
+      "detailUrl": "http://api.map.baidu.com/place/detail?uid=78e80f96e3c572f42a02e11e&output=html&source=placeapi_v3",
+      "blameLine": "人多热闹，适合破冰",
+      "lat": 30.29081999832933,
+      "lng": 120.02764001001135,
+      "sourceLabel": "百度地图",
+      "minPeople": 3,
+      "maxPeople": 16,
+      "price": "333.6",
+      "shopHours": "11:00-14:00,17:30-21:30",
+      "image": "https://lbsugc.cdn.bcebos.com/images/B6720631b72bb233b5.jpeg",
+      "city": "杭州市",
+      "actions": [
+        {
+          "platform": "baidu",
+          "label": "百度详情",
+          "hint": "百度地图商家页",
+          "url": "http://api.map.baidu.com/place/detail?uid=78e80f96e3c572f42a02e11e&output=html&source=placeapi_v3"
+        },
+        {
+          "platform": "baidu",
+          "label": "百度导航",
+          "hint": "调起百度地图导航",
+          "url": "https://api.map.baidu.com/marker?location=30.29081999832933,120.02764001001135&title=%E5%85%B3%E5%86%85%E7%89%A7%E7%BE%8A%E4%BA%BA%C2%B7%E6%B6%AE%E6%BB%A9%E7%BE%8A%C2%B7%E6%B8%85%E7%9C%9F%E8%A5%BF%E5%8C%97%E5%AE%B4%E5%B8%AD(%E6%9C%AA%E6%9D%A5%E6%98%9F%E5%AE%B8%E5%BA%97)&content=%E5%85%B3%E5%86%85%E7%89%A7%E7%BE%8A%E4%BA%BA%C2%B7%E6%B6%AE%E6%BB%A9%E7%BE%8A%C2%B7%E6%B8%85%E7%9C%9F%E8%A5%BF%E5%8C%97%E5%AE%B4%E5%B8%AD(%E6%9C%AA%E6%9D%A5%E6%98%9F%E5%AE%B8%E5%BA%97)&output=html&coord_type=gcj02"
+        },
+        {
+          "platform": "meituan",
+          "label": "美团搜店",
+          "hint": "在美团搜索同名店（团购/预订）",
+          "url": "https://m.meituan.com/s/?q=%E6%9D%AD%E5%B7%9E%20%E5%85%B3%E5%86%85%E7%89%A7%E7%BE%8A%E4%BA%BA%C2%B7%E6%B6%AE%E6%BB%A9%E7%BE%8A%C2%B7%E6%B8%85%E7%9C%9F%E8%A5%BF%E5%8C%97%E5%AE%B4%E5%B8%AD"
+        },
+        {
+          "platform": "dianping",
+          "label": "点评搜店",
+          "hint": "在大众点评搜索同名店（评价）",
+          "url": "https://m.dianping.com/shoplist/0/r/0/c/0/s/s_-1?keyword=%E5%85%B3%E5%86%85%E7%89%A7%E7%BE%8A%E4%BA%BA%C2%B7%E6%B6%AE%E6%BB%A9%E7%BE%8A%C2%B7%E6%B8%85%E7%9C%9F%E8%A5%BF%E5%8C%97%E5%AE%B4%E5%B8%AD"
+        }
+      ]
+    }
+  ]
+}
