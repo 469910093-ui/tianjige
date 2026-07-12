@@ -2,11 +2,11 @@
 
 import { useState, useCallback } from 'react';
 import Navbar from '@/components/navbar';
-import InputForm, { type DateSelection, type CitySelection, SHICHEN_TO_HOUR } from '@/components/input-form';
+import { SHICHEN_TO_HOUR } from '@/components/input-form';
 import FortuneReport from '@/components/fortune-report';
 import CopyableSummary from '@/components/copyable-summary';
 import NearbyMerchants from '@/components/nearby-merchants';
-import PartyGuestsForm, { syncHostAsFirstGuest } from '@/components/party-guests-form';
+import PartyGuestsForm from '@/components/party-guests-form';
 import PartySynthPanel from '@/components/party-synth-panel';
 import { useReport } from '@/components/use-report';
 import { calculateBazi, getZodiacFromDate, type BaziResult } from '@/lib/bazi-engine';
@@ -68,55 +68,39 @@ export default function UnifiedPage() {
   ]);
   const [partySynth, setPartySynth] = useState<PartySynthResult | null>(null);
 
-  const handleFormSubmit = useCallback(async (data: {
-    date: DateSelection;
-    gender?: string;
-    city?: CitySelection;
-    mbti?: string;
-  }) => {
+  const handleFormSubmit = useCallback(async () => {
+    const host = partyGuests[0];
+    if (!host) return;
     setFormLoading(true);
-    const { year, month, day, shichenIndex } = data.date;
-    const shichenNames = [
-      '子时(23-1点)', '丑时(1-3点)', '寅时(3-5点)', '卯时(5-7点)',
-      '辰时(7-9点)', '巳时(9-11点)', '午时(11-13点)', '未时(13-15点)',
-      '申时(15-17点)', '酉时(17-19点)', '戌时(19-21点)', '亥时(21-23点)',
-    ];
 
-    const guests = syncHostAsFirstGuest(partyGuests, {
-      date: data.date,
-      gender: data.gender,
-      mbti: data.mbti,
-      name: partyGuests[0]?.name || '我',
-    });
-    setPartyGuests(guests);
-    const synth = synthesizeParty(guests);
+    // ponytail: 界面只收名字+生日；时辰默认午时，性别默认男
+    const year = host.year;
+    const month = host.month;
+    const day = host.day;
+    const shichenIndex = host.shichenIndex ?? 6;
+    const gender = host.gender || '男';
+    const hour = SHICHEN_TO_HOUR[shichenIndex] ?? 12;
+
+    const synth = synthesizeParty(partyGuests);
     setPartySynth(synth);
 
     const guestLines = synth.guests
-      .map((g) => `- ${g.name}${g.mbti ? ` MBTI:${g.mbti}` : ''}｜${g.bazi.bazi}｜属${g.bazi.shengxiao}`)
+      .map((g) => `- ${g.name}｜${g.bazi.bazi}｜属${g.bazi.shengxiao}`)
       .join('\n');
     setSummary(
       `【多人聚餐综合测算】\n人数：${synth.peopleCount}\n` +
-      `主测出生：${year}年${month}月${day}日 ${shichenNames[shichenIndex]}` +
-      `${data.gender ? ' 性别：' + data.gender : ''}` +
-      `${data.city ? ' 出生地：' + data.city.province + data.city.city : ''}\n` +
+      `主测：${host.name || '我'} ${year}年${month}月${day}日\n` +
       `${synth.groupFoodSummary}\n\n同行八字：\n${guestLines}\n\n来源：今天吃什么 AI 算命`
     );
 
-    const hour = SHICHEN_TO_HOUR[shichenIndex];
-    const gender = data.gender || '男';
     const results: EngineResults = {
       bazi: null, ziwei: null, qimen: null, liuyao: null,
       astrology: null, tarot: null, horoscope: null,
     };
 
     try { results.bazi = calculateBazi(year, month, day, hour); } catch { results.bazi = calculateBazi(1990, 6, 15, 12); }
-    try {
-      results.ziwei = calculateZiwei(
-        year, month, day, shichenIndex, gender,
-        data.city?.province, data.city?.city, data.city?.longitude
-      );
-    } catch { results.ziwei = calculateZiwei(1990, 6, 15, 6, '男'); }
+    try { results.ziwei = calculateZiwei(year, month, day, shichenIndex, gender); }
+    catch { results.ziwei = calculateZiwei(1990, 6, 15, 6, '男'); }
     try { results.qimen = calculateQiMen(year, month, day, hour); } catch { results.qimen = calculateQiMen(1990, 6, 15, 12); }
     {
       const dongCount = 1 + Math.floor(Math.random() * 3);
@@ -128,12 +112,8 @@ export default function UnifiedPage() {
       try { results.liuyao = calculateLiuYao(year, month, day, hour, dongYaoIdxs); }
       catch { results.liuyao = calculateLiuYao(1990, 6, 15, 12, [2]); }
     }
-    {
-      const lat = 39.9;
-      const lon = data.city?.longitude || 116.4;
-      try { results.astrology = calculateAstrology(year, month, day, hour, lat, lon); }
-      catch { results.astrology = calculateAstrology(1995, 3, 15, 15, 39.9, 116.4); }
-    }
+    try { results.astrology = calculateAstrology(year, month, day, hour, 30.27, 120.0); }
+    catch { results.astrology = calculateAstrology(1995, 3, 15, 15, 30.27, 120.0); }
     results.tarot = drawCards(3);
     {
       const zodiac = getZodiacFromDate(month, day);
@@ -146,12 +126,8 @@ export default function UnifiedPage() {
     setStep('report');
     setFormLoading(false);
 
-    const partyMbti = synth.guests.map((g) => g.mbti).filter(Boolean).join(',');
     const birthInfo =
-      `${year}-${month}-${day} ${shichenNames[shichenIndex]} ${gender}` +
-      `${data.city ? ` 出生地${data.city.city}` : ''}` +
-      `${partyMbti ? ` MBTI:${partyMbti}` : ''}` +
-      ` 聚餐${synth.peopleCount}人 ${synth.groupFoodSummary}`;
+      `${host.name || '我'} ${year}-${month}-${day} 聚餐${synth.peopleCount}人 ${synth.groupFoodSummary}`;
     await handleGenerateReport(results, 'unified', birthInfo);
   }, [handleGenerateReport, partyGuests]);
 
@@ -168,21 +144,16 @@ export default function UnifiedPage() {
       <Navbar />
       <main className="max-w-6xl mx-auto px-3 md:px-6 py-4 md:py-8">
         <div className="mb-5 md:mb-8">
-          <h1 className="text-xl md:text-2xl font-bold text-foreground">填写生辰</h1>
+          <h1 className="text-xl md:text-2xl font-bold text-foreground">名字 + 生日</h1>
         </div>
 
         {step === 'input' && (
           <div className="max-w-lg mx-auto space-y-4">
-            <PartyGuestsForm value={partyGuests} onChange={setPartyGuests} />
-            <InputForm
-              showDate={true}
-              showShichen={true}
-              showGender={true}
-              showCity={true}
-              showMbti={true}
+            <PartyGuestsForm
+              value={partyGuests}
+              onChange={setPartyGuests}
+              onSubmit={() => void handleFormSubmit()}
               loading={formLoading}
-              onSubmit={handleFormSubmit}
-              title="主测"
               submitLabel="合盘起卦"
             />
           </div>

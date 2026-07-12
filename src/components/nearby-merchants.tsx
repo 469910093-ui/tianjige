@@ -17,6 +17,7 @@ import {
   formatDistance,
   type NearbyMerchant,
   type NearbySort,
+  type SpiceFilter,
 } from '@/lib/nearby-merchants';
 import { buildVirtualMerchants } from '@/lib/virtual-merchants';
 import {
@@ -49,6 +50,7 @@ export default function NearbyMerchants({
   const [maxDistanceM, setMaxDistanceM] = useState(3000);
   const [people, setPeople] = useState(defaultPeople);
   const [onlyRated, setOnlyRated] = useState(true);
+  const [spice, setSpice] = useState<SpiceFilter>('any');
   const [sort, setSort] = useState<NearbySort>('rating');
   const [errorMsg, setErrorMsg] = useState('');
   const [locLabel, setLocLabel] = useState(FALLBACK_LOC.name);
@@ -147,8 +149,9 @@ export default function NearbyMerchants({
         sort,
         people,
         requireRating: onlyRated,
+        spice,
       }),
-    [raw, minRating, maxDistanceM, sort, people, onlyRated, isVirtual]
+    [raw, minRating, maxDistanceM, sort, people, onlyRated, isVirtual, spice]
   );
 
   const games: IcebreakGame[] = useMemo(
@@ -293,6 +296,35 @@ export default function NearbyMerchants({
               仅显示有评分的商家
             </label>
 
+            <div>
+              <p className="text-xs text-muted-foreground mb-1.5">口味</p>
+              <div className="flex gap-2">
+                {(
+                  [
+                    { id: 'any' as const, label: '不限' },
+                    { id: 'spicy' as const, label: '能吃辣' },
+                    { id: 'mild' as const, label: '不吃辣' },
+                  ] as const
+                ).map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setSpice(opt.id)}
+                    className={`flex-1 min-h-[44px] rounded-sm text-[12px] font-medium ${
+                      spice === opt.id
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-background text-muted-foreground border border-outline-variant/40'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-1">
+                按店名/品类粗分（川湘火锅等算辣；粤菜日料咖啡等偏清淡）
+              </p>
+            </div>
+
             {!isVirtual && (
               <label className="block text-xs text-muted-foreground">
                 最远距离：{formatDistance(maxDistanceM)}
@@ -344,7 +376,7 @@ export default function NearbyMerchants({
 
           {list.length === 0 ? (
             <div className="text-center py-6 text-sm text-muted-foreground">
-              没有符合筛选的商家，试试调低评分或改人数
+              没有符合筛选的商家，试试改口味、调低评分或改人数
             </div>
           ) : (
             <ul className="space-y-2">

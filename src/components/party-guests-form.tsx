@@ -2,14 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Plus, Trash2, Users } from 'lucide-react';
-import { MBTI_OPTIONS, SHICHEN_LABELS, type DateSelection } from '@/components/input-form';
 import { defaultGuest, type PartyGuestInput } from '@/lib/party-synth';
 
 export interface PartyGuestsFormProps {
   value: PartyGuestInput[];
   onChange: (guests: PartyGuestInput[]) => void;
-  /** 主测人（表单里那一位）同步为第一位宾客时的提示 */
-  hostHint?: string;
+  /** 合盘提交；不传则只编辑名单 */
+  onSubmit?: () => void;
+  loading?: boolean;
+  submitLabel?: string;
 }
 
 function toDateValue(g: PartyGuestInput): string {
@@ -20,23 +21,29 @@ function toDateValue(g: PartyGuestInput): string {
 
 export function syncHostAsFirstGuest(
   guests: PartyGuestInput[],
-  host: { date: DateSelection; gender?: string; mbti?: string; name?: string }
+  host: { year: number; month: number; day: number; name?: string }
 ): PartyGuestInput[] {
   const first = defaultGuest({
     id: guests[0]?.id || 'host',
     name: host.name || guests[0]?.name || '我',
-    gender: host.gender || '男',
-    year: host.date.year,
-    month: host.date.month,
-    day: host.date.day,
-    shichenIndex: host.date.shichenIndex,
-    mbti: host.mbti || '',
+    gender: guests[0]?.gender || '男',
+    year: host.year,
+    month: host.month,
+    day: host.day,
+    shichenIndex: guests[0]?.shichenIndex ?? 6,
+    mbti: guests[0]?.mbti || '',
   });
   if (guests.length <= 1) return [first];
   return [first, ...guests.slice(1)];
 }
 
-export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProps) {
+export default function PartyGuestsForm({
+  value,
+  onChange,
+  onSubmit,
+  loading,
+  submitLabel = '合盘起卦',
+}: PartyGuestsFormProps) {
   const [openId, setOpenId] = useState<string | null>(value[0]?.id ?? null);
   const pendingScrollId = useRef<string | null>(null);
 
@@ -44,8 +51,7 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
     const id = pendingScrollId.current;
     if (!id) return;
     pendingScrollId.current = null;
-    const el = document.getElementById(`guest-${id}`);
-    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById(`guest-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [value]);
 
   const update = (id: string, patch: Partial<PartyGuestInput>) => {
@@ -76,8 +82,9 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
     <section className="bg-card rounded-xl p-3 md:p-5 border border-outline-variant/25 space-y-3">
       <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
         <Users className="w-4 h-4 text-primary" />
-        同行
+        同行 · 名字 + 生日
       </h2>
+      <p className="text-xs text-muted-foreground">时辰默认午时，够用合盘与附近落座。</p>
 
       <ul className="space-y-2">
         {value.map((g, idx) => {
@@ -96,7 +103,6 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
                 <span className="text-sm font-medium text-foreground truncate">
                   {idx === 0 ? '主测 · ' : ''}
                   {g.name || `同伴${idx + 1}`}
-                  {g.mbti ? ` · ${g.mbti}` : ''}
                   <span className="text-muted-foreground font-normal">
                     {' '}
                     · {g.year}/{g.month}/{g.day}
@@ -123,7 +129,7 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
               {open && (
                 <div className="px-3 pb-3 space-y-2 border-t border-outline-variant/20 pt-2">
                   <label className="block text-xs text-muted-foreground">
-                    称呼
+                    名字
                     <input
                       className="mt-1 w-full min-h-[44px] rounded-xl border border-outline-variant/40 bg-background px-3 text-sm text-foreground"
                       value={g.name}
@@ -131,24 +137,8 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
                       placeholder="如：阿伟"
                     />
                   </label>
-                  <div className="flex gap-2">
-                    {(['男', '女'] as const).map((sex) => (
-                      <button
-                        key={sex}
-                        type="button"
-                        onClick={() => update(g.id, { gender: sex })}
-                        className={`flex-1 min-h-[40px] rounded-xl text-sm ${
-                          g.gender === sex
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {sex}
-                      </button>
-                    ))}
-                  </div>
                   <label className="block text-xs text-muted-foreground">
-                    出生日期
+                    生日
                     <input
                       type="date"
                       className="mt-1 w-full min-h-[44px] rounded-xl border border-outline-variant/40 bg-background px-3 text-sm text-foreground"
@@ -159,46 +149,6 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
                       }}
                     />
                   </label>
-                  <label className="block text-xs text-muted-foreground">
-                    时辰
-                    <select
-                      className="mt-1 w-full min-h-[44px] rounded-xl border border-outline-variant/40 bg-background px-3 text-sm text-foreground"
-                      value={g.shichenIndex ?? 6}
-                      onChange={(e) => update(g.id, { shichenIndex: Number(e.target.value) })}
-                    >
-                      {SHICHEN_LABELS.map((lab, i) => (
-                        <option key={lab} value={i}>
-                          {lab}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block text-xs text-muted-foreground">
-                    MBTI（选填）
-                    <input
-                      className="mt-1 w-full min-h-[44px] rounded-xl border border-outline-variant/40 bg-background px-3 text-sm text-foreground"
-                      value={g.mbti || ''}
-                      maxLength={8}
-                      placeholder="如 INFP"
-                      onChange={(e) => update(g.id, { mbti: e.target.value.toUpperCase() })}
-                    />
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {MBTI_OPTIONS.map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => update(g.id, { mbti: t })}
-                        className={`min-h-[32px] px-2 rounded-full text-[11px] ${
-                          g.mbti === t
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
-                  </div>
                 </div>
               )}
             </li>
@@ -219,6 +169,17 @@ export default function PartyGuestsForm({ value, onChange }: PartyGuestsFormProp
         <Plus className="w-4 h-4" />
         添加同伴
       </button>
+
+      {onSubmit && (
+        <button
+          type="button"
+          disabled={loading || value.length < 1}
+          onClick={() => onSubmit()}
+          className="w-full min-h-[48px] rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-50"
+        >
+          {loading ? '测算中…' : submitLabel}
+        </button>
+      )}
     </section>
   );
 }

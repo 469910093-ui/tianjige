@@ -42,6 +42,33 @@ export interface NearbyMerchant {
 
 export type NearbySort = 'recommend' | 'distance' | 'rating';
 
+/** 口味：不限 / 能吃辣 / 不吃辣 */
+export type SpiceFilter = 'any' | 'spicy' | 'mild';
+
+export type SpiceGuess = 'spicy' | 'mild' | 'unknown';
+
+/** 店名/品类猜辣度（地图无辣度字段；启发式够筛一轮） */
+export function guessSpiceLevel(name: string, category: string): SpiceGuess {
+  const text = `${name} ${category}`;
+  // 明显偏辣
+  if (
+    /辣|麻辣|香辣|酸辣|泡椒|椒麻|剁椒|水煮|干锅|冒菜|串串|火锅|重庆|成都|川菜|湘菜|贵州|云南|小龙虾|烧烤|烤肉|烤鱼|钵钵鸡|鸭血粉丝|毛血旺/.test(
+      text
+    )
+  ) {
+    return 'spicy';
+  }
+  // 明显偏清淡 / 少辣
+  if (
+    /粤|潮汕|本帮|杭帮|淮扬|苏帮|日料|寿司|刺身|清淡|白切|清蒸|广东|港式|意面|西餐|咖啡|甜品|面包|沙拉|粥|面馆|饺子|馄饨|私房菜/.test(
+      text
+    )
+  ) {
+    return 'mild';
+  }
+  return 'unknown';
+}
+
 export function formatDistance(m: number): string {
   if (m < 1000) return `${Math.round(m)}m`;
   return `${(m / 1000).toFixed(1)}km`;
@@ -163,9 +190,11 @@ export function filterAndSortMerchants(
     sort: NearbySort;
     people: number;
     requireRating?: boolean;
+    spice?: SpiceFilter;
   }
 ): NearbyMerchant[] {
   const requireRating = opts.requireRating ?? opts.minRating > 0;
+  const spice = opts.spice ?? 'any';
   const filtered = items.filter((m) => {
     if (m.distanceM > opts.maxDistanceM) return false;
     // 虚拟店仍按人数区间筛；真实百度/腾讯店放宽，避免启发式过严导致「全被滤掉又像没接上」
@@ -176,6 +205,11 @@ export function filterAndSortMerchants(
       if (m.rating == null || m.rating < opts.minRating) return false;
     } else if (m.rating != null && m.rating < opts.minRating) {
       return false;
+    }
+    if (spice !== 'any') {
+      const level = guessSpiceLevel(m.name, m.category);
+      if (spice === 'spicy' && level !== 'spicy') return false;
+      if (spice === 'mild' && level === 'spicy') return false; // 未知保留，只踢掉明显辣
     }
     return true;
   });

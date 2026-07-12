@@ -525,50 +525,13 @@
       <div class="card">
         <div class="card-title">
           <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bagua"/></svg></span>
-          <h2>填写生辰</h2>
+          <h2>名字 + 生日</h2>
         </div>
 
         <div id="guestList"></div>
         <button class="btn-secondary" type="button" id="addGuestBtn" style="width:100%;justify-content:center;margin:12px 0 16px">＋ 添加同伴</button>
 
-        <label>性别</label>
-        <div class="seg" id="genderSeg">
-          <button type="button" class="on" data-g="男">男</button>
-          <button type="button" data-g="女">女</button>
-        </div>
-
-        <label>出生日期</label>
-        <input type="date" id="birthDate" value="1998-07-12" />
-
-        <label>出生时辰</label>
-        <select id="shichen">
-          <option value="0">子时 (23-1点)</option>
-          <option value="1">丑时 (1-3点)</option>
-          <option value="2">寅时 (3-5点)</option>
-          <option value="3">卯时 (5-7点)</option>
-          <option value="4">辰时 (7-9点)</option>
-          <option value="5">巳时 (9-11点)</option>
-          <option value="6" selected>午时 (11-13点)</option>
-          <option value="7">未时 (13-15点)</option>
-          <option value="8">申时 (15-17点)</option>
-          <option value="9">酉时 (17-19点)</option>
-          <option value="10">戌时 (19-21点)</option>
-          <option value="11">亥时 (21-23点)</option>
-        </select>
-
-        <label>出生地</label>
-        <div class="row">
-          <select id="province">
-            <option>浙江</option><option>上海</option><option>北京</option><option>广东</option><option>江苏</option><option>四川</option>
-          </select>
-          <input type="text" id="city" value="杭州" placeholder="城市" />
-        </div>
-
-        <label>MBTI</label>
-        <input type="text" id="mbti" placeholder="选填" maxlength="16" />
-        <div class="chips" id="mbtiChips"></div>
-
-        <button class="btn-primary" id="submitBtn" type="button" style="width:100%;margin-top:28px">合盘起卦</button>
+        <button class="btn-primary" id="submitBtn" type="button" style="width:100%;margin-top:12px">合盘起卦</button>
       </div>
     </section>
 
@@ -626,6 +589,12 @@
         <label>最低评分 <span id="minRatingLabel">不限（完整排名）</span></label>
         <input type="range" id="minRatingRange" min="0" max="5" step="0.1" value="0" style="width:100%;accent-color:var(--color-tertiary);margin:4px 0 12px" />
         <p class="sub" id="ratingFilterHint" style="margin:-4px 0 12px">仓南广场 3 公里内按评分降序；拖动可提高门槛</p>
+        <label>口味</label>
+        <div class="seg" id="spiceSeg" style="margin-bottom:12px">
+          <button type="button" class="on" data-spice="any">不限</button>
+          <button type="button" data-spice="spicy">能吃辣</button>
+          <button type="button" data-spice="mild">不吃辣</button>
+        </div>
         <label>排序</label>
         <div class="seg" id="merchantSortSeg">
           <button type="button" class="on" data-sort="rating">评分最高</button>
@@ -654,35 +623,13 @@
   </div>
 
   <script>
-    const MBTI = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
     const SHENGXIAO = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
-    let gender = '男';
     let reportSet = null;
     let activeTab = 'overview';
 
-    /* 导航滚动描边 */
     window.addEventListener('scroll', () => {
       document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 8);
     }, { passive: true });
-
-    const chips = document.getElementById('mbtiChips');
-    MBTI.forEach(t => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.textContent = t;
-      b.onclick = () => {
-        document.getElementById('mbti').value = t;
-        [...chips.children].forEach(c => c.classList.toggle('on', c.textContent === t));
-      };
-      chips.appendChild(b);
-    });
-
-    document.querySelectorAll('#genderSeg button').forEach(btn => {
-      btn.onclick = () => {
-        document.querySelectorAll('#genderSeg button').forEach(b => b.classList.remove('on'));
-        btn.classList.add('on');
-        gender = btn.dataset.g;
-      };
-    });
 
     function hashSeed(s) {
       let h = 2166136261;
@@ -697,11 +644,7 @@
     function shengxiaoOf(year) {
       return SHENGXIAO[(year - 4) % 12];
     }
-    function toneHint(mbti) {
-      if (!mbti) return '说话别绕弯，该推进就推进。';
-      if (mbti.startsWith('E')) return '你外向气场足，场合里不妨多带动气氛，少硬扛。';
-      if (mbti.includes('T')) return '你偏理性，决策时别只盯对错，也给关系留一点余地。';
-      if (mbti.includes('F')) return '你重感受，边界要说清楚，别把委屈攒成闷雷。';
+    function toneHint() {
       return '节奏先稳住，再谈扩张。';
     }
 
@@ -726,18 +669,17 @@
     }
 
     /** 对齐 PRD §3.3 / MIGRATION §4.4：四 Tab + 五维评分 + 白话 + 金句建议 */
-    function buildReport({ date, shichen, province, city, mbti }) {
+    function buildReport({ date, name }) {
       const [y, m, d] = date.split('-').map(Number);
       const sx = shengxiaoOf(y);
       const now = new Date();
       const today = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
       const thisMonth = `${now.getFullYear()}年${now.getMonth() + 1}月`;
       const thisYear = `${now.getFullYear()}年`;
-      const seed = hashSeed(`${date}|${gender}|${shichen}|${city}|${mbti}`);
+      const seed = hashSeed(`${date}|${name || '我'}|午时`);
       const strong = ['木','火','土','金','水'][seed % 5];
       const weak = ['木','火','土','金','水'][(seed + 2) % 5];
-      const tone = toneHint(mbti);
-      const mbtiNote = mbti ? `语气上略参考你填的 ${mbti}，不拿它盖过命盘。` : '';
+      const tone = toneHint();
 
       function sec(s, texts, bases) {
         bases = bases || { o: 72, c: 70, l: 68, w: 66, h: 74 };
@@ -753,7 +695,7 @@
 
       return {
         overview: sec(seed, {
-          o: `此造属${sx}，生于${y}年${m}月${d}日${shichen}，${gender}，出生地${province}${city}。五行里${strong}气更足，${weak}偏弱。布局求同：做事别一个人硬刚，协作更顺。${mbtiNote}${tone}`,
+          o: `${name || '主测'}属${sx}，生于${y}年${m}月${d}日（默认午时）。五行里${strong}气更足，${weak}偏弱。布局求同：做事别一个人硬刚，协作更顺。${tone}`,
           c: '事业上更适合把力气花在「选对题」而不是「证明自己」。格局不虚，但急于翻盘容易翻车。不如先把手头一件事做透，再谈扩张。',
           l: '感情里别把「对错」当唯一标准。愿意听、愿意让一步，气场反而更稳。单身不妨多出现在轻松场合，有伴则少翻旧账。',
           w: '财运宜稳不宜赌。进账靠节制和信用，不靠一次梭哈。有大额支出先晾一晚再定。',
@@ -785,7 +727,7 @@
           a: '今年少做证明题，多做选择题。娱乐参考，重大决策请另找专业意见。',
         }, { o: 74, c: 72, l: 70, w: 68, h: 73 }),
         foodSummary: foodSummaryOf(strong, weak),
-        basis: `流派依据（预览）：生肖${sx} · 五行旺${strong}/弱${weak} · 时辰${shichen}。正式环境 /unified 会并行布引引擎排盘后写入同结构报告。`,
+        basis: `流派依据（预览）：生肖${sx} · 五行旺${strong}/弱${weak} · 默认午时。正式环境 /unified 会并行引擎排盘。`,
       };
     }
 
@@ -823,32 +765,22 @@
       btn.onclick = () => showTab(btn.dataset.tab);
     });
 
-    let companions = []; // {id,name,gender,date,shichen,mbti}
+    let companions = [
+      { id: 'host', name: '我', date: '1998-07-12' },
+    ];
 
     function renderGuestEditor() {
       const box = document.getElementById('guestList');
-      if (!companions.length) {
-        box.innerHTML = '';
-        return;
-      }
       box.innerHTML = companions.map((g, i) => `
         <div class="guest-row" data-id="${g.id}">
           <div class="row-title">
-            <span>同伴 ${i + 1}</span>
-            <button type="button" class="btn-ghost" style="min-height:32px;padding:0 12px;font-size:12px" data-del="${g.id}">删除</button>
+            <span>${i === 0 ? '主测' : '同伴 ' + i}</span>
+            ${i > 0 ? `<button type="button" class="btn-ghost" style="min-height:32px;padding:0 12px;font-size:12px" data-del="${g.id}">删除</button>` : ''}
           </div>
-          <input type="text" data-f="name" data-id="${g.id}" value="${g.name}" placeholder="称呼" />
-          <div class="seg" data-gender="${g.id}">
-            <button type="button" class="${g.gender==='男'?'on':''}" data-gid="${g.id}" data-g="男">男</button>
-            <button type="button" class="${g.gender==='女'?'on':''}" data-gid="${g.id}" data-g="女">女</button>
-          </div>
+          <label style="font-size:12px;color:var(--muted)">名字</label>
+          <input type="text" data-f="name" data-id="${g.id}" value="${g.name}" placeholder="名字" />
+          <label style="font-size:12px;color:var(--muted)">生日</label>
           <input type="date" data-f="date" data-id="${g.id}" value="${g.date}" />
-          <select data-f="shichen" data-id="${g.id}">
-            ${[0,1,2,3,4,5,6,7,8,9,10,11].map(si =>
-              `<option value="${si}" ${Number(g.shichen)===si?'selected':''}>${document.getElementById('shichen').options[si].text}</option>`
-            ).join('')}
-          </select>
-          <input type="text" data-f="mbti" data-id="${g.id}" value="${g.mbti||''}" placeholder="MBTI 选填" maxlength="8" />
         </div>
       `).join('');
 
@@ -866,14 +798,6 @@
           if (c) c[f] = el.value;
         };
       });
-      box.querySelectorAll('[data-gid]').forEach(btn => {
-        btn.onclick = () => {
-          const id = btn.getAttribute('data-gid');
-          const c = companions.find(x => x.id === id);
-          if (c) c.gender = btn.getAttribute('data-g');
-          renderGuestEditor();
-        };
-      });
     }
 
     function addCompanion() {
@@ -881,14 +805,10 @@
       const id = 'c' + Date.now() + '-' + Math.random().toString(36).slice(2, 6);
       companions.push({
         id,
-        name: '同伴' + (companions.length + 1),
-        gender: '男',
+        name: '同伴' + companions.length,
         date: '1995-03-08',
-        shichen: '6',
-        mbti: '',
       });
       renderGuestEditor();
-      // 新同伴卡插入在按钮上方，滚入视口，避免「点了没反应」的错觉
       requestAnimationFrame(() => {
         const row = document.querySelector(`#guestList .guest-row[data-id="${id}"]`);
         if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -919,64 +839,38 @@
       const eatMap = {木:'青绿时蔬、菌菇',火:'苦瓜、清汤绿叶',土:'杂粮、南瓜家常',金:'白肉清汤、萝卜白菜',水:'温热汤羹、豆制品'};
       const avoidMap = {木:'过酸生冷',火:'过烫油炸重辣',土:'过甜油腻冷饮',金:'过咸熏烤燥热',水:'过量冰饮腌制'};
       const names = people.map(p=>p.name).join('、');
-      const mbtis = people.map(p=>p.mbti).filter(Boolean);
-      let mbtiNote = mbtis.length ? `MBTI：${mbtis.join(' / ')}。` : '本局部分人未填 MBTI。';
-      const e = mbtis.filter(m=>m.startsWith('E')).length;
-      const i = mbtis.filter(m=>m.startsWith('I')).length;
-      if (e > i) mbtiNote += '外向偏多，适合热闹局。';
-      else if (i > e) mbtiNote += '内向偏多，话题先轻后深。';
       return {
         groupFood: `今晚 ${people.length} 人（${names}）综合：适合吃「${eatMap[topWeak]}」；不太适合「${avoidMap[topStrong]}」。群体偏补${topWeak}、慎过旺${topStrong}。`,
-        mbtiNote,
+        mbtiNote: '',
         cardsHtml: people.map(p => `
           <div class="party-person">
-            <div class="nm">${p.name}${p.mbti ? ' · ' + p.mbti : ''}</div>
-            <div class="meta">属${p.sx} · ${p.strong}旺${p.weak}弱 · ${p.date} ${p.shichenLabel}${p.gender ? ' · ' + p.gender : ''}</div>
+            <div class="nm">${p.name}</div>
+            <div class="meta">属${p.sx} · ${p.strong}旺${p.weak}弱 · ${p.date}</div>
             <div class="food">${foodSummaryOf(p.strong, p.weak)}</div>
           </div>`).join(''),
       };
     }
 
     document.getElementById('submitBtn').onclick = () => {
-      const date = document.getElementById('birthDate').value;
-      const shichenSel = document.getElementById('shichen');
-      const shichen = shichenSel.selectedOptions[0].text;
-      const province = document.getElementById('province').value;
-      const city = document.getElementById('city').value.trim() || province;
-      const mbti = (document.getElementById('mbti').value || '').trim().toUpperCase();
-
-      const hostY = Number(date.split('-')[0]);
-      const hostWx = wxFromYear(hostY, 1);
-      const people = [{
-        name: '我（主测）',
-        gender,
-        date,
-        shichenLabel: shichen,
-        mbti,
-        ...hostWx,
-      }];
-      companions.forEach((c, idx) => {
+      if (!companions.length) return;
+      const people = companions.map((c, idx) => {
         const y = Number((c.date || '1995-01-01').split('-')[0]);
-        const wx = wxFromYear(y, idx + 3);
-        const lab = document.getElementById('shichen').options[Number(c.shichen) || 6].text;
-        people.push({
-          name: c.name || ('同伴' + (idx + 1)),
-          gender: c.gender,
-          date: c.date,
-          shichenLabel: lab,
-          mbti: (c.mbti || '').trim().toUpperCase(),
+        const wx = wxFromYear(y, idx + 1);
+        return {
+          name: c.name || (idx === 0 ? '我' : '同伴' + idx),
+          date: c.date || '1995-01-01',
           ...wx,
-        });
+        };
       });
-
+      const host = people[0];
       const synth = synthPartyPeople(people);
       partyPeople = people.length;
       document.querySelectorAll('#peopleSeg button').forEach(b => b.classList.remove('on'));
       const exact = [...document.querySelectorAll('#peopleSeg button')].find(b => Number(b.dataset.p) === Math.min(8, partyPeople <= 2 ? 2 : partyPeople <= 4 ? 4 : partyPeople <= 6 ? 6 : 8));
       if (exact) exact.classList.add('on');
       document.getElementById('profileChipText').textContent =
-        `${people.length}人聚餐 · ${date} · ${province}${city}`;
-      reportSet = buildReport({ date, shichen, province, city, mbti });
+        `${people.length}人 · ${host.name} · ${host.date}`;
+      reportSet = buildReport({ date: host.date, name: host.name });
       reportSet.foodSummary = synth.groupFood;
       document.getElementById('reportSub').textContent = '';
       document.getElementById('foodSummaryText').textContent = synth.groupFood;
@@ -1003,6 +897,7 @@
     let gameSeed = 1;
     let merchantSort = 'rating';
     let minRating = 0;
+    let spiceFilter = 'any'; // any | spicy | mild
     let liveMerchants = []; // {name,category,rating,price,min,max,addr,dist,source,uid,meituan,dianping,baidu}
     let merchantSource = 'loading'; // loading | baidu | virtual | error
     let merchantNote = '';
@@ -1117,6 +1012,13 @@
       }));
     }
 
+    function guessSpice(name, category) {
+      const text = (name || '') + ' ' + (category || '');
+      if (/辣|麻辣|香辣|酸辣|泡椒|椒麻|剁椒|水煮|干锅|冒菜|串串|火锅|重庆|成都|川菜|湘菜|贵州|云南|小龙虾|烧烤|烤肉|烤鱼|钵钵鸡|鸭血粉丝|毛血旺/.test(text)) return 'spicy';
+      if (/粤|潮汕|本帮|杭帮|淮扬|苏帮|日料|寿司|刺身|清淡|白切|清蒸|广东|港式|意面|西餐|咖啡|甜品|面包|沙拉|粥|面馆|饺子|馄饨|私房菜/.test(text)) return 'mild';
+      return 'unknown';
+    }
+
     function recommendScore(m, maxDist) {
       const ratingPart = Math.min(Math.max((m.rating ?? 3.6) / 5, 0), 1);
       const distPart = 1 - Math.min(Math.max(m.dist, 0) / Math.max(maxDist, 1), 1);
@@ -1148,8 +1050,15 @@
         // 评分榜：无评分的排后面/默认不进完整排名
         list = list.filter(p => p.rating != null);
       }
+      if (spiceFilter === 'spicy') {
+        list = list.filter(p => guessSpice(p.name, p.category) === 'spicy');
+      } else if (spiceFilter === 'mild') {
+        list = list.filter(p => guessSpice(p.name, p.category) !== 'spicy');
+      }
       if (!list.length && !liveMerchants.length) {
         list = [...VIRTUAL_POOL].filter(p => p.rating != null && (minRating <= 0 || p.rating >= minRating));
+        if (spiceFilter === 'spicy') list = list.filter(p => guessSpice(p.name, p.category) === 'spicy');
+        else if (spiceFilter === 'mild') list = list.filter(p => guessSpice(p.name, p.category) !== 'spicy');
       }
       const maxDist = 3000;
       list = [...list].sort((a, b) => {
@@ -1172,7 +1081,7 @@
         ? `评分 ≥${minRating.toFixed(1)} · 共 ${list.length} 家`
         : `3公里内有评分 · 共 ${list.length} 家 · 评分降序`;
       const head = !list.length
-        ? `<div class="warn" style="margin-bottom:12px"><strong>无匹配</strong>：当前 ${ratingHint}。请下调最低评分。</div>`
+        ? `<div class="warn" style="margin-bottom:12px"><strong>无匹配</strong>：当前 ${ratingHint}。请改口味或下调最低评分。</div>`
         : isVirt
         ? `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：${merchantNote || '请用本机 http://127.0.0.1:5000/ui-mockup.html'} · ${ratingHint}</div>`
         : `<div class="warn" style="margin-bottom:12px"><strong>仓南广场 · 3公里美食评分榜</strong>：${merchantNote || userCity} · ${ratingHint}</div>`;
@@ -1273,6 +1182,14 @@
         document.querySelectorAll('#merchantSortSeg button').forEach(b => b.classList.remove('on'));
         btn.classList.add('on');
         merchantSort = btn.dataset.sort;
+        renderMerchants();
+      };
+    });
+    document.querySelectorAll('#spiceSeg button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#spiceSeg button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        spiceFilter = btn.dataset.spice || 'any';
         renderMerchants();
       };
     });
