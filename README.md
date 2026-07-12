@@ -2,13 +2,17 @@
 
 ## 在线预览
 
-> **对外主链接（请继续用这个）：** Cloudflare 隧道，域名不变。本机需保持 `preview-gateway`（8765）+ `pnpm next`（5000）+ cloudflared 运行。
+> 说明：旧地址 `fragrances-influence-chemistry-tampa.trycloudflare.com` 已失效（临时隧道过期，DNS 无法解析）。`*.trycloudflare.com` **每次重启都会换域名**，无法保留旧名。
 
-- **体验地址：** https://fragrances-influence-chemistry-tampa.trycloudflare.com/
-- GitHub Pages（静态，国内可能打不开）：https://469910093-ui.github.io/tianjige/
+### 推荐对外链接（较稳，约 3 天，可认领永久）
+- **ShipStatic：** https://subtle-fringe-hg1z2wq.shipstatic.com/
+- 认领永久保留：https://my.shipstatic.com/claim/3e5ad939f608dfaf8886c1471ad8bb88c643b331d2cb36f25cf5b109d82d068e
+
+### 本机隧道（可走真实附近店 API，本机需保持开机）
+- **Cloudflare：** https://cook-registration-campus-offices.trycloudflare.com/
 - 代码仓库：https://github.com/469910093-ui/tianjige
 
-本地：`pnpm next dev --port 5000`，另开 `node scripts/preview-gateway.mjs`（静态 + `/api` 反代）。
+本地：`pnpm next dev --port 5000` + `node scripts/preview-gateway.mjs`；对外隧道：`npx cloudflared tunnel --url http://127.0.0.1:8765`。
 
 ---
 
