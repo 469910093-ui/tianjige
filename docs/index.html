@@ -1,0 +1,1131 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>今天吃什么 · 天机食鉴</title>
+  <link href="https://fonts.googleapis.cn/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --color-primary: #1A1A1A;
+      --color-secondary: #7A7368;
+      --color-tertiary: #B8945A;
+      --color-neutral: #F7F4EE;
+      --color-surface: #FBF8F2;
+      --color-border: #E8E2D4;
+      --color-on-primary: #F7F4EE;
+      --color-on-tertiary: #1A1A1A;
+      --font-serif: 'DM Serif Display', 'Noto Serif SC', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', sans-serif;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --spacing-2xl: 48px;
+      --spacing-3xl: 72px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-pill: 9999px;
+      --shadow-card-hover: 0 2px 8px rgba(26, 26, 26, 0.06);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-neutral);
+      color: var(--color-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+    .shell { max-width: 640px; margin: 0 auto; min-height: 100vh; position: relative; }
+    .label-caps {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .nav {
+      position: sticky; top: 0; z-index: 20;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(247, 244, 238, 0.9);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid transparent;
+      transition: border-color .2s;
+    }
+    .nav.scrolled { border-bottom-color: var(--color-border); }
+    .brand {
+      display: flex; align-items: center; gap: 12px;
+      font-family: var(--font-serif); font-weight: 400;
+      letter-spacing: -0.01em; font-size: 1.125rem;
+      color: var(--color-primary);
+    }
+    .brand-mark {
+      width: 28px; height: 28px; color: var(--color-tertiary);
+      display: grid; place-items: center;
+    }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .nav-cta {
+      min-height: 40px; padding: 10px 20px; border-radius: var(--radius-sm);
+      background: var(--color-primary); color: var(--color-on-primary);
+      border: 0; font: inherit; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+    }
+    .nav-cta:hover { background: #000; }
+    .hero {
+      padding: 48px 24px 40px;
+      position: relative;
+      text-align: center;
+    }
+    .hero-wheel {
+      width: 160px; height: 160px; margin: 0 auto 28px;
+      color: var(--color-tertiary);
+      animation: wheel-breathe 8s ease-in-out infinite;
+    }
+    @keyframes wheel-breathe {
+      0%, 100% { transform: rotate(0deg); opacity: .85; }
+      50% { transform: rotate(6deg); opacity: 1; }
+    }
+    .hero .eyebrow {
+      color: var(--color-tertiary);
+      margin-bottom: 16px;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.5rem, 10vw, 3.5rem);
+      font-weight: 400; line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--color-primary);
+      margin-bottom: 16px;
+    }
+    .hero p {
+      font-size: 1.0625rem; color: var(--color-secondary);
+      max-width: 28em; margin: 0 auto 28px; line-height: 1.6;
+    }
+    .social-strip {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .badge-meta {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--color-tertiary);
+      padding: 4px 0;
+    }
+    .badge-tag {
+      font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--color-tertiary); color: var(--color-on-tertiary);
+      border-radius: var(--radius-pill); padding: 4px 12px;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+    .btn-primary {
+      min-height: 52px; padding: 16px 32px; border: 0; border-radius: var(--radius-sm);
+      background: var(--color-primary); color: var(--color-on-primary);
+      font: inherit; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: #000; }
+    .btn-secondary {
+      min-height: 52px; padding: 16px 32px;
+      border: 1px solid var(--color-primary); border-radius: var(--radius-sm);
+      background: transparent; color: var(--color-primary);
+      font: inherit; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    }
+    .btn-secondary:hover { background: var(--color-primary); color: var(--color-on-primary); }
+    .btn-ghost {
+      min-height: 44px; padding: 8px 0; border: 0; background: transparent;
+      color: var(--color-primary); font: inherit; font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px; text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    .btn-ghost:hover { color: var(--color-tertiary); }
+    .divider {
+      height: 1px; background: var(--color-border);
+      margin: 0 24px;
+    }
+    .section { padding: var(--spacing-3xl) 24px var(--spacing-2xl); }
+    .section.tight { padding-top: var(--spacing-2xl); }
+    .section-head { margin-bottom: var(--spacing-xl); }
+    .section-head .eyebrow { color: var(--color-tertiary); margin-bottom: 8px; }
+    .section-head h2 {
+      font-family: var(--font-serif); font-weight: 400;
+      font-size: 2rem; line-height: 1.2; letter-spacing: -0.015em;
+      color: var(--color-primary);
+    }
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      padding: 32px 24px;
+      margin-bottom: 16px;
+      border: 1px solid transparent;
+      transition: box-shadow .2s;
+    }
+    .card:hover { box-shadow: var(--shadow-card-hover); }
+    .card-title {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px;
+    }
+    .card-title .glyph {
+      width: 36px; height: 36px; color: var(--color-tertiary);
+      display: grid; place-items: center;
+      border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+    }
+    .card-title .glyph svg { width: 18px; height: 18px; }
+    .card h2, .card-title h2 {
+      font-family: var(--font-serif); font-weight: 400;
+      font-size: 1.75rem; letter-spacing: -0.01em;
+      color: var(--color-primary); line-height: 1.2;
+    }
+    .sub { color: var(--color-secondary); font-size: 0.875rem; margin-bottom: 20px; line-height: 1.5; }
+    label {
+      display: block; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--color-secondary); margin: 16px 0 8px;
+    }
+    .row { display: flex; gap: 12px; }
+    select, input[type=date], input[type=text] {
+      width: 100%; min-height: 48px; border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border); background: var(--color-surface);
+      color: var(--color-primary); padding: 12px 16px; font: inherit; font-size: 1rem;
+      outline: none;
+    }
+    select:focus, input:focus { border-color: var(--color-tertiary); }
+    select option { background: var(--color-surface); }
+    .seg { display: flex; gap: 8px; }
+    .seg button {
+      flex: 1; min-height: 44px; border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border); background: var(--color-surface);
+      color: var(--color-secondary); font: inherit; font-size: 0.9375rem; cursor: pointer;
+    }
+    .seg button.on {
+      border-color: var(--color-primary); color: var(--color-primary);
+      background: var(--color-neutral); font-weight: 500;
+    }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .chips button {
+      min-height: 32px; padding: 0 12px; border-radius: var(--radius-pill);
+      border: 1px solid var(--color-border); background: transparent;
+      color: var(--color-secondary); font: inherit; font-size: 0.75rem; cursor: pointer;
+    }
+    .chips button.on {
+      background: var(--color-tertiary); border-color: var(--color-tertiary);
+      color: var(--color-on-tertiary); font-weight: 600;
+    }
+    .warn {
+      background: var(--color-neutral);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: 16px;
+      font-size: 0.875rem; color: var(--color-secondary); line-height: 1.55;
+    }
+    .warn strong { color: var(--color-primary); font-weight: 600; }
+    .disclaimer {
+      text-align: center; color: var(--color-secondary);
+      font-size: 0.75rem; letter-spacing: 0.08em;
+      padding: 72px 24px 56px;
+      font-family: var(--font-serif);
+    }
+    .hidden { display: none !important; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.75rem; color: var(--color-tertiary);
+      border: 1px solid var(--color-border); border-radius: var(--radius-pill);
+      padding: 4px 12px; letter-spacing: 0.04em;
+    }
+    .tabs {
+      display: flex; gap: 0; margin: 24px 0 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .tabs button {
+      flex: 1; min-height: 44px; border: 0; background: transparent;
+      color: var(--color-secondary); font: inherit; font-size: 0.8125rem;
+      font-weight: 500; cursor: pointer;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      letter-spacing: 0.04em;
+    }
+    .tabs button.on {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-tertiary);
+    }
+    .scores {
+      background: var(--color-neutral);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md); padding: 16px; margin-bottom: 16px;
+    }
+    .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .score-row:last-child { margin-bottom: 0; }
+    .score-row span.l { width: 36px; font-size: 0.75rem; color: var(--color-secondary); }
+    .score-row span.n { width: 28px; text-align: right; font-size: 0.75rem; color: var(--color-primary); font-weight: 600; }
+    .bar {
+      flex: 1; height: 4px; border-radius: var(--radius-pill);
+      background: var(--color-border); overflow: hidden;
+    }
+    .bar i {
+      display: block; height: 100%; border-radius: var(--radius-pill);
+      background: var(--color-tertiary);
+    }
+    .block { margin-bottom: 14px; }
+    .block h4 {
+      font-size: 0.75rem; font-weight: 600; color: var(--color-tertiary);
+      margin-bottom: 6px; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .block p { font-size: 0.9375rem; line-height: 1.6; color: var(--color-primary); }
+    .advice {
+      margin-top: 8px; padding: 14px 16px; border-radius: var(--radius-md);
+      background: var(--color-neutral);
+      border: 1px solid var(--color-border);
+      color: var(--color-primary); font-size: 0.875rem;
+    }
+    .food-summary {
+      margin: 16px 0 0;
+      padding: 16px; border-radius: var(--radius-md);
+      background: var(--color-neutral);
+      border: 1px solid var(--color-border);
+    }
+    .food-summary .label {
+      font-size: 0.75rem; font-weight: 600; color: var(--color-tertiary);
+      letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .food-summary .label svg { width: 14px; height: 14px; }
+    .food-summary p {
+      font-size: 1rem; line-height: 1.55; font-family: var(--font-serif);
+      color: var(--color-primary);
+    }
+    .basis { margin-top: 16px; font-size: 0.8125rem; color: var(--color-secondary); line-height: 1.5; }
+    .m-card, .g-card, .guest-row, .party-person {
+      border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      padding: 16px; margin-bottom: 10px;
+      background: var(--color-neutral);
+    }
+    .m-card .name, .g-card .name, .party-person .nm {
+      font-weight: 500; color: var(--color-primary); font-size: 0.9375rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .tag-v {
+      font-size: 0.625rem; padding: 2px 8px; border-radius: var(--radius-pill);
+      background: var(--color-tertiary); color: var(--color-on-tertiary);
+      letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;
+    }
+    .m-card .meta, .g-card .meta, .party-person .meta { font-size: 0.8125rem; color: var(--color-secondary); margin-top: 4px; }
+    .m-card .bl, .g-card .rule, .party-person .food { font-size: 0.875rem; color: var(--color-primary); margin-top: 8px; line-height: 1.5; }
+    .g-card .host { font-size: 0.8125rem; color: var(--color-tertiary); margin-top: 6px; }
+    .guest-row .row-title {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.75rem; color: var(--color-secondary); margin-bottom: 8px;
+      font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    }
+    .guest-row input, .guest-row select { min-height: 40px; margin-bottom: 8px; font-size: 0.9375rem; }
+    .social-band {
+      margin: 0 24px 32px;
+      padding: 28px 24px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      text-align: center;
+    }
+    .social-band h3 {
+      font-family: var(--font-serif); font-weight: 400;
+      font-size: 1.5rem; margin: 12px 0 8px;
+    }
+    .social-band p { color: var(--color-secondary); font-size: 0.9375rem; margin-bottom: 16px; }
+    .social-steps {
+      display: grid; grid-template-columns: 1fr; gap: 12px; text-align: left;
+      padding: 0; margin: 0;
+    }
+    .social-steps li {
+      list-style: none; padding: 12px 14px;
+      border-left: 2px solid var(--color-tertiary);
+      background: var(--color-neutral);
+      font-size: 0.875rem; color: var(--color-primary);
+    }
+    .social-steps li span {
+      display: block; font-size: 0.6875rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--color-tertiary); font-weight: 600; margin-bottom: 4px;
+    }
+    .oracle-quote {
+      margin: 8px 24px 40px;
+      padding: 40px 24px;
+      text-align: center;
+      position: relative;
+    }
+    .oracle-quote::before,
+    .oracle-quote::after {
+      content: '';
+      display: block;
+      width: 48px; height: 1px;
+      background: var(--color-tertiary);
+      margin: 0 auto 20px;
+      opacity: 0.7;
+    }
+    .oracle-quote::after { margin: 20px auto 0; }
+    .oracle-quote blockquote {
+      font-family: var(--font-serif);
+      font-size: 1.25rem;
+      font-weight: 400;
+      line-height: 1.45;
+      letter-spacing: -0.01em;
+      color: var(--color-primary);
+      max-width: 18em;
+      margin: 0 auto 12px;
+    }
+    .oracle-quote cite {
+      font-style: normal;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-secondary);
+    }
+    .vibe-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 0 24px 8px;
+    }
+    .vibe-cell {
+      padding: 20px 16px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      text-align: center;
+    }
+    .vibe-cell .glyph {
+      width: 28px; height: 28px; margin: 0 auto 10px;
+      color: var(--color-tertiary);
+    }
+    .vibe-cell .glyph svg { width: 28px; height: 28px; }
+    .vibe-cell strong {
+      display: block;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 1.0625rem;
+      margin-bottom: 6px;
+      color: var(--color-primary);
+    }
+    .vibe-cell span {
+      font-size: 0.8125rem;
+      color: var(--color-secondary);
+      line-height: 1.45;
+    }
+    .social-band .eyebrow { color: var(--color-tertiary); margin-bottom: 4px; }
+    .party-hint {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.8125rem;
+      color: var(--color-secondary);
+      letter-spacing: 0.02em;
+    }
+    .party-hint em {
+      font-style: normal;
+      color: var(--color-tertiary);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+  </style>
+</head>
+<body>
+  <!-- 几何 SVG sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="i-taiji" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M12 3a9 9 0 0 1 0 18 4.5 4.5 0 0 1 0-9 4.5 4.5 0 0 0 0-9z" fill="currentColor"/>
+      <circle cx="12" cy="7.5" r="1.2" fill="#F7F4EE"/>
+      <circle cx="12" cy="16.5" r="1.2" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-wheel" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="54" fill="none" stroke="currentColor" stroke-width="1"/>
+      <circle cx="60" cy="60" r="40" fill="none" stroke="currentColor" stroke-width="0.8"/>
+      <circle cx="60" cy="60" r="8" fill="none" stroke="currentColor" stroke-width="1"/>
+      <g stroke="currentColor" stroke-width="0.8">
+        <line x1="60" y1="6" x2="60" y2="114"/>
+        <line x1="6" y1="60" x2="114" y2="60"/>
+        <line x1="21.5" y1="21.5" x2="98.5" y2="98.5"/>
+        <line x1="98.5" y1="21.5" x2="21.5" y2="98.5"/>
+      </g>
+      <circle cx="60" cy="20" r="2.5" fill="currentColor"/>
+      <circle cx="100" cy="60" r="2.5" fill="currentColor"/>
+      <circle cx="60" cy="100" r="2.5" fill="currentColor"/>
+      <circle cx="20" cy="60" r="2.5" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-bagua" viewBox="0 0 24 24">
+      <path d="M5 5h14M5 8h14M5 16h14M5 19h14M8 11.5h8M8 13.5h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24">
+      <path d="M18 14.5A7.5 7.5 0 1 1 9.5 6 6 6 0 0 0 18 14.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-star" viewBox="0 0 24 24">
+      <path d="M12 3l1.8 5.4H19l-4.4 3.3 1.7 5.3L12 14.8 7.7 17l1.7-5.3L5 8.4h5.2L12 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M14.5 9.5 10 14l4.5-1L13 9.5z" fill="currentColor"/>
+      <circle cx="12" cy="12" r="1" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-lotus" viewBox="0 0 24 24">
+      <path d="M12 19c-3-3-6-5-6-9a3 3 0 0 1 3-3c1.2 0 2.2.6 3 1.5.8-.9 1.8-1.5 3-1.5a3 3 0 0 1 3 3c0 4-3 6-6 9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M8 11c-2 .5-4 2-4 4.5M16 11c2 .5 4 2 4 4.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-bowl" viewBox="0 0 24 24">
+      <path d="M4 10h16c0 5-3.5 9-8 9s-8-4-8-9z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M8 7c1-2 2.5-3 4-3s3 1 4 3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <div class="shell">
+    <header class="nav" id="mainNav">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><use href="#i-taiji"/></svg>
+        </span>
+        今天吃什么
+      </div>
+      <button class="nav-cta" type="button" onclick="document.getElementById('formPanel').scrollIntoView({behavior:'smooth'})">
+        <svg width="14" height="14" viewBox="0 0 24 24"><use href="#i-compass"/></svg>
+        开始测算
+      </button>
+    </header>
+
+    <section class="hero">
+      <div class="hero-wheel" aria-hidden="true">
+        <svg viewBox="0 0 120 120" width="160" height="160"><use href="#i-wheel"/></svg>
+      </div>
+      <p class="eyebrow label-caps">天机食鉴 · Social Dining</p>
+      <h1>今天吃什么</h1>
+      <p>把生辰摆上桌，把合盘当成开场白。七派同算给出白话宜忌，再配附近店与破冰游戏——让「吃什么」变成今晚的社交仪式。</p>
+      <div class="social-strip">
+        <span class="badge-tag">多人合盘</span>
+        <span class="badge-meta" style="margin-left:24px">Party · Table</span>
+      </div>
+      <div class="cta-row">
+        <button class="btn-primary" type="button" onclick="document.getElementById('formPanel').scrollIntoView({behavior:'smooth'})">
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#i-lotus"/></svg>
+          起一卦 · 定今晚
+        </button>
+        <a class="btn-secondary" href="#socialRitual">
+          <svg width="16" height="16" viewBox="0 0 24 24"><use href="#i-bowl"/></svg>
+          聚会怎么玩
+        </a>
+      </div>
+    </section>
+
+    <div class="oracle-quote">
+      <blockquote>「席未定，先问天机；人已齐，再定今晚。」</blockquote>
+      <cite>天机食鉴 · 合席签</cite>
+    </div>
+
+    <div class="vibe-grid" aria-hidden="false">
+      <div class="vibe-cell">
+        <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bagua"/></svg></div>
+        <strong>金线合盘</strong>
+        <span>八字五行对坐，宜忌一句说清，不堆术语</span>
+      </div>
+      <div class="vibe-cell">
+        <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg></div>
+        <strong>席间破冰</strong>
+        <span>饭桌 / 酒桌两套游戏，把沉默变成话题</span>
+      </div>
+      <div class="vibe-cell">
+        <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></div>
+        <strong>今日食签</strong>
+        <span>适合吃 / 暂缓吃，像拆开一张轻盈签文</span>
+      </div>
+      <div class="vibe-cell">
+        <div class="glyph"><svg viewBox="0 0 24 24"><use href="#i-compass"/></svg></div>
+        <strong>附近落座</strong>
+        <span>按定位推荐真实商家；无密钥时诚实标虚拟</span>
+      </div>
+    </div>
+
+    <div class="social-band" id="socialRitual" style="margin-top:24px">
+      <p class="eyebrow label-caps">社交饭局仪式</p>
+      <h3>聚齐 · 测算 · 分享</h3>
+      <p>三人即可开局——合盘是破冰，推荐是续航，游戏是高潮</p>
+      <ol class="social-steps">
+        <li><span>Gather · 聚齐</span>把同伴生辰与 MBTI 加进来，主测人像「主位」一样先落座填写</li>
+        <li><span>Cast · 起卦</span>七派同算 → 群体今日饮食宜忌 + 各人白话签，像拆开一桌合席签</li>
+        <li><span>Share · 落座</span>附近商家候选 + 桌面破冰游戏，把天机落到真实饭局</li>
+      </ol>
+      <p class="party-hint">今晚建议人数 <em>3–8</em> · 先合盘再点菜 · 酒桌需成年确认</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <section class="section" id="formPanel">
+      <div class="card">
+        <div class="card-title">
+          <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bagua"/></svg></span>
+          <h2>填写生辰信息</h2>
+        </div>
+        <p class="sub">主测人如「主位」先落座；可添加同伴生辰与 MBTI，合盘后再定今晚吃什么</p>
+
+        <div id="guestList"></div>
+        <button class="btn-ghost" type="button" id="addGuestBtn" style="width:100%;justify-content:center;margin:12px 0 8px">＋ 添加同伴</button>
+
+        <label>主测 · 性别</label>
+        <div class="seg" id="genderSeg">
+          <button type="button" class="on" data-g="男">男</button>
+          <button type="button" data-g="女">女</button>
+        </div>
+
+        <label>主测 · 出生日期</label>
+        <input type="date" id="birthDate" value="1998-07-12" />
+
+        <label>主测 · 出生时辰</label>
+        <select id="shichen">
+          <option value="0">子时 (23-1点)</option>
+          <option value="1">丑时 (1-3点)</option>
+          <option value="2">寅时 (3-5点)</option>
+          <option value="3">卯时 (5-7点)</option>
+          <option value="4">辰时 (7-9点)</option>
+          <option value="5">巳时 (9-11点)</option>
+          <option value="6" selected>午时 (11-13点)</option>
+          <option value="7">未时 (13-15点)</option>
+          <option value="8">申时 (15-17点)</option>
+          <option value="9">酉时 (17-19点)</option>
+          <option value="10">戌时 (19-21点)</option>
+          <option value="11">亥时 (21-23点)</option>
+        </select>
+
+        <label>主测 · 出生地</label>
+        <div class="row">
+          <select id="province">
+            <option>浙江</option><option>上海</option><option>北京</option><option>广东</option><option>江苏</option><option>四川</option>
+          </select>
+          <input type="text" id="city" value="杭州" placeholder="城市" />
+        </div>
+
+        <label>主测 · MBTI <span style="font-weight:400">（选填）</span></label>
+        <input type="text" id="mbti" placeholder="如 INFP，也可不填" maxlength="16" />
+        <div class="chips" id="mbtiChips"></div>
+
+        <button class="btn-primary" id="submitBtn" type="button" style="width:100%;margin-top:28px">合盘起卦 · 定今晚</button>
+      </div>
+    </section>
+
+    <section class="section hidden" id="resultPanel" style="padding-top:0">
+      <div class="card">
+        <div style="margin-bottom:16px"><span class="chip" id="profileChip">
+          <svg width="12" height="12" viewBox="0 0 24 24"><use href="#i-star"/></svg>
+          <span id="profileChipText">—</span>
+        </span></div>
+        <div class="card-title">
+          <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-moon"/></svg></span>
+          <h2>测算结果</h2>
+        </div>
+        <p class="sub" id="reportSub">白话四 Tab：概况 / 今日 / 本月 / 今年</p>
+        <div class="food-summary hidden" id="foodSummary">
+          <div class="label">
+            <svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg>
+            一句重点 · 合席食签
+          </div>
+          <p id="foodSummaryText"></p>
+        </div>
+        <div id="partyCards" class="hidden" style="margin:16px 0"></div>
+        <div class="tabs" id="reportTabs" role="tablist">
+          <button type="button" class="on" data-tab="overview">概况</button>
+          <button type="button" data-tab="daily">今日</button>
+          <button type="button" data-tab="monthly">本月</button>
+          <button type="button" data-tab="yearly">今年</button>
+        </div>
+        <div id="reportBody"></div>
+        <p class="basis" id="reportBasis"></p>
+        <button class="btn-ghost" type="button" id="resetBtn" style="margin-top:24px">重新填写</button>
+      </div>
+    </section>
+
+    <section class="section" id="nearby" style="padding-top:0">
+      <div class="card">
+        <div class="card-title">
+          <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-bowl"/></svg></span>
+          <h2>附近落座</h2>
+        </div>
+        <p class="sub">合盘之后落座：默认「距离 + 评分」综合最推荐；可切换纯距离 / 纯评分</p>
+        <label>就餐人数</label>
+        <div class="seg" id="peopleSeg">
+          <button type="button" data-p="2">2人</button>
+          <button type="button" class="on" data-p="4">4人</button>
+          <button type="button" data-p="6">6人</button>
+          <button type="button" data-p="8">8人</button>
+        </div>
+        <label>排序</label>
+        <div class="seg" id="merchantSortSeg">
+          <button type="button" class="on" data-sort="recommend">综合推荐</button>
+          <button type="button" data-sort="distance">距离最近</button>
+          <button type="button" data-sort="rating">评分最高</button>
+        </div>
+        <div id="merchantList" style="margin-top:16px"></div>
+        <div class="card-title" style="margin-top:24px">
+          <span class="glyph"><svg viewBox="0 0 24 24"><use href="#i-star"/></svg></span>
+          <h2 style="font-size:20px">破冰游戏</h2>
+        </div>
+        <div class="seg" id="sceneSeg" style="margin-bottom:12px">
+          <button type="button" class="on" data-s="table">饭桌</button>
+          <button type="button" data-s="drink">酒桌</button>
+        </div>
+        <label id="adultLabel" class="hidden" style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--color-secondary);margin:0 0 12px">
+          <input type="checkbox" id="adultOk" style="margin-top:3px;width:16px;height:16px" />
+          <span>确认全员已成年（禁止劝酒；可不喝酒）</span>
+        </label>
+        <div id="gameList"></div>
+        <button class="btn-ghost" type="button" id="reshuffleGames" style="margin-top:12px;width:100%;justify-content:center">换一组游戏</button>
+      </div>
+    </section>
+
+    <p class="disclaimer">☆ 仅供娱乐参考 · 不构成任何决策建议 ☆</p>
+  </div>
+
+  <script>
+    const MBTI = ['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
+    const SHENGXIAO = ['鼠','牛','虎','兔','龙','蛇','马','羊','猴','鸡','狗','猪'];
+    let gender = '男';
+    let reportSet = null;
+    let activeTab = 'overview';
+
+    /* 导航滚动描边 */
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 8);
+    }, { passive: true });
+
+    const chips = document.getElementById('mbtiChips');
+    MBTI.forEach(t => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = t;
+      b.onclick = () => {
+        document.getElementById('mbti').value = t;
+        [...chips.children].forEach(c => c.classList.toggle('on', c.textContent === t));
+      };
+      chips.appendChild(b);
+    });
+
+    document.querySelectorAll('#genderSeg button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#genderSeg button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        gender = btn.dataset.g;
+      };
+    });
+
+    function hashSeed(s) {
+      let h = 2166136261;
+      for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+      return Math.abs(h);
+    }
+    function clamp(n) { return Math.max(35, Math.min(95, Math.round(n))); }
+    function scoreFrom(seed, base, spread) {
+      spread = spread || 18;
+      return clamp(base + (seed % (spread * 2 + 1)) - spread);
+    }
+    function shengxiaoOf(year) {
+      return SHENGXIAO[(year - 4) % 12];
+    }
+    function toneHint(mbti) {
+      if (!mbti) return '说话别绕弯，该推进就推进。';
+      if (mbti.startsWith('E')) return '你外向气场足，场合里不妨多带动气氛，少硬扛。';
+      if (mbti.includes('T')) return '你偏理性，决策时别只盯对错，也给关系留一点余地。';
+      if (mbti.includes('F')) return '你重感受，边界要说清楚，别把委屈攒成闷雷。';
+      return '节奏先稳住，再谈扩张。';
+    }
+
+    function foodSummaryOf(strong, weak) {
+      const eatByWeak = {
+        木: '青绿时蔬、菌菇、清淡酸香小菜',
+        火: '苦瓜、绿叶菜、清汤慢炖',
+        土: '杂粮、南瓜、温热家常菜',
+        金: '白肉清汤、萝卜白菜、辛香调味适中',
+        水: '温热汤羹、豆制品、略偏咸鲜',
+      };
+      const avoidByStrong = {
+        木: '过酸刺激、生冷硬撑',
+        火: '过烫油炸、重辣烧烤',
+        土: '过甜油腻、冷饮冰品',
+        金: '过咸熏烤、燥热辛辣堆叠',
+        水: '过量冰饮、过咸腌制',
+      };
+      const eat = eatByWeak[weak] || '清淡温热、好消化的家常菜';
+      const avoid = avoidByStrong[strong] || '过油过辣、冰凉硬撑';
+      return `今天适合吃：${eat}；不适合吃：${avoid}。`;
+    }
+
+    /** 对齐 PRD §3.3 / MIGRATION §4.4：四 Tab + 五维评分 + 白话 + 金句建议 */
+    function buildReport({ date, shichen, province, city, mbti }) {
+      const [y, m, d] = date.split('-').map(Number);
+      const sx = shengxiaoOf(y);
+      const now = new Date();
+      const today = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+      const thisMonth = `${now.getFullYear()}年${now.getMonth() + 1}月`;
+      const thisYear = `${now.getFullYear()}年`;
+      const seed = hashSeed(`${date}|${gender}|${shichen}|${city}|${mbti}`);
+      const strong = ['木','火','土','金','水'][seed % 5];
+      const weak = ['木','火','土','金','水'][(seed + 2) % 5];
+      const tone = toneHint(mbti);
+      const mbtiNote = mbti ? `语气上略参考你填的 ${mbti}，不拿它盖过命盘。` : '';
+
+      function sec(s, texts, bases) {
+        bases = bases || { o: 72, c: 70, l: 68, w: 66, h: 74 };
+        return {
+          overall: { score: scoreFrom(s, bases.o), text: texts.o },
+          career: { score: scoreFrom(s >> 3, bases.c), text: texts.c },
+          love: { score: scoreFrom(s >> 5, bases.l), text: texts.l },
+          wealth: { score: scoreFrom(s >> 7, bases.w), text: texts.w },
+          health: { score: scoreFrom(s >> 9, bases.h), text: texts.h },
+          advice: texts.a,
+        };
+      }
+
+      return {
+        overview: sec(seed, {
+          o: `此造属${sx}，生于${y}年${m}月${d}日${shichen}，${gender}，出生地${province}${city}。五行里${strong}气更足，${weak}偏弱。布局求同：做事别一个人硬刚，协作更顺。${mbtiNote}${tone}`,
+          c: '事业上更适合把力气花在「选对题」而不是「证明自己」。格局不虚，但急于翻盘容易翻车。不如先把手头一件事做透，再谈扩张。',
+          l: '感情里别把「对错」当唯一标准。愿意听、愿意让一步，气场反而更稳。单身不妨多出现在轻松场合，有伴则少翻旧账。',
+          w: '财运宜稳不宜赌。进账靠节制和信用，不靠一次梭哈。有大额支出先晾一晚再定。',
+          h: `作息比补品重要。${weak}弱时更要防透支——肩颈、肠胃、睡眠任挑一个先管住。`,
+          a: '少做证明题，多做选择题。仅供娱乐，勿作人生重大决策依据。',
+        }),
+        daily: sec(seed + 11, {
+          o: `今天是${today}。日运对命盘不硬碰，宜沟通、整理；忌硬刚、冲动消费。今天适合把一件小事办完，别开头太多头。',
+          c: '职场里沟通比硬刚管用。有分歧先对齐目标，再谈立场。',
+          l: '感情上多一句体贴，少一句反驳。约会选轻松的，别上强度。',
+          w: '别冲动下单。小钱可花在体验上，大钱再等等风头。',
+          h: '喝水、走动、早点睡。今天别用咖啡硬顶。',
+          a: '今天把「一件该做的事」做完，比空想十件强。',
+        }, { o: 70, c: 68, l: 72, w: 64, h: 76 }),
+        monthly: sec(seed + 29, {
+          o: `${thisMonth}整体走势平稳偏上。月份对${strong}有利时，适合推进协作型项目；${weak}弱的月份，别硬扛体能与情绪。`,
+          c: '本月事业看「节奏」：前半月收口旧事，后半月再开新局更稳。',
+          l: '关系里多给确定性。暧昧拖太久，双方都累。',
+          w: '财运宜规划不宜冒险。账单、保险、备用金先理顺。',
+          h: '运动选温和的，比突然暴练更对盘。',
+          a: '本月口诀：先收口，再开局。',
+        }, { o: 73, c: 71, l: 69, w: 67, h: 75 }),
+        yearly: sec(seed + 47, {
+          o: `${thisYear}大势：适合把力气花在协作与长期关系上，别一个人硬刚全年。太岁年注意口舌与行程变动，备选方案比死磕更有用。`,
+          c: '今年事业看「选择题」：少证明、多对齐资源。升迁与跳槽都要留缓冲。',
+          l: '感情宜真诚不宜表演。重要关系值得当面说清楚。',
+          w: '年运财气靠复利与信用，不靠一键子买卖。大额投资务必冷静。',
+          h: '全年防透支。节假日补觉，比年底一次性崩盘强。',
+          a: '今年少做证明题，多做选择题。娱乐参考，重大决策请另找专业意见。',
+        }, { o: 74, c: 72, l: 70, w: 68, h: 73 }),
+        foodSummary: foodSummaryOf(strong, weak),
+        basis: `流派依据（预览）：生肖${sx} · 五行旺${strong}/弱${weak} · 时辰${shichen}。正式环境 /unified 会并行布引引擎排盘后写入同结构报告。`,
+      };
+    }
+
+    function renderSection(sec) {
+      const rows = [
+        ['总评', sec.overall.score],
+        ['事业', sec.career.score],
+        ['感情', sec.love.score],
+        ['财运', sec.wealth.score],
+        ['健康', sec.health.score],
+      ].map(([l, n]) =>
+        `<div class="score-row"><span class="l">${l}</span><div class="bar"><i style="width:${n}%"></i></div><span class="n">${n}</span></div>`
+      ).join('');
+      return `
+        <div class="scores">${rows}</div>
+        <div class="block"><h4>总论</h4><p>${sec.overall.text}</p></div>
+        <div class="block"><h4>事业</h4><p>${sec.career.text}</p></div>
+        <div class="block"><h4>感情</h4><p>${sec.love.text}</p></div>
+        <div class="block"><h4>财运</h4><p>${sec.wealth.text}</p></div>
+        <div class="block"><h4>健康</h4><p>${sec.health.text}</p></div>
+        <div class="advice">${sec.advice}</div>`;
+    }
+
+    function showTab(key) {
+      activeTab = key;
+      document.querySelectorAll('#reportTabs button').forEach(b => {
+        b.classList.toggle('on', b.dataset.tab === key);
+      });
+      if (!reportSet) return;
+      document.getElementById('reportBody').innerHTML = renderSection(reportSet[key]);
+      document.getElementById('reportBasis').textContent = reportSet.basis;
+    }
+
+    document.querySelectorAll('#reportTabs button').forEach(btn => {
+      btn.onclick = () => showTab(btn.dataset.tab);
+    });
+
+    let companions = []; // {id,name,gender,date,shichen,mbti}
+
+    function renderGuestEditor() {
+      const box = document.getElementById('guestList');
+      if (!companions.length) {
+        box.innerHTML = '<p class="sub" style="margin:0">暂无同伴，可点下方添加（主测人在下面填写）</p>';
+        return;
+      }
+      box.innerHTML = companions.map((g, i) => `
+        <div class="guest-row" data-id="${g.id}">
+          <div class="row-title">
+            <span>同伴 ${i + 1}</span>
+            <button type="button" class="btn-ghost" style="min-height:32px;padding:0 12px;font-size:12px" data-del="${g.id}">删除</button>
+          </div>
+          <input type="text" data-f="name" data-id="${g.id}" value="${g.name}" placeholder="称呼" />
+          <div class="seg" data-gender="${g.id}">
+            <button type="button" class="${g.gender==='男'?'on':''}" data-gid="${g.id}" data-g="男">男</button>
+            <button type="button" class="${g.gender==='女'?'on':''}" data-gid="${g.id}" data-g="女">女</button>
+          </div>
+          <input type="date" data-f="date" data-id="${g.id}" value="${g.date}" />
+          <select data-f="shichen" data-id="${g.id}">
+            ${[0,1,2,3,4,5,6,7,8,9,10,11].map(si =>
+              `<option value="${si}" ${Number(g.shichen)===si?'selected':''}>${document.getElementById('shichen').options[si].text}</option>`
+            ).join('')}
+          </select>
+          <input type="text" data-f="mbti" data-id="${g.id}" value="${g.mbti||''}" placeholder="MBTI 选填" maxlength="8" />
+        </div>
+      `).join('');
+
+      box.querySelectorAll('[data-del]').forEach(btn => {
+        btn.onclick = () => {
+          companions = companions.filter(c => c.id !== btn.getAttribute('data-del'));
+          renderGuestEditor();
+        };
+      });
+      box.querySelectorAll('[data-f]').forEach(el => {
+        el.onchange = el.oninput = () => {
+          const id = el.getAttribute('data-id');
+          const f = el.getAttribute('data-f');
+          const c = companions.find(x => x.id === id);
+          if (c) c[f] = el.value;
+        };
+      });
+      box.querySelectorAll('[data-gid]').forEach(btn => {
+        btn.onclick = () => {
+          const id = btn.getAttribute('data-gid');
+          const c = companions.find(x => x.id === id);
+          if (c) c.gender = btn.getAttribute('data-g');
+          renderGuestEditor();
+        };
+      });
+    }
+
+    document.getElementById('addGuestBtn').onclick = () => {
+      if (companions.length >= 10) return;
+      companions.push({
+        id: 'c' + Date.now(),
+        name: '同伴' + (companions.length + 1),
+        gender: '男',
+        date: '1995-03-08',
+        shichen: '6',
+        mbti: '',
+      });
+      renderGuestEditor();
+    };
+    renderGuestEditor();
+
+    function wxFromYear(year, seed) {
+      const strong = ['木','火','土','金','水'][(year + seed) % 5];
+      const weak = ['木','火','土','金','水'][(year + seed + 2) % 5];
+      return { strong, weak, sx: SHENGXIAO[(year - 4) % 12] };
+    }
+
+    function synthPartyPeople(people) {
+      const weakScore = {金:0,木:0,水:0,火:0,土:0};
+      const strongScore = {金:0,木:0,水:0,火:0,土:0};
+      people.forEach(p => { weakScore[p.weak]++; strongScore[p.strong]++; });
+      const topWeak = Object.entries(weakScore).sort((a,b)=>b[1]-a[1])[0][0];
+      const topStrong = Object.entries(strongScore).sort((a,b)=>b[1]-a[1])[0][0];
+      const eatMap = {木:'青绿时蔬、菌菇',火:'苦瓜、清汤绿叶',土:'杂粮、南瓜家常',金:'白肉清汤、萝卜白菜',水:'温热汤羹、豆制品'};
+      const avoidMap = {木:'过酸生冷',火:'过烫油炸重辣',土:'过甜油腻冷饮',金:'过咸熏烤燥热',水:'过量冰饮腌制'};
+      const names = people.map(p=>p.name).join('、');
+      const mbtis = people.map(p=>p.mbti).filter(Boolean);
+      let mbtiNote = mbtis.length ? `MBTI：${mbtis.join(' / ')}。` : '本局部分人未填 MBTI。';
+      const e = mbtis.filter(m=>m.startsWith('E')).length;
+      const i = mbtis.filter(m=>m.startsWith('I')).length;
+      if (e > i) mbtiNote += '外向偏多，适合热闹局。';
+      else if (i > e) mbtiNote += '内向偏多，话题先轻后深。';
+      return {
+        groupFood: `今晚 ${people.length} 人（${names}）综合：适合吃「${eatMap[topWeak]}」；不太适合「${avoidMap[topStrong]}」。群体偏补${topWeak}、慎过旺${topStrong}。`,
+        mbtiNote,
+        cardsHtml: people.map(p => `
+          <div class="party-person">
+            <div class="nm">${p.name}${p.mbti ? ' · ' + p.mbti : ''}</div>
+            <div class="meta">属${p.sx} · ${p.strong}旺${p.weak}弱 · ${p.date} ${p.shichenLabel}${p.gender ? ' · ' + p.gender : ''}</div>
+            <div class="food">${foodSummaryOf(p.strong, p.weak)}</div>
+          </div>`).join(''),
+      };
+    }
+
+    document.getElementById('submitBtn').onclick = () => {
+      const date = document.getElementById('birthDate').value;
+      const shichenSel = document.getElementById('shichen');
+      const shichen = shichenSel.selectedOptions[0].text;
+      const province = document.getElementById('province').value;
+      const city = document.getElementById('city').value.trim() || province;
+      const mbti = (document.getElementById('mbti').value || '').trim().toUpperCase();
+
+      const hostY = Number(date.split('-')[0]);
+      const hostWx = wxFromYear(hostY, 1);
+      const people = [{
+        name: '我（主测）',
+        gender,
+        date,
+        shichenLabel: shichen,
+        mbti,
+        ...hostWx,
+      }];
+      companions.forEach((c, idx) => {
+        const y = Number((c.date || '1995-01-01').split('-')[0]);
+        const wx = wxFromYear(y, idx + 3);
+        const lab = document.getElementById('shichen').options[Number(c.shichen) || 6].text;
+        people.push({
+          name: c.name || ('同伴' + (idx + 1)),
+          gender: c.gender,
+          date: c.date,
+          shichenLabel: lab,
+          mbti: (c.mbti || '').trim().toUpperCase(),
+          ...wx,
+        });
+      });
+
+      const synth = synthPartyPeople(people);
+      partyPeople = people.length;
+      document.querySelectorAll('#peopleSeg button').forEach(b => b.classList.remove('on'));
+      const exact = [...document.querySelectorAll('#peopleSeg button')].find(b => Number(b.dataset.p) === Math.min(8, partyPeople <= 2 ? 2 : partyPeople <= 4 ? 4 : partyPeople <= 6 ? 6 : 8));
+      if (exact) exact.classList.add('on');
+      document.getElementById('profileChipText').textContent =
+        `${people.length}人聚餐 · ${date} · ${province}${city}`;
+      reportSet = buildReport({ date, shichen, province, city, mbti });
+      reportSet.foodSummary = synth.groupFood;
+      document.getElementById('reportSub').textContent =
+        synth.mbtiNote + '已按多人八字/MBTI 综合（预览简化排盘；正式环境走真实八字引擎）。';
+      document.getElementById('foodSummaryText').textContent = synth.groupFood;
+      document.getElementById('foodSummary').classList.remove('hidden');
+      const pc = document.getElementById('partyCards');
+      pc.innerHTML = '<p class="sub">各位八字摘要</p>' + synth.cardsHtml;
+      pc.classList.remove('hidden');
+      showTab('overview');
+      document.getElementById('resultPanel').classList.remove('hidden');
+      renderMerchants();
+      renderGames();
+      document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    document.getElementById('resetBtn').onclick = () => {
+      document.getElementById('resultPanel').classList.add('hidden');
+      document.getElementById('formPanel').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    /* —— 虚拟商家 + 破冰游戏（HTML 预览无真实地图） —— */
+    let partyPeople = 4;
+    let iceScene = 'table';
+    let adultOk = false;
+    let gameSeed = 1;
+    let merchantSort = 'recommend';
+    const VIRTUAL_POOL = [
+      { name: '云海小厨·家常', category: '家常菜', rating: 4.5, price: '68', min: 2, max: 8, addr: '示例路 12 号', dist: 320 },
+      { name: '半盏火锅局', category: '火锅', rating: 4.6, price: '98', min: 3, max: 12, addr: '示例街 88 号', dist: 480 },
+      { name: '青灯烧烤铺', category: '烧烤', rating: 4.3, price: '75', min: 3, max: 10, addr: '示例巷 6 号', dist: 560 },
+      { name: '月白咖啡馆', category: '咖啡', rating: 4.7, price: '42', min: 1, max: 4, addr: '示例广场 B1', dist: 210 },
+      { name: '同袍私房菜', category: '私房菜', rating: 4.8, price: '128', min: 2, max: 6, addr: '示例里 3 弄', dist: 390 },
+      { name: '聚气自助涮', category: '自助涮', rating: 4.2, price: '99', min: 2, max: 20, addr: '示例大道 168 号', dist: 720 },
+      { name: '团圆大宴楼', category: '宴会', rating: 4.3, price: '120', min: 8, max: 30, addr: '示例会展馆', dist: 880 },
+    ];
+    const GAMES = [
+      { id: '1', name: '命运关键词接龙', scene: 'table', minutes: 5, rule: '每人抽关键词讲一件小事，下一位接上一个词结尾。', host: '今晚别先聊业绩——从关键词接龙开始。', minP: 3, maxP: 10 },
+      { id: '2', name: '谁最像「今日宜」', scene: 'table', minutes: 4, rule: '主持人报词，全员指认最符合的人，被指最多者分享近况。', host: '我报一个词，你们指人。', minP: 3, maxP: 12 },
+      { id: '3', name: '两真一假', scene: 'table', minutes: 6, rule: '每人三句话藏一句假，其他人投票找假话。', host: '猜错的人负责倒茶。', minP: 3, maxP: 8 },
+      { id: '4', name: '菜单命运转盘', scene: 'table', minutes: 3, rule: '转盘/抽签决定下一道菜，可声明一次免死金牌。', host: '转一下，决定下一道。', minP: 2, maxP: 8 },
+      { id: '5', name: '邻座快问快答', scene: 'table', minutes: 5, rule: '两人一组 60 秒三个问题。', host: '和旁边的人组队，一分钟三个问题。', minP: 4, maxP: 16 },
+      { id: '6', name: '一句话故事链', scene: 'table', minutes: 5, rule: '从「今天我本来…」起头，每人加一句。', host: '我起头一句，你们每人只加一句。', minP: 4, maxP: 12 },
+      { id: '7', name: '干杯版真假话', scene: 'drink', minutes: 6, rule: '举杯表决真假；猜错小酌或喝茶，禁止劝酒。', host: '举杯表决——不想喝酒就喝茶。', minP: 4, maxP: 12, adult: true },
+      { id: '8', name: '干杯话题轮盘', scene: 'drink', minutes: 5, rule: '抽话题干杯，可随时换成无酒精。', host: '抽个轻松话题干杯。', minP: 3, maxP: 10, adult: true },
+    ];
+
+    function recommendScore(m, maxDist) {
+      const ratingPart = Math.min(Math.max((m.rating ?? 3.6) / 5, 0), 1);
+      const distPart = 1 - Math.min(Math.max(m.dist, 0) / Math.max(maxDist, 1), 1);
+      return ratingPart * 0.6 + distPart * 0.4;
+    }
+
+    function renderMerchants() {
+      let list = VIRTUAL_POOL.filter(p => partyPeople >= p.min && partyPeople <= p.max);
+      if (!list.length) list = [...VIRTUAL_POOL];
+      const maxDist = 1500;
+      list = [...list].sort((a, b) => {
+        if (merchantSort === 'rating') {
+          if (b.rating !== a.rating) return b.rating - a.rating;
+          return a.dist - b.dist;
+        }
+        if (merchantSort === 'distance') {
+          if (a.dist !== b.dist) return a.dist - b.dist;
+          return b.rating - a.rating;
+        }
+        const sa = recommendScore(a, maxDist);
+        const sb = recommendScore(b, maxDist);
+        if (sb !== sa) return sb - sa;
+        return a.dist - b.dist;
+      });
+      const use = list.slice(0, 5);
+      document.getElementById('merchantList').innerHTML =
+        `<div class="warn" style="margin-bottom:12px"><strong>虚拟推荐</strong>：预览页无真实地图 Key 时展示示例店。排序：评分 60% + 距离 40%（可切换）。</div>` +
+        use.map((m, idx) => `
+          <div class="m-card">
+            <div class="name">${m.name}${merchantSort === 'recommend' && idx === 0 ? '<span class="tag-v" style="background:var(--color-tertiary);color:var(--color-on-tertiary)">最推荐</span>' : ''}${merchantSort === 'recommend' && idx > 0 && idx < 3 ? `<span class="tag-v">推荐 ${idx + 1}</span>` : ''}<span class="tag-v">虚拟</span></div>
+            <div class="meta">${m.category} · 评分 ${m.rating} · 人均¥${m.price} · ${m.dist}m · 约${m.min}-${m.max}人</div>
+            <div class="meta">（虚拟）${m.addr}</div>
+            <div class="bl">按 ${partyPeople} 人聚餐挑的 · 虚拟示例店</div>
+          </div>`).join('');
+    }
+
+    function renderGames() {
+      const adultLabel = document.getElementById('adultLabel');
+      if (iceScene === 'drink') {
+        adultLabel.classList.remove('hidden');
+        adultLabel.style.display = 'flex';
+      } else {
+        adultLabel.classList.add('hidden');
+        adultLabel.style.display = 'none';
+      }
+      const scene = iceScene === 'drink' && !adultOk ? 'table' : iceScene;
+      let pool = GAMES.filter(g => g.scene === scene && partyPeople >= g.minP && partyPeople <= g.maxP && (!g.adult || adultOk));
+      if (!pool.length) pool = GAMES.filter(g => g.scene === 'table');
+      const sorted = [...pool].sort((a, b) => ((a.id.charCodeAt(0) * 31 + gameSeed) % 97) - ((b.id.charCodeAt(0) * 31 + gameSeed) % 97));
+      const pick = sorted.slice(0, 3);
+      document.getElementById('gameList').innerHTML = pick.map((g, i) => `
+        <div class="g-card">
+          <div class="name">${i + 1}. ${g.name}</div>
+          <div class="meta">适合 ${g.minP}-${g.maxP} 人 · 约 ${g.minutes} 分钟</div>
+          <div class="rule">${g.rule}</div>
+          <div class="host">主持：${g.host}</div>
+        </div>`).join('') +
+        (iceScene === 'drink' && !adultOk ? '<p class="sub">未确认成年，暂显示饭桌游戏。</p>' : '');
+    }
+
+    document.querySelectorAll('#peopleSeg button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#peopleSeg button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        partyPeople = Number(btn.dataset.p);
+        renderMerchants();
+        renderGames();
+      };
+    });
+    document.querySelectorAll('#merchantSortSeg button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#merchantSortSeg button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        merchantSort = btn.dataset.sort;
+        renderMerchants();
+      };
+    });
+    document.querySelectorAll('#sceneSeg button').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('#sceneSeg button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        iceScene = btn.dataset.s;
+        renderGames();
+      };
+    });
+    document.getElementById('adultOk').onchange = (e) => {
+      adultOk = e.target.checked;
+      renderGames();
+    };
+    document.getElementById('reshuffleGames').onclick = () => {
+      gameSeed += 1;
+      renderGames();
+    };
+    renderMerchants();
+    renderGames();
+  </script>
+</body>
+</html>
