@@ -2,13 +2,13 @@
 
 ## 在线预览
 
-> Cloudflare 隧道指向本机 Next（可走真实附近店 API）。隧道重启后域名会变，需重新更新此处。
+> **对外主链接（请继续用这个）：** Cloudflare 隧道，域名不变。本机需保持 `preview-gateway`（8765）+ `pnpm next`（5000）+ cloudflared 运行。
 
 - **体验地址：** https://fragrances-influence-chemistry-tampa.trycloudflare.com/
-- GitHub Pages（静态 HTML，国内可能打不开）：https://469910093-ui.github.io/tianjige/
+- GitHub Pages（静态，国内可能打不开）：https://469910093-ui.github.io/tianjige/
 - 代码仓库：https://github.com/469910093-ui/tianjige
 
-本地预览：`pnpm dev` 后打开 [http://127.0.0.1:5000](http://127.0.0.1:5000)，或打开 `docs/ui-mockup.html`。
+本地：`pnpm next dev --port 5000`，另开 `node scripts/preview-gateway.mjs`（静态 + `/api` 反代）。
 
 ---
 
