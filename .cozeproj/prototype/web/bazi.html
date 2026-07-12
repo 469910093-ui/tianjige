@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 琥珀赭石，命理文化感 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #F5DDD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 温暖纸感 === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FFF9F1;
+      --color-surface-container:          #F3E8D8;
+      --color-surface-container-high:     #EDDCD0;
+      --color-surface-container-highest:  #E5D0BF;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #C75050;
+      --color-warning:  #D4A24E;
+      /* === 边框 === */
+      --color-outline:          #C4B09E;
+      --color-outline-variant:  #D9CCBE;
+      /* === 圆角 — 温润圆润 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 — 轻柔纸感 === */
+      --shadow-card:   0 2px 8px rgba(49,37,27,0.08);
+      --shadow-float:  0 10px 25px rgba(49,37,27,0.12);
+      --shadow-dialog: 0 25px 50px rgba(49,37,27,0.18);
+      /* === 字体 — 宋体标题 + 系统正文 === */
+      --font-sans: "Lora", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto h-16 flex items-center justify-between px-6">
+      <a href="home.html" class="flex items-center gap-2.5">
+        <i data-lucide="sparkles" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg text-on-surface">天机阁</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">首页</a>
+        <a href="bazi.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md transition-colors" aria-current="page">八字命盘</a>
+        <a href="astrology.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">星座星盘</a>
+        <a href="tarot.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">塔罗占卜</a>
+        <a href="dream.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">周公解梦</a>
+        <a href="horoscope.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">每日运势</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <!-- @main-content:start -->
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- 页面标题区 -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <i data-lucide="book-open-text" class="w-7 h-7 text-primary"></i>
+        <h1 class="text-2xl font-bold text-on-surface">八字命盘</h1>
+      </div>
+      <p class="text-sm text-on-surface-variant ml-10">AI 算命先生引导您输入出生信息，算法排盘后多流派解读</p>
+    </section>
+
+    <!-- 对话区 + 算法结果展示区 并排布局 -->
+    <div class="flex gap-6 mb-8">
+
+      <!-- 左侧：对话区 约 45% -->
+      <section class="w-[45%] shrink-0 bg-surface rounded-lg shadow-card flex flex-col" style="height: 640px;">
+        <!-- 对话区标题 -->
+        <div class="px-5 py-3.5 border-b border-outline-variant/20 flex items-center gap-2">
+          <i data-lucide="message-circle" class="w-4 h-4 text-primary"></i>
+          <span class="text-base font-semibold text-on-surface">AI 算命先生</span>
+          <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">在线</span>
+        </div>
+
+        <!-- 对话消息列表 -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+
+          <!-- AI 对话气泡 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="bg-surface-container rounded-lg rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+              <p class="text-sm text-on-surface leading-relaxed">您好，我是天机阁的算命先生。请告诉我您的出生日期（阳历），以及出生时辰，我来为您排盘测算。</p>
+            </div>
+          </div>
+
+          <!-- 用户对话气泡 -->
+          <div class="flex gap-2.5 items-start justify-end">
+            <div class="bg-primary text-on-primary rounded-lg rounded-tr-sm px-4 py-2.5 max-w-[85%]">
+              <p class="text-sm leading-relaxed">我1990年6月15日中午12点出生</p>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+              <span class="text-xs font-semibold text-on-surface-variant">初</span>
+            </div>
+          </div>
+
+          <!-- AI 对话气泡（正在输入态） -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+              <i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="bg-surface-container rounded-lg rounded-tl-sm px-4 py-2.5 max-w-[85%]">
+              <p id="ai-typing-text" class="text-sm text-on-surface leading-relaxed">已收到您的信息。您的命盘已排好，请查看右侧结果</p>
+              <span id="ai-typing-cursor" class="inline-block w-0.5 h-4 bg-primary align-middle ml-0.5"></span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 底部输入区 -->
+        <div class="px-5 py-4 border-t border-outline-variant/20 space-y-3">
+          <div class="flex gap-2 items-end">
+            <input id="chat-input" type="text" placeholder="输入您的问题…"
+              class="flex-1 bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+            <button id="btn-send" class="bg-surface-container text-on-surface border-none px-3.5 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center gap-1.5">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>发送
+            </button>
+          </div>
+          <button id="btn-generate-report" class="w-full bg-primary text-on-primary px-4 py-2.5 rounded-md text-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+            <i data-lucide="scroll-text" class="w-4 h-4"></i>生成报告
+          </button>
+        </div>
+      </section>
+
+      <!-- 右侧：算法结果展示区 约 55% -->
+      <section class="flex-1 space-y-5 overflow-y-auto" style="max-height: 640px;">
+
+        <!-- 四柱八字卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="columns-3" class="w-4 h-4 text-primary"></i>
+            <h2 class="text-base font-semibold text-on-surface">四柱八字</h2>
+            <span class="ml-auto text-xs text-on-surface-variant">1990-06-15 12:00 · 属马</span>
+          </div>
+          <div class="grid grid-cols-4 gap-3">
+
+            <!-- 年柱 -->
+            <div class="bg-surface-container rounded-lg p-3 text-center">
+              <div class="text-xs text-on-surface-variant mb-2">年柱</div>
+              <div class="flex flex-col items-center gap-1.5 py-1">
+                <div class="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+                  <span class="text-lg font-bold text-primary leading-none">庚</span>
+                </div>
+                <div class="w-10 h-10 rounded-md bg-warning/15 flex items-center justify-center">
+                  <span class="text-lg font-bold text-warning leading-none">午</span>
+                </div>
+              </div>
+              <div class="text-xs text-on-surface-variant mt-2">剑锋金</div>
+            </div>
+
+            <!-- 月柱 -->
+            <div class="bg-surface-container rounded-lg p-3 text-center">
+              <div class="text-xs text-on-surface-variant mb-2">月柱</div>
+              <div class="flex flex-col items-center gap-1.5 py-1">
+                <div class="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+                  <span class="text-lg font-bold text-primary leading-none">癸</span>
+                </div>
+                <div class="w-10 h-10 rounded-md bg-warning/15 flex items-center justify-center">
+                  <span class="text-lg font-bold text-warning leading-none">未</span>
+                </div>
+              </div>
+              <div class="text-xs text-on-surface-variant mt-2">杨柳木</div>
+            </div>
+
+            <!-- 日柱 -->
+            <div class="bg-surface-container rounded-lg p-3 text-center">
+              <div class="text-xs text-on-surface-variant mb-2">日柱（日主）</div>
+              <div class="flex flex-col items-center gap-1.5 py-1">
+                <div class="w-10 h-10 rounded-md bg-primary/15 flex items-center justify-center ring-2 ring-primary/20">
+                  <span class="text-lg font-bold text-primary leading-none">甲</span>
+                </div>
+                <div class="w-10 h-10 rounded-md bg-warning/15 flex items-center justify-center">
+                  <span class="text-lg font-bold text-warning leading-none">寅</span>
+                </div>
+              </div>
+              <div class="text-xs text-on-surface-variant mt-2">大溪水</div>
+            </div>
+
+            <!-- 时柱 -->
+            <div class="bg-surface-container rounded-lg p-3 text-center">
+              <div class="text-xs text-on-surface-variant mb-2">时柱</div>
+              <div class="flex flex-col items-center gap-1.5 py-1">
+                <div class="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center">
+                  <span class="text-lg font-bold text-primary leading-none">庚</span>
+                </div>
+                <div class="w-10 h-10 rounded-md bg-warning/15 flex items-center justify-center">
+                  <span class="text-lg font-bold text-warning leading-none">午</span>
+                </div>
+              </div>
+              <div class="text-xs text-on-surface-variant mt-2">剑锋金</div>
+            </div>
+
+          </div>
+          <div class="mt-3 pt-3 border-t border-outline-variant/15 flex items-center gap-4 text-xs text-on-surface-variant">
+            <span>日主：<span class="text-primary font-medium">甲木</span></span>
+            <span>命局：<span class="text-on-surface font-medium">身弱</span></span>
+            <span>喜用神：<span class="text-success font-medium">水 · 木</span></span>
+          </div>
+        </div>
+
+        <!-- 五行分布卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="bar-chart-3" class="w-4 h-4 text-primary"></i>
+            <h2 class="text-base font-semibold text-on-surface">五行分布</h2>
+            <span class="ml-auto text-xs text-on-surface-variant">总计 7 个</span>
+          </div>
+          <div class="space-y-3">
+
+            <!-- 五行-金 -->
+            <div class="flex items-center gap-3">
+              <span class="w-8 text-sm font-medium text-on-surface">金</span>
+              <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full rounded-full flex items-center justify-end pr-2" style="width: 28.5%; background-color: #C4B09E;">
+                  <span class="text-xs font-semibold text-white">2</span>
+                </div>
+              </div>
+              <span class="w-10 text-right text-xs text-on-surface-variant">28.5%</span>
+            </div>
+
+            <!-- 五行-木 -->
+            <div class="flex items-center gap-3">
+              <span class="w-8 text-sm font-medium text-on-surface">木</span>
+              <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full rounded-full flex items-center justify-end pr-2" style="width: 14.3%; background-color: #7E9F7A;">
+                  <span class="text-xs font-semibold text-white">1</span>
+                </div>
+              </div>
+              <span class="w-10 text-right text-xs text-on-surface-variant">14.3%</span>
+            </div>
+
+            <!-- 五行-水 -->
+            <div class="flex items-center gap-3">
+              <span class="w-8 text-sm font-medium text-on-surface">水</span>
+              <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full rounded-full flex items-center justify-end pr-2" style="width: 14.3%; background-color: #6B9EC4;">
+                  <span class="text-xs font-semibold text-white">1</span>
+                </div>
+              </div>
+              <span class="w-10 text-right text-xs text-on-surface-variant">14.3%</span>
+            </div>
+
+            <!-- 五行-火 -->
+            <div class="flex items-center gap-3">
+              <span class="w-8 text-sm font-medium text-on-surface">火</span>
+              <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full rounded-full flex items-center justify-end pr-2" style="width: 28.5%; background-color: #D4744A;">
+                  <span class="text-xs font-semibold text-white">2</span>
+                </div>
+              </div>
+              <span class="w-10 text-right text-xs text-on-surface-variant">28.5%</span>
+            </div>
+
+            <!-- 五行-土 -->
+            <div class="flex items-center gap-3">
+              <span class="w-8 text-sm font-medium text-on-surface">土</span>
+              <div class="flex-1 h-6 bg-surface-container rounded-full overflow-hidden">
+                <div class="h-full rounded-full flex items-center justify-end pr-2" style="width: 14.3%; background-color: #D4A24E;">
+                  <span class="text-xs font-semibold text-white">1</span>
+                </div>
+              </div>
+              <span class="w-10 text-right text-xs text-on-surface-variant">14.3%</span>
+            </div>
+
+          </div>
+          <div class="mt-3 pt-3 border-t border-outline-variant/15 text-xs text-on-surface-variant">
+            日主甲木偏弱，宜补水木以生扶。火旺克金，需注意。
+          </div>
+        </div>
+
+        <!-- 十神关系卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="network" class="w-4 h-4 text-primary"></i>
+            <h2 class="text-base font-semibold text-on-surface">十神关系</h2>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+
+            <!-- 十神-年干偏官 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">年干</span>
+              <span class="text-sm font-medium text-on-surface">偏官</span>
+              <span class="ml-auto text-xs text-primary font-semibold">庚</span>
+            </div>
+
+            <!-- 十神-年支伤官 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">年支</span>
+              <span class="text-sm font-medium text-on-surface">伤官</span>
+              <span class="ml-auto text-xs text-primary font-semibold">午</span>
+            </div>
+
+            <!-- 十神-月干正印 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">月干</span>
+              <span class="text-sm font-medium text-on-surface">正印</span>
+              <span class="ml-auto text-xs text-primary font-semibold">癸</span>
+            </div>
+
+            <!-- 十神-月支偏财 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">月支</span>
+              <span class="text-sm font-medium text-on-surface">偏财</span>
+              <span class="ml-auto text-xs text-primary font-semibold">未</span>
+            </div>
+
+            <!-- 十神-日支比肩 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">日支</span>
+              <span class="text-sm font-medium text-on-surface">比肩</span>
+              <span class="ml-auto text-xs text-primary font-semibold">寅</span>
+            </div>
+
+            <!-- 十神-时干偏官 -->
+            <div class="flex items-center gap-2.5 bg-surface-container rounded-md px-3 py-2">
+              <span class="text-xs text-on-surface-variant w-8">时干</span>
+              <span class="text-sm font-medium text-on-surface">偏官</span>
+              <span class="ml-auto text-xs text-primary font-semibold">庚</span>
+            </div>
+
+          </div>
+          <div class="mt-3 pt-3 border-t border-outline-variant/15 text-xs text-on-surface-variant">
+            偏官两透，性格果断有魄力；正印贴身，学习能力强。
+          </div>
+        </div>
+
+        <!-- 神煞列表卡片 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="sparkle" class="w-4 h-4 text-primary"></i>
+            <h2 class="text-base font-semibold text-on-surface">神煞列表</h2>
+          </div>
+          <div class="flex flex-wrap gap-2">
+
+            <!-- 神煞-天乙贵人 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-success/15 text-success">
+              <i data-lucide="star" class="w-3 h-3"></i>天乙贵人
+            </span>
+
+            <!-- 神煞-驿马 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-warning/15 text-warning">
+              <i data-lucide="footprints" class="w-3 h-3"></i>驿马
+            </span>
+
+            <!-- 神煞-桃花 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/15 text-primary">
+              <i data-lucide="flower-2" class="w-3 h-3"></i>桃花
+            </span>
+
+            <!-- 神煞-文昌贵人 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-success/15 text-success">
+              <i data-lucide="book-marked" class="w-3 h-3"></i>文昌贵人
+            </span>
+
+            <!-- 神煞-将星 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-warning/15 text-warning">
+              <i data-lucide="shield" class="w-3 h-3"></i>将星
+            </span>
+
+            <!-- 神煞-羊刃 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-error/15 text-error">
+              <i data-lucide="swords" class="w-3 h-3"></i>羊刃
+            </span>
+
+            <!-- 神煞-华盖 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-primary/15 text-primary">
+              <i data-lucide="umbrella" class="w-3 h-3"></i>华盖
+            </span>
+
+            <!-- 神煞-亡神 -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-error/15 text-error">
+              <i data-lucide="ghost" class="w-3 h-3"></i>亡神
+            </span>
+
+          </div>
+          <div class="mt-3 pt-3 border-t border-outline-variant/15 text-xs text-on-surface-variant">
+            天乙贵人主逢凶化吉；驿马星动，一生多奔波迁移。
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <!-- 报告展示区（全宽） -->
+    <section id="report-section" class="bg-surface rounded-lg shadow-card overflow-hidden">
+
+      <!-- 报告标题 -->
+      <div class="px-6 py-4 border-b border-outline-variant/15 flex items-center gap-2">
+        <i data-lucide="scroll-text" class="w-5 h-5 text-primary"></i>
+        <h2 class="text-base font-semibold text-on-surface">解读报告</h2>
+        <span class="text-xs text-on-surface-variant ml-1">四版多流派解读</span>
+      </div>
+
+      <!-- 报告 Tab 切换 -->
+      <div class="px-6 pt-4">
+        <div class="flex gap-1 bg-surface-container rounded-lg p-1">
+
+          <!-- Tab-偏听偏信 -->
+          <button id="tab-credulous" class="report-tab flex-1 px-4 py-2 rounded-md text-sm font-medium bg-surface text-on-surface shadow-sm transition-all" data-version="credulous">
+            偏听偏信
+          </button>
+
+          <!-- Tab-偏中式 -->
+          <button id="tab-chinese" class="report-tab flex-1 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all" data-version="chinese">
+            偏中式
+          </button>
+
+          <!-- Tab-偏西式 -->
+          <button id="tab-western" class="report-tab flex-1 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all" data-version="western">
+            偏西式
+          </button>
+
+          <!-- Tab-民主投票 -->
+          <button id="tab-vote" class="report-tab flex-1 px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface transition-all" data-version="vote">
+            民主投票
+          </button>
+
+        </div>
+      </div>
+
+      <!-- 报告内容区域 -->
+      <div class="p-6">
+
+        <!-- 偏听偏信版 -->
+        <div id="report-credulous" class="report-panel">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="circle-check-big" class="w-4 h-4 text-primary"></i>
+            <p class="text-sm text-on-surface-variant">全盘采信所有流派结论，不加质疑，给出最"确定"的断语。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- 维度-性格 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">性格</span>
+                </div>
+                <span class="text-lg font-bold text-primary">85<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 85%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">甲木日主生于未月，偏官两透天干，性格刚毅果决，行事雷厉风行。正印贴身主聪慧好学，华盖星临主孤高脱俗，内心有独立精神追求。伤官配印，才华横溢，但易心直口快，需注意言辞分寸。</p>
+            </div>
+
+            <!-- 维度-事业 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">事业</span>
+                </div>
+                <span class="text-lg font-bold text-primary">78<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 78%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">偏官透干主适合管理、军警、法律等行业，将星入命有领导才能。驿马星动，事业多有异地发展之象，宜外出谋事。羊刃冲克，中年事业有重大转折，逢金水大运则运势上扬，可大器晚成。</p>
+            </div>
+
+            <!-- 维度-感情 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">感情</span>
+                </div>
+                <span class="text-lg font-bold text-primary">62<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 62%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">桃花星入命，异性缘佳，但偏官两透恐感情多变，易有三角纠葛。日支比肩，配偶性格刚强独立，夫妻间易有争执。建议晚婚为佳，逢鼠年、兔年有婚恋之喜，需用心经营感情。</p>
+            </div>
+
+            <!-- 维度-财运 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="coins" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">财运</span>
+                </div>
+                <span class="text-lg font-bold text-primary">80<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 80%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">月支偏财暗藏，有意外之财的机遇，但财不外露方为上策。伤官生财，凭才智和技艺获利，适合技术型、创意型工作。中年走水木大运，财运渐入佳境，宜在东方、北方发展。注意勿做投机之事。</p>
+            </div>
+
+            <!-- 维度-健康 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">健康</span>
+                </div>
+                <span class="text-lg font-bold text-primary">72<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 72%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">木日主偏弱，肝胆系统需多保养。火旺克金，注意呼吸系统和肺部健康。羊刃入命易有意外损伤，运动时需格外小心。建议多食酸味补肝，早睡早起养肝胆，逢火旺之年尤需注意心血管。</p>
+            </div>
+
+            <!-- 维度-总结建议 -->
+            <div class="bg-primary/5 rounded-lg p-4 border border-primary/10">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <span class="text-sm font-semibold text-on-surface">综合建议</span>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">此命甲木日主身弱，喜水木，忌火土金。一生宜从事教育、文化、创意类工作，向东方或北方发展为佳。天乙贵人入命，逢凶化吉，遇难呈祥。人生运势在35岁后逐步上扬，晚景安泰。</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 偏中式版 -->
+        <div id="report-chinese" class="report-panel hidden">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="bookmark" class="w-4 h-4 text-primary"></i>
+            <p class="text-sm text-on-surface-variant">以八字命理为主体结论，西方星座作为补充参考。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- 维度-性格 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">性格</span>
+                </div>
+                <span class="text-lg font-bold text-primary">82<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 82%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">从八字看，甲木日主性格仁直有上进心，偏官两透主刚毅果断。华盖星主内心丰富，有艺术天赋。补充来看，太阳双子座赋予您灵活多变的思维方式，好奇心强，善于交际。中式为主，西式印证。</p>
+            </div>
+
+            <!-- 维度-事业 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">事业</span>
+                </div>
+                <span class="text-lg font-bold text-primary">75<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">八字偏官透干，将星入命，适合管理与武职。驿马星动主奔波之象，宜异地发展。星盘水星落巨蟹座赋予细腻的沟通能力，适合文字与教育工作。以八字命局为主导，星盘为辅，教育、法律行业为佳。</p>
+            </div>
+
+            <!-- 维度-感情 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">感情</span>
+                </div>
+                <span class="text-lg font-bold text-primary">65<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 65%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">八字桃花入命异性缘旺，偏官两透恐感情波折，日支比肩配偶强势。金星落金牛座补充说明在感情中重视物质基础与稳定感。以中式为基调，建议晚婚，选择性格互补、五行水木旺的伴侣为佳。</p>
+            </div>
+
+            <!-- 维度-财运 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="coins" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">财运</span>
+                </div>
+                <span class="text-lg font-bold text-primary">77<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 77%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">八字月支偏财暗藏，伤官生财运，凭才智获利。金星金牛的西方视角也印证了务实理财的特质。以中式八字为主导，财运在35岁后水木大运时显著提升。适合以技术、创意积累财富，不宜投机。</p>
+            </div>
+
+            <!-- 维度-健康 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">健康</span>
+                </div>
+                <span class="text-lg font-bold text-primary">74<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 74%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">八字木弱需养肝胆，火旺克金注意肺系。以中医五行理论为主，搭配西方星座双子座需注意神经系统与手臂保养。建议日常以酸味补肝，练习太极或瑜伽舒缓神经，早睡养肝。</p>
+            </div>
+
+            <!-- 维度-总结建议 -->
+            <div class="bg-primary/5 rounded-lg p-4 border border-primary/10">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <span class="text-sm font-semibold text-on-surface">综合建议</span>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">以八字命理为解读主体：甲木身弱喜水木，从事文教创意行业为佳，向北方发展。星盘双子座特质作为辅助参考，印证了灵活多变的性格。中西结合来看，人生轨迹以中式命理为主线，35岁后运势上扬。</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 偏西式版 -->
+        <div id="report-western" class="report-panel hidden">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="compass" class="w-4 h-4 text-primary"></i>
+            <p class="text-sm text-on-surface-variant">以西方星盘为主体结论，中式命理作为补充参考。</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- 维度-性格 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">性格</span>
+                </div>
+                <span class="text-lg font-bold text-primary">88<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 88%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">太阳双子座赋予您极强的适应力和求知欲，思维敏捷，善于沟通。月亮天秤座追求和谐美感，在人际交往中游刃有余。上升处女座赋予完美主义倾向。补充来看，中式八字偏官两透也印证了果断的执行力。</p>
+            </div>
+
+            <!-- 维度-事业 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">事业</span>
+                </div>
+                <span class="text-lg font-bold text-primary">83<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 83%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">水星巨蟹座落二宫，赋予细腻的表达力与价值感，适合媒体、写作、教育。火星落狮子座赋予领导魅力与创造力。以星盘为主导，传媒、教育、创意管理行业最佳。中式八字驿马星印证了职业多变与迁移之象。</p>
+            </div>
+
+            <!-- 维度-感情 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">感情</span>
+                </div>
+                <span class="text-lg font-bold text-primary">70<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 70%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">金星金牛座赋予稳定持久的爱情观，重视感官享受与物质安全感。月亮天秤座追求伴侣关系的平等和谐。以星盘为主，建议选择土象星座（金牛、处女、摩羯）的伴侣。中式八字桃花星补充说明了异性缘旺盛。</p>
+            </div>
+
+            <!-- 维度-财运 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="coins" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">财运</span>
+                </div>
+                <span class="text-lg font-bold text-primary">79<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 79%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">木星落巨蟹座二宫，赋予良好的财运直觉与积累能力，适合通过知识与服务积累财富。金星金牛也指向稳健理财。以西方星盘为主导，投资宜偏保守稳健。中式八字偏财运补充说明中年有意外之财机遇。</p>
+            </div>
+
+            <!-- 维度-健康 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">健康</span>
+                </div>
+                <span class="text-lg font-bold text-primary">76<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 76%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">上升处女座主宰消化系统与肠道健康，需注意饮食规律。双子座主宰呼吸系统与手臂。以西方星盘为主，建议注重饮食健康与呼吸系统保养。中式八字火旺克金的五行分析也印证了肺部需多加注意。</p>
+            </div>
+
+            <!-- 维度-总结建议 -->
+            <div class="bg-primary/5 rounded-lg p-4 border border-primary/10">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <span class="text-sm font-semibold text-on-surface">综合建议</span>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">以西方星盘为解读主体：太阳双子、月亮天秤、上升处女的组合赋予您智慧、和谐与务实的特质。事业适合传媒、教育、创意管理领域。中式八字甲木身弱喜水木作为补充参考，印证了文教创意方向的适配性。</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 民主投票版 -->
+        <div id="report-vote" class="report-panel hidden">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="vote" class="w-4 h-4 text-primary"></i>
+            <p class="text-sm text-on-surface-variant">多流派投票统计，采信多数派结论，少数派以"也有观点认为"附注。</p>
+          </div>
+
+          <!-- 各流派投票对比 -->
+          <div class="bg-surface-container rounded-lg p-4 mb-4">
+            <h3 class="text-sm font-semibold text-on-surface mb-4 flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i>各流派投票对比
+            </h3>
+            <div class="space-y-3">
+
+              <!-- 投票-中式命理派 -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-sm text-on-surface">中式命理派</span>
+                  <span class="text-xs text-on-surface-variant">3 票</span>
+                </div>
+                <div class="h-5 bg-surface rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full flex items-center justify-end pr-2" style="width: 75%;">
+                    <span class="text-xs font-semibold text-on-primary">75%</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 投票-西方星盘派 -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-sm text-on-surface">西方星盘派</span>
+                  <span class="text-xs text-on-surface-variant">1 票</span>
+                </div>
+                <div class="h-5 bg-surface rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full flex items-center justify-end pr-2" style="width: 25%;">
+                    <span class="text-xs font-semibold text-white">25%</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="mt-3 pt-3 border-t border-outline-variant/15 text-xs text-on-surface-variant">
+              本次投票中，中式命理派（八字+紫微+生肖）投出 3 票，西方星盘派（星座+星盘）投出 1 票。多数派结论采用中式命理观点。
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+            <!-- 维度-性格 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="user" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">性格</span>
+                </div>
+                <span class="text-lg font-bold text-primary">83<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 83%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">多数派（中式3票）：甲木日主刚毅果断，偏官两透有魄力，华盖星主孤高。也有观点认为（西方1票）：太阳双子座赋予灵活多变的思维方式。综合采信多数派，性格以仁直果断为主导。</p>
+            </div>
+
+            <!-- 维度-事业 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">事业</span>
+                </div>
+                <span class="text-lg font-bold text-primary">77<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 77%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">多数派（中式3票）：偏官透干适合管理武职，驿马星动宜异地发展。也有观点认为（西方1票）：水星巨蟹座适合媒体写作。综合采信多数派，事业以管理、法律行业为主，写作教育为辅。</p>
+            </div>
+
+            <!-- 维度-感情 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">感情</span>
+                </div>
+                <span class="text-lg font-bold text-primary">64<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 64%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">多数派（中式3票）：桃花入命异性缘佳，偏官两透感情多变，宜晚婚。也有观点认为（西方1票）：金星金牛追求稳定持久的爱情。综合采信多数派，感情需谨慎经营，晚婚为佳。</p>
+            </div>
+
+            <!-- 维度-财运 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="coins" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">财运</span>
+                </div>
+                <span class="text-lg font-bold text-primary">78<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 78%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">多数派（中式3票）：月支偏财，伤官生财，凭才智获利。也有观点认为（西方1票）：木星二宫财运直觉良好。综合采信多数派，财运以技术创意积累为主，中年大运提升。</p>
+            </div>
+
+            <!-- 维度-健康 -->
+            <div class="bg-surface-container rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+                  <span class="text-sm font-semibold text-on-surface">健康</span>
+                </div>
+                <span class="text-lg font-bold text-primary">73<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-1.5 bg-surface-container-high rounded-full overflow-hidden mb-3">
+                <div class="h-full bg-primary rounded-full" style="width: 73%;"></div>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">多数派（中式3票）：木弱养肝胆，火旺克金注意肺系。也有观点认为（西方1票）：上升处女主宰消化系统。综合采信多数派，以五行调理为主，兼顾消化系统保养。</p>
+            </div>
+
+            <!-- 维度-总结建议 -->
+            <div class="bg-primary/5 rounded-lg p-4 border border-primary/10">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <span class="text-sm font-semibold text-on-surface">综合建议</span>
+              </div>
+              <p class="text-sm text-on-surface leading-relaxed">经多流派投票，中式命理派以3:1胜出。综合结论以八字命理为主线：甲木身弱喜水木，从事文教管理为佳，向北方发展，35岁后运势上扬。西方星盘观点作为补充参考，印证了灵活多变与务实理财的特质。</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 报告底部操作 -->
+      <div class="px-6 py-4 border-t border-outline-variant/15 flex items-center justify-between">
+        <span class="text-xs text-on-surface-variant">报告基于 1990-06-15 12:00 排盘生成</span>
+        <button id="btn-restart" class="bg-surface-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center gap-2">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重新开始
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+  <!-- @main-content:end -->
+
+  <script>
+    $(function () {
+      // === 打字机效果 ===
+      // 模拟 AI 正在输入的打字机动画
+      // 1. 页面加载后，逐字显示 AI 回复文本
+      // 2. 每个字符间隔 50ms，显示完毕后光标闪烁
+      var $typingText = $('#ai-typing-text');
+      var $cursor = $('#ai-typing-cursor');
+      var fullText = $typingText.text();
+      $typingText.text('');
+      var charIndex = 0;
+
+      function typeNextChar() {
+        if (charIndex < fullText.length) {
+          $typingText.text(fullText.substring(0, charIndex + 1));
+          charIndex++;
+          setTimeout(typeNextChar, 50);
+        } else {
+          // 打字完毕，光标闪烁
+          var visible = true;
+          setInterval(function () {
+            visible = !visible;
+            $cursor.css('opacity', visible ? 1 : 0);
+          }, 500);
+        }
+      }
+      // 延迟 800ms 后开始打字
+      setTimeout(typeNextChar, 800);
+
+      // === 发送消息 ===
+      // 1. 获取输入框文本
+      // 2. 在对话区追加用户气泡消息
+      // 3. 清空输入框
+      // 4. 后续应调用 AI API 流式回复，此处仅模拟追加消息
+      $('#btn-send').on('click', function () {
+        var text = $('#chat-input').val().trim();
+        if (!text) return;
+
+        // 追加用户消息气泡
+        var userBubble = '<div class="flex gap-2.5 items-start justify-end">' +
+          '<div class="bg-primary text-on-primary rounded-lg rounded-tr-sm px-4 py-2.5 max-w-[85%]">' +
+          '<p class="text-sm leading-relaxed">' + $('<div>').text(text).html() + '</p>' +
+          '</div>' +
+          '<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">' +
+          '<span class="text-xs font-semibold text-on-surface-variant">初</span>' +
+          '</div>' +
+          '</div>';
+        $('#chat-messages').append(userBubble);
+        $('#chat-input').val('');
+        // 滚动到底部
+        $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+      });
+
+      // 回车键发送
+      $('#chat-input').on('keydown', function (e) {
+        if (e.key === 'Enter') {
+          $('#btn-send').click();
+        }
+      });
+
+      // === 生成报告 ===
+      // 1. 点击后平滑滚动到报告区域
+      // 2. 后续应调用算法引擎计算 → 展示原始数据 → AI 并行生成 4 版报告
+      $('#btn-generate-report').on('click', function () {
+        $('html, body').animate({
+          scrollTop: $('#report-section').offset().top - 80
+        }, 600);
+      });
+
+      // === 报告 Tab 切换 ===
+      // 1. 点击 Tab 时切换激活态样式
+      // 2. 显示对应版本的报告面板，隐藏其他
+      $('.report-tab').on('click', function () {
+        var version = $(this).data('version');
+
+        // 切换 Tab 样式
+        $('.report-tab').each(function () {
+          $(this).removeClass('bg-surface text-on-surface shadow-sm');
+          $(this).addClass('text-on-surface-variant');
+        });
+        $(this).addClass('bg-surface text-on-surface shadow-sm');
+        $(this).removeClass('text-on-surface-variant');
+
+        // 切换面板显示
+        $('.report-panel').addClass('hidden');
+        $('#report-' + version).removeClass('hidden');
+      });
+
+      // === 重新开始 ===
+      // 1. 清空对话消息（保留首条 AI 问候消息）
+      // 2. 滚动回页面顶部
+      // 3. 后续应清空算法结果和报告
+      $('#btn-restart').on('click', function () {
+        // 保留第一条 AI 消息，移除其余
+        $('#chat-messages').children().slice(1).remove();
+        $('html, body').animate({ scrollTop: 0 }, 600);
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 琥珀赭石，命理文化感 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #F5DDD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 温暖纸感 === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FFF9F1;
+      --color-surface-container:          #F3E8D8;
+      --color-surface-container-high:     #EDDCD0;
+      --color-surface-container-highest:  #E5D0BF;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #C75050;
+      --color-warning:  #D4A24E;
+      /* === 边框 === */
+      --color-outline:          #C4B09E;
+      --color-outline-variant:  #D9CCBE;
+      /* === 圆角 — 温润圆润 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 — 轻柔纸感 === */
+      --shadow-card:   0 2px 8px rgba(49,37,27,0.08);
+      --shadow-float:  0 10px 25px rgba(49,37,27,0.12);
+      --shadow-dialog: 0 25px 50px rgba(49,37,27,0.18);
+      /* === 字体 — 宋体标题 + 系统正文 === */
+      --font-sans: "Lora", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto h-16 flex items-center justify-between px-6">
+      <a href="home.html" class="flex items-center gap-2.5">
+        <i data-lucide="sparkles" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg text-on-surface">天机阁</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">首页</a>
+        <a href="bazi.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">八字命盘</a>
+        <a href="astrology.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md transition-colors" aria-current="page">星座星盘</a>
+        <a href="tarot.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">塔罗占卜</a>
+        <a href="dream.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">周公解梦</a>
+        <a href="horoscope.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">每日运势</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- 页面标题区 -->
+    <div class="px-6 pt-8 pb-6">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+          <i data-lucide="moon-star" class="text-primary w-5 h-5"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold text-on-surface">星座星盘</h1>
+          <p class="text-sm text-on-surface-variant mt-0.5">AI 占星师引导您输入出生信息，计算太阳/月亮/上升星座及行星落宫</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 对话区 + 算法结果展示区 -->
+    <div class="px-6 pb-6">
+      <div class="flex gap-5">
+
+        <!-- 左侧：对话区 约 45% -->
+        <div class="w-[45%] shrink-0 flex flex-col bg-surface rounded-xl shadow-card overflow-hidden" style="height: 560px;">
+          <!-- 对话消息列表 -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4">
+
+            <!-- AI 对话气泡-1：初始问候 -->
+            <div class="flex gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <i data-lucide="sparkles" class="text-primary w-4 h-4"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="bg-surface-container rounded-lg rounded-tl-none px-3.5 py-2.5">
+                  <p class="text-sm text-on-surface leading-relaxed">您好，我是天机阁的占星师。请告诉我您的出生日期、时间和出生城市，我来为您绘制星盘。</p>
+                </div>
+                <p class="text-xs text-on-surface-variant/60 mt-1 ml-1">占星师 · 刚刚</p>
+              </div>
+            </div>
+
+            <!-- 用户对话气泡-1：出生信息 -->
+            <div class="flex gap-2.5 flex-row-reverse">
+              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <span class="text-on-primary text-sm font-semibold">初</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="bg-primary/15 rounded-lg rounded-tr-none px-3.5 py-2.5">
+                  <p class="text-sm text-on-surface leading-relaxed">1995年3月15日 下午3点 北京</p>
+                </div>
+                <p class="text-xs text-on-surface-variant/60 mt-1 mr-1 text-right">小初 · 刚刚</p>
+              </div>
+            </div>
+
+            <!-- AI 对话气泡-2：正在输入态 -->
+            <div class="flex gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <i data-lucide="sparkles" class="text-primary w-4 h-4"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <div class="bg-surface-container rounded-lg rounded-tl-none px-3.5 py-2.5 inline-flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-on-surface-variant/40 animate-bounce" style="animation-delay: 0ms;"></span>
+                  <span class="w-2 h-2 rounded-full bg-on-surface-variant/40 animate-bounce" style="animation-delay: 150ms;"></span>
+                  <span class="w-2 h-2 rounded-full bg-on-surface-variant/40 animate-bounce" style="animation-delay: 300ms;"></span>
+                  <span class="text-xs text-on-surface-variant ml-1">正在计算星盘…</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 底部输入区 -->
+          <div class="border-t border-outline-variant/15 p-3 space-y-2.5 bg-surface">
+            <div class="flex gap-2">
+              <input id="chat-input" type="text" class="flex-1 bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" placeholder="输入出生信息，如：1995年3月15日 下午3点 北京"/>
+              <button id="btn-send" class="bg-primary text-on-primary px-3 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-1.5 shrink-0">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>发送
+              </button>
+            </div>
+            <button id="btn-generate-report" class="w-full bg-primary-container text-on-surface border-none px-4 py-2 rounded-md text-sm font-semibold hover:bg-primary/20 active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+              <i data-lucide="file-text" class="w-4 h-4 text-primary"></i>生成报告
+            </button>
+          </div>
+        </div>
+
+        <!-- 右侧：算法结果展示区 约 55% -->
+        <div class="flex-1 min-w-0 space-y-4 overflow-y-auto" style="max-height: 560px;">
+
+          <!-- 星座概览卡片 -->
+          <div class="bg-surface rounded-xl shadow-card p-4">
+            <div class="flex items-center gap-2 mb-3.5">
+              <i data-lucide="sun" class="text-primary w-4 h-4"></i>
+              <h2 class="text-base font-semibold text-on-surface">星座概览</h2>
+              <span class="text-xs text-on-surface-variant/60 ml-auto">三大主星座</span>
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+
+              <!-- 太阳星座-双鱼座 -->
+              <div class="bg-surface-container/60 rounded-lg p-3 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-2 border border-primary/15">
+                  <span class="text-2xl text-primary">♓</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mb-0.5">太阳星座</p>
+                <p class="text-sm font-semibold text-on-surface">双鱼座</p>
+              </div>
+
+              <!-- 月亮星座-巨蟹座 -->
+              <div class="bg-surface-container/60 rounded-lg p-3 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-2 border border-primary/15">
+                  <span class="text-2xl text-primary">♋</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mb-0.5">月亮星座</p>
+                <p class="text-sm font-semibold text-on-surface">巨蟹座</p>
+              </div>
+
+              <!-- 上升星座-天蝎座 -->
+              <div class="bg-surface-container/60 rounded-lg p-3 text-center">
+                <div class="w-14 h-14 mx-auto rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-2 border border-primary/15">
+                  <span class="text-2xl text-primary">♏</span>
+                </div>
+                <p class="text-xs text-on-surface-variant mb-0.5">上升星座</p>
+                <p class="text-sm font-semibold text-on-surface">天蝎座</p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 行星落宫表格卡片 -->
+          <div class="bg-surface rounded-xl shadow-card overflow-hidden">
+            <div class="flex items-center gap-2 px-4 pt-4 pb-3">
+              <i data-lucide="orbit" class="text-primary w-4 h-4"></i>
+              <h2 class="text-base font-semibold text-on-surface">行星落宫</h2>
+              <span class="text-xs text-on-surface-variant/60 ml-auto">10 颗行星</span>
+            </div>
+            <div class="grid grid-cols-3 px-4 py-2 bg-surface-container text-xs font-semibold text-on-surface-variant uppercase tracking-wide">
+              <span>行星</span><span>星座</span><span>宫位</span>
+            </div>
+            <div class="divide-y divide-outline-variant/30">
+
+              <!-- 行星-太阳 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">☉ 太阳</span>
+                <span class="text-sm text-on-surface-variant">♓ 双鱼</span>
+                <span class="text-sm text-on-surface-variant">第 4 宫</span>
+              </div>
+
+              <!-- 行星-月亮 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">☽ 月亮</span>
+                <span class="text-sm text-on-surface-variant">♋ 巨蟹</span>
+                <span class="text-sm text-on-surface-variant">第 8 宫</span>
+              </div>
+
+              <!-- 行星-水星 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">☿ 水星</span>
+                <span class="text-sm text-on-surface-variant">♓ 双鱼</span>
+                <span class="text-sm text-on-surface-variant">第 2 宫</span>
+              </div>
+
+              <!-- 行星-金星 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">♀ 金星</span>
+                <span class="text-sm text-on-surface-variant">♒ 水瓶</span>
+                <span class="text-sm text-on-surface-variant">第 1 宫</span>
+              </div>
+
+              <!-- 行星-火星 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">♂ 火星</span>
+                <span class="text-sm text-on-surface-variant">♉ 金牛</span>
+                <span class="text-sm text-on-surface-variant">第 5 宫</span>
+              </div>
+
+              <!-- 行星-木星 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">♃ 木星</span>
+                <span class="text-sm text-on-surface-variant">♐ 射手</span>
+                <span class="text-sm text-on-surface-variant">第 12 宫</span>
+              </div>
+
+              <!-- 行星-土星 -->
+              <div class="grid grid-cols-3 px-4 py-2.5 hover:bg-surface-container/50 transition-colors">
+                <span class="text-sm font-medium text-on-surface">♄ 土星</span>
+                <span class="text-sm text-on-surface-variant">♓ 双鱼</span>
+                <span class="text-sm text-on-surface-variant">第 3 宫</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 主要相位卡片 -->
+          <div class="bg-surface rounded-xl shadow-card p-4">
+            <div class="flex items-center gap-2 mb-3.5">
+              <i data-lucide="git-merge" class="text-primary w-4 h-4"></i>
+              <h2 class="text-base font-semibold text-on-surface">主要相位</h2>
+              <span class="text-xs text-on-surface-variant/60 ml-auto">6 组相位</span>
+            </div>
+            <div class="space-y-2">
+
+              <!-- 相位-太阳合水星 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">太阳</span>
+                  <div class="flex-1 h-0.5 bg-success rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">水星</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">合相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">0°12′</span>
+              </div>
+
+              <!-- 相位-月亮刑火星 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">月亮</span>
+                  <div class="flex-1 h-0.5 bg-error rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">火星</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">刑相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">92°34′</span>
+              </div>
+
+              <!-- 相位-金星拱木星 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">金星</span>
+                  <div class="flex-1 h-0.5 bg-primary rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">木星</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/15 text-primary">拱相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">118°06′</span>
+              </div>
+
+              <!-- 相位-太阳冲月亮 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">太阳</span>
+                  <div class="flex-1 h-0.5 bg-warning rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">月亮</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">冲相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">178°21′</span>
+              </div>
+
+              <!-- 相位-水星合土星 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">水星</span>
+                  <div class="flex-1 h-0.5 bg-success rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">土星</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">合相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">3°45′</span>
+              </div>
+
+              <!-- 相位-火星拱月亮 -->
+              <div class="flex items-center gap-3 py-1.5">
+                <div class="flex items-center gap-1.5 w-28 shrink-0">
+                  <span class="text-sm font-medium text-on-surface">火星</span>
+                  <div class="flex-1 h-0.5 bg-primary rounded-full"></div>
+                  <span class="text-sm font-medium text-on-surface">月亮</span>
+                </div>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/15 text-primary">拱相</span>
+                <span class="text-xs text-on-surface-variant ml-auto">115°28′</span>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- 元素分布卡片 -->
+          <div class="bg-surface rounded-xl shadow-card p-4">
+            <div class="flex items-center gap-2 mb-3.5">
+              <i data-lucide="flame" class="text-primary w-4 h-4"></i>
+              <h2 class="text-base font-semibold text-on-surface">元素分布</h2>
+              <span class="text-xs text-on-surface-variant/60 ml-auto">四象能量</span>
+            </div>
+            <div class="flex items-center gap-4">
+
+              <!-- 环形图 SVG -->
+              <div class="shrink-0 relative w-24 h-24">
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                  <!-- 玫瑰红 - 水元素 6/10 -->
+                  <circle cx="50" cy="50" r="35" fill="none" stroke="#C96F3D" stroke-width="14"
+                          stroke-dasharray="131.95 219.91" stroke-dashoffset="0"/>
+                  <!-- 赭石色 - 土元素 3/10 -->
+                  <circle cx="50" cy="50" r="35" fill="none" stroke="#8B7662" stroke-width="14"
+                          stroke-dasharray="65.97 219.91" stroke-dashoffset="-131.95"/>
+                  <!-- 橄榄绿 - 风元素 1/10 -->
+                  <circle cx="50" cy="50" r="35" fill="none" stroke="#7E9F7A" stroke-width="14"
+                          stroke-dasharray="21.99 219.91" stroke-dashoffset="-197.92"/>
+                  <!-- 琥珀色 - 火元素 0/10 -->
+                  <circle cx="50" cy="50" r="35" fill="none" stroke="#D4A24E" stroke-width="14"
+                          stroke-dasharray="0 219.91" stroke-dashoffset="-219.91"/>
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center">
+                    <p class="text-lg font-bold text-on-surface leading-none">10</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">行星</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 图例 -->
+              <div class="flex-1 space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-sm bg-primary shrink-0"></span>
+                  <span class="text-sm text-on-surface font-medium">水</span>
+                  <span class="text-sm text-on-surface-variant">6 颗</span>
+                  <span class="text-xs text-on-surface-variant ml-auto">60%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-sm bg-on-surface-variant shrink-0"></span>
+                  <span class="text-sm text-on-surface font-medium">土</span>
+                  <span class="text-sm text-on-surface-variant">3 颗</span>
+                  <span class="text-xs text-on-surface-variant ml-auto">30%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-sm bg-success shrink-0"></span>
+                  <span class="text-sm text-on-surface font-medium">风</span>
+                  <span class="text-sm text-on-surface-variant">1 颗</span>
+                  <span class="text-xs text-on-surface-variant ml-auto">10%</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-sm bg-warning shrink-0"></span>
+                  <span class="text-sm text-on-surface font-medium">火</span>
+                  <span class="text-sm text-on-surface-variant">0 颗</span>
+                  <span class="text-xs text-on-surface-variant ml-auto">0%</span>
+                </div>
+              </div>
+
+            </div>
+            <div class="mt-3 pt-3 border-t border-outline-variant/20">
+              <p class="text-xs text-on-surface-variant leading-relaxed">
+                <i data-lucide="info" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>
+                水象元素占绝对主导，性格偏向感性、直觉敏锐。火象缺失，行动力需借助外力推动。
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 报告展示区（全宽） -->
+    <div class="px-6 pb-10">
+      <div class="bg-surface rounded-xl shadow-card overflow-hidden">
+
+        <!-- 报告区标题 -->
+        <div class="flex items-center gap-2 px-5 pt-5 pb-4">
+          <i data-lucide="scroll-text" class="text-primary w-5 h-5"></i>
+          <h2 class="text-base font-semibold text-on-surface">解读报告</h2>
+          <span class="text-xs text-on-surface-variant/60 ml-auto">四种风格 · 汇聚百家之长</span>
+        </div>
+
+        <!-- 四版报告 Tab -->
+        <div class="flex gap-1 px-5 pb-3 border-b border-outline-variant/15">
+          <button id="report-tab-1" class="report-tab px-4 py-2 rounded-md text-sm font-medium bg-primary/10 text-primary transition-all" data-version="1">偏听偏信</button>
+          <button id="report-tab-2" class="report-tab px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-version="2">偏中式</button>
+          <button id="report-tab-3" class="report-tab px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-version="3">偏西式</button>
+          <button id="report-tab-4" class="report-tab px-4 py-2 rounded-md text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all" data-version="4">民主投票</button>
+        </div>
+
+        <!-- 报告内容区 -->
+        <div class="p-5 space-y-5">
+
+          <!-- 维度-性格内核 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="heart" class="text-primary w-4 h-4"></i>
+                <h3 class="text-sm font-semibold text-on-surface">性格内核</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div id="report-bar-personality" class="h-full bg-primary rounded-full" style="width: 92%;"></div>
+                </div>
+                <span id="report-score-personality" class="text-sm font-bold text-primary w-8 text-right">92</span>
+              </div>
+            </div>
+            <p id="report-text-personality" class="text-sm text-on-surface-variant leading-relaxed">
+              太阳双鱼赋予你极强的共情力与想象力，月亮巨蟹则将这份敏感深植于情感安全的需求中。上升天蝎为你的外在披上一层神秘面纱——人们第一眼看到的是冷静与距离感，但内心是一片汹涌的感性与直觉之海。水象元素占 60%，你是天生的"情感雷达"，能捕捉到他人最细微的情绪波动。
+            </p>
+          </div>
+
+          <!-- 维度-感情模式 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="venus" class="text-primary w-4 h-4"></i>
+                <h3 class="text-sm font-semibold text-on-surface">感情模式</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div id="report-bar-relationship" class="h-full bg-primary rounded-full" style="width: 88%;"></div>
+                </div>
+                <span id="report-score-relationship" class="text-sm font-bold text-primary w-8 text-right">88</span>
+              </div>
+            </div>
+            <p id="report-text-relationship" class="text-sm text-on-surface-variant leading-relaxed">
+              金星落水瓶座第 1 宫，你在感情中追求精神共鸣与独立空间，不喜被传统关系模式束缚。月亮巨蟹让你渴望深层的安全感，而上升天蝎又使你在亲密关系中倾向试探与掌控。太阳与月亮形成冲相（178°），内心常有"给予"与"保护自我"的拉扯。理想的伴侣需要同时满足灵魂对话与情感安定。
+            </p>
+          </div>
+
+          <!-- 维度-事业方向 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="briefcase" class="text-primary w-4 h-4"></i>
+                <h3 class="text-sm font-semibold text-on-surface">事业方向</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div id="report-bar-career" class="h-full bg-primary rounded-full" style="width: 75%;"></div>
+                </div>
+                <span id="report-score-career" class="text-sm font-bold text-primary w-8 text-right">75</span>
+              </div>
+            </div>
+            <p id="report-text-career" class="text-sm text-on-surface-variant leading-relaxed">
+              水星合土星于双鱼座，思维兼具直觉力与条理性，适合需要深度洞察与系统性输出的领域。火星落金牛第 5 宫，创造力稳定且持久，在艺术创作、心理咨询、灵性教育等领域有突出潜力。木星射手第 12 宫提示你在幕后工作、研究或跨文化事业中易获成就。火象缺失意味着创业魄力稍弱，更适合在成熟团队中发挥核心智囊角色。
+            </p>
+          </div>
+
+          <!-- 维度-灵性成长 -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="sparkle" class="text-primary w-4 h-4"></i>
+                <h3 class="text-sm font-semibold text-on-surface">灵性成长</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-20 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div id="report-bar-spiritual" class="h-full bg-primary rounded-full" style="width: 95%;"></div>
+                </div>
+                <span id="report-score-spiritual" class="text-sm font-bold text-primary w-8 text-right">95</span>
+              </div>
+            </div>
+            <p id="report-text-spiritual" class="text-sm text-on-surface-variant leading-relaxed">
+              太阳双鱼 + 月亮巨蟹 + 上升天蝎——这是占星学中最具灵性天赋的三重水象组合。你天生对梦境、直觉、潜意识有着超乎常人的感知力。木星在第 12 宫（灵性宫位）进一步放大了内在探索的深度。建议定期进行冥想、梦境记录或能量疗愈练习，将过载的情感波动转化为创造力。月亮刑火星的相位提醒你：情绪波动时避免冲动决策，学会在感受与行动之间留出缓冲空间。
+            </p>
+          </div>
+
+        </div>
+
+        <!-- 报告底部操作 -->
+        <div class="flex items-center justify-between px-5 py-4 border-t border-outline-variant/15 bg-surface-container/30">
+          <p class="text-xs text-on-surface-variant">
+            <i data-lucide="info" class="w-3 h-3 inline-block mr-1 -mt-0.5"></i>
+            报告基于 1995-03-15 15:00 北京（116.4°E, 39.9°N）星盘数据生成
+          </p>
+          <button id="btn-restart" class="text-primary text-sm font-medium hover:underline inline-flex items-center gap-1.5">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>重新开始
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+  $(function() {
+    // 报告 Tab 切换 — 点击切换四种解读风格的报告版本
+    // 1. 移除所有 Tab 的激活样式，添加非激活样式
+    // 2. 为当前点击的 Tab 添加激活样式（bg-primary/10 text-primary）
+    // 3. 更新四个维度的评分进度条宽度与分数文字
+    // 4. 更新四个维度的解读文本内容
+    // 后续接入后端 API 时，此处应调用 /api/report 并传入 version 参数获取流式报告内容
+    var reportData = {
+      '1': {
+        scores: { personality: 92, relationship: 88, career: 75, spiritual: 95 },
+        texts: {
+          personality: '太阳双鱼赋予你极强的共情力与想象力，月亮巨蟹则将这份敏感深植于情感安全的需求中。上升天蝎为你的外在披上一层神秘面纱——人们第一眼看到的是冷静与距离感，但内心是一片汹涌的感性与直觉之海。水象元素占 60%，你是天生的"情感雷达"，能捕捉到他人最细微的情绪波动。',
+          relationship: '金星落水瓶座第 1 宫，你在感情中追求精神共鸣与独立空间，不喜被传统关系模式束缚。月亮巨蟹让你渴望深层的安全感，而上升天蝎又使你在亲密关系中倾向试探与掌控。太阳与月亮形成冲相（178°），内心常有"给予"与"保护自我"的拉扯。理想的伴侣需要同时满足灵魂对话与情感安定。',
+          career: '水星合土星于双鱼座，思维兼具直觉力与条理性，适合需要深度洞察与系统性输出的领域。火星落金牛第 5 宫，创造力稳定且持久，在艺术创作、心理咨询、灵性教育等领域有突出潜力。木星射手第 12 宫提示你在幕后工作、研究或跨文化事业中易获成就。火象缺失意味着创业魄力稍弱，更适合在成熟团队中发挥核心智囊角色。',
+          spiritual: '太阳双鱼 + 月亮巨蟹 + 上升天蝎——这是占星学中最具灵性天赋的三重水象组合。你天生对梦境、直觉、潜意识有着超乎常人的感知力。木星在第 12 宫（灵性宫位）进一步放大了内在探索的深度。建议定期进行冥想、梦境记录或能量疗愈练习，将过载的情感波动转化为创造力。月亮刑火星的相位提醒你：情绪波动时避免冲动决策，学会在感受与行动之间留出缓冲空间。'
+        }
+      },
+      '2': {
+        scores: { personality: 85, relationship: 82, career: 80, spiritual: 90 },
+        texts: {
+          personality: '从命理五行来看，水象过旺对应八字中水偏盛，性情柔顺而多思。太阳双鱼如"癸水"之性，润物无声而内涵深厚；月亮巨蟹如"子水"归垣，顾家重情。上升天蝎为"壬水"之变，暗藏锋芒。建议修身养性，平衡水旺之势，避免情绪过载而伤及脾胃。',
+          relationship: '金星水瓶居命宫，如命中"食神"透出，主才情外显而择偶眼光高远。月亮巨蟹为"正印"之象，内心渴求安定。建议择偶时勿过于追求精神契合，亦需看重现实根基。太阳冲月亮之象，提示婚恋中需注意自我与家庭的平衡。',
+          career: '水星合土星于双鱼，如命中"印星"与"官星"并临，主学业有成、思维缜密。火星入金牛第五宫，如"伤官生财"，宜以创意谋生。木星居第十二宫，如"贵人"隐于暗处，适合从事幕僚、研究等不居前台之职。',
+          spiritual: '水象三重叠加，如八字中水局会聚，灵性根基深厚，天然与玄学、宗教有缘。木星在第十二宫如"华盖"星现，主与佛道有缘。建议修习静坐、抄经，以水之柔德化解内心执着。月火相刑，如"子午冲"之象，情绪波动时宜静不宜动。'
+        }
+      },
+      '3': {
+        scores: { personality: 90, relationship: 85, career: 78, spiritual: 93 },
+        texts: {
+          personality: 'Your Pisces Sun makes you a natural empath, absorbing the emotions of those around you like a sponge. The Cancer Moon deepens this sensitivity, anchoring it in a need for emotional security and family bonds. With Scorpio Rising, you present an enigmatic exterior to the world — guarded, intense, and magnetically mysterious. The 60% water dominance in your chart makes you an emotional seer.',
+          relationship: 'Venus in Aquarius in the 1st House means you approach love as a friendship first — you need intellectual stimulation and personal freedom. The Cancer Moon, however, craves nesting and security. This Sun-Moon opposition (178°) creates a classic Full Moon personality: you are constantly balancing your need to merge with your need to individuate.',
+          career: 'Mercury conjunct Saturn in Pisces gives you a rare blend of intuition and discipline — you can channel abstract insights into structured output. Mars in Taurus in the 5th House suggests steady creative productivity. Jupiter in Sagittarius in the 12th House points to success behind the scenes, possibly in research, healing, or cross-cultural work.',
+          spiritual: 'The triple-water signature (Pisces-Cancer-Scorpio) is one of the most psychically gifted combinations in astrology. Jupiter in the 12th House amplifies your connection to the collective unconscious. Regular dream journaling and meditation are essential practices. The Moon-Mars square advises creating emotional buffer zones before taking action.'
+        }
+      },
+      '4': {
+        scores: { personality: 89, relationship: 84, career: 78, spiritual: 92 },
+        texts: {
+          personality: '【多数派】太阳双鱼+月亮巨蟹+上升天蝎的三重水象组合，多数流派一致认为你具有极强的共情力与直觉感知（偏听偏信版与偏西式版均给出 90+ 高分）。【少数派】偏中式版从五行角度认为水旺需调，建议注意情绪管理。综合评分取各流派加权平均。',
+          relationship: '【多数派】金星水瓶追求精神共鸣，月亮巨蟹渴求安全感，三版报告均认同这一矛盾内核。【分歧点】偏中式版认为应更看重现实根基；偏西式版强调个人自由与精神契合优先。民主投票采信多数派：理想关系需同时满足精神对话与情感安定，但适度向现实妥协。',
+          career: '【一致结论】水星合土星带来直觉与条理并重的思维优势，四版报告高度一致。【投票结果】艺术创作、心理咨询、灵性教育为首选方向（3 票）。也有观点认为，火象缺失提示需借助团队力量弥补行动力不足，不宜独立创业（偏中式版附注）。',
+          spiritual: '【全票通过】四版报告一致认为三重水象组合具有极高的灵性天赋。木星第十二宫进一步放大内在探索深度。月亮刑火星的相位被各流派共同标注为需关注的挑战相位。综合建议：坚持冥想与梦境记录，在情绪波动与行动之间建立缓冲机制。'
+        }
+      }
+    };
+
+    function switchReport(version) {
+      var data = reportData[version];
+      if (!data) return;
+
+      // 切换 Tab 激活态
+      $('.report-tab').each(function() {
+        $(this).removeClass('bg-primary/10 text-primary')
+               .addClass('text-on-surface-variant hover:text-on-surface hover:bg-surface-container');
+      });
+      var $activeTab = $('#report-tab-' + version);
+      $activeTab.addClass('bg-primary/10 text-primary')
+               .removeClass('text-on-surface-variant hover:text-on-surface hover:bg-surface-container');
+
+      // 更新评分进度条
+      var scoreMap = {
+        personality: { bar: '#report-bar-personality', score: '#report-score-personality' },
+        relationship: { bar: '#report-bar-relationship', score: '#report-score-relationship' },
+        career: { bar: '#report-bar-career', score: '#report-score-career' },
+        spiritual: { bar: '#report-bar-spiritual', score: '#report-score-spiritual' }
+      };
+
+      $.each(data.scores, function(key, val) {
+        var info = scoreMap[key];
+        if (info) {
+          $(info.bar).css('width', val + '%');
+          $(info.score).text(val);
+        }
+      });
+
+      // 更新解读文本
+      $('#report-text-personality').text(data.texts.personality);
+      $('#report-text-relationship').text(data.texts.relationship);
+      $('#report-text-career').text(data.texts.career);
+      $('#report-text-spiritual').text(data.texts.spiritual);
+    }
+
+    // 绑定 Tab 切换事件
+    $('.report-tab').on('click', function() {
+      switchReport($(this).data('version'));
+    });
+
+    // 发送按钮 — 点击后将输入框内容追加为用户消息气泡
+    // 后续接入 AI 流式 API 时，此处应调用 /api/chat 接口，type="astrology"
+    // 1. 将输入框内容作为用户消息追加到 #chat-messages
+    // 2. 追加一个 AI "正在输入" 气泡
+    // 3. 调用 AI API 流式返回占星师回复
+    // 4. 流式渲染回复内容到 AI 气泡中
+    $('#btn-send').on('click', function() {
+      var text = $('#chat-input').val().trim();
+      if (!text) return;
+      console.log('用户输入:', text, '— 后续应调用 AI 流式对话 API (type=astrology)');
+      // 原型演示：清空输入框
+      $('#chat-input').val('');
+    });
+
+    // 回车发送
+    $('#chat-input').on('keypress', function(e) {
+      if (e.which === 13) {
+        $('#btn-send').click();
+      }
+    });
+
+    // 生成报告按钮 — 点击后触发星盘引擎计算 + AI 并行生成四版报告
+    // 后续接入后端时：
+    // 1. 调用星盘计算引擎，传入出生日期时间与出生地经纬度
+    // 2. 将计算结果（行星落宫、相位、元素分布）渲染到右侧展示区
+    // 3. 并行调用 4 次 /api/report 接口生成四种风格的解读报告
+    // 4. 流式渲染报告内容到报告区
+    $('#btn-generate-report').on('click', function() {
+      console.log('生成报告 — 后续应调用星盘引擎 + AI 并行生成 4 版报告');
+    });
+
+    // 重新开始按钮 — 点击后清空对话、星盘结果和报告
+    // 1. 清空 #chat-messages 中除第一条 AI 问候消息外的所有消息
+    // 2. 重置右侧算法结果展示区（清空或恢复初始状态）
+    // 3. 重置报告 Tab 到第一版
+    // 4. 滚动到页面顶部
+    $('#btn-restart').on('click', function() {
+      console.log('重新开始 — 清空对话、星盘结果和报告');
+      switchReport('1');
+    });
+  });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

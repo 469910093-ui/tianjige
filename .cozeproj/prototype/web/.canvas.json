@@ -1,0 +1,52 @@
+{
+  "elements": [
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/home.html"
+      },
+      "title": "首页",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/bazi.html"
+      },
+      "title": "八字命盘",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/astrology.html"
+      },
+      "title": "星座星盘",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/tarot.html"
+      },
+      "title": "塔罗占卜",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/dream.html"
+      },
+      "title": "周公解梦",
+      "size": "web"
+    },
+    {
+      "type": "html",
+      "options": {
+        "path": ".cozeproj/prototype/web/horoscope.html"
+      },
+      "title": "每日运势",
+      "size": "web"
+    }
+  ]
+}

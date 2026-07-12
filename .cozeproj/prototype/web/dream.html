@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 琥珀赭石，命理文化感 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #F5DDD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 温暖纸感 === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FFF9F1;
+      --color-surface-container:          #F3E8D8;
+      --color-surface-container-high:     #EDDCD0;
+      --color-surface-container-highest:  #E5D0BF;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #C75050;
+      --color-warning:  #D4A24E;
+      /* === 边框 === */
+      --color-outline:          #C4B09E;
+      --color-outline-variant:  #D9CCBE;
+      /* === 圆角 — 温润圆润 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 — 轻柔纸感 === */
+      --shadow-card:   0 2px 8px rgba(49,37,27,0.08);
+      --shadow-float:  0 10px 25px rgba(49,37,27,0.12);
+      --shadow-dialog: 0 25px 50px rgba(49,37,27,0.18);
+      /* === 字体 — 宋体标题 + 系统正文 === */
+      --font-sans: "Lora", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto h-16 flex items-center justify-between px-6">
+      <a href="home.html" class="flex items-center gap-2.5">
+        <i data-lucide="sparkles" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg text-on-surface">天机阁</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">首页</a>
+        <a href="bazi.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">八字命盘</a>
+        <a href="astrology.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">星座星盘</a>
+        <a href="tarot.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">塔罗占卜</a>
+        <a href="dream.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md transition-colors" aria-current="page">周公解梦</a>
+        <a href="horoscope.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">每日运势</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- 页面标题区 -->
+    <section class="pt-8 pb-6 text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 mb-3">
+        <i data-lucide="moon-star" class="w-3.5 h-3.5 text-primary"></i>
+        <span class="text-xs font-medium text-primary">梦者，心之影也</span>
+      </div>
+      <h1 class="text-2xl font-bold text-on-surface">周公解梦</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">AI 解梦师追问梦境细节，千年解梦典籍智慧解析</p>
+    </section>
+
+    <!-- 对话区 + 算法匹配结果展示区 -->
+    <section class="flex gap-5 mb-8">
+      <!-- 对话区（左侧约45%） -->
+      <div class="w-[45%] shrink-0 flex flex-col">
+        <div class="bg-surface rounded-lg shadow-card flex flex-col" style="height: 520px;">
+          <!-- 对话头部 -->
+          <div class="flex items-center gap-2.5 px-5 py-3.5 border-b border-outline-variant/15">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <i data-lucide="moon" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-on-surface">天机阁解梦师</p>
+              <p class="text-xs text-on-surface-variant">在线 · 正在聆听</p>
+            </div>
+          </div>
+
+          <!-- 对话消息列表 -->
+          <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+            <!-- 消息-AI-初始问候 -->
+            <div class="flex gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="moon" class="w-3.5 h-3.5 text-primary"></i>
+              </div>
+              <div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">
+                <p class="text-sm text-on-surface leading-relaxed">您好，我是天机阁的解梦师。请描述您的梦境，越详细越好——场景、人物、情绪、颜色都可以告诉我。</p>
+              </div>
+            </div>
+
+            <!-- 消息-用户-梦境描述 -->
+            <div class="flex gap-2.5 justify-end">
+              <div class="bg-primary text-on-primary rounded-lg rounded-tr-sm px-3.5 py-2.5 max-w-[85%]">
+                <p class="text-sm leading-relaxed">我梦见在清澈的水里游泳，水很温暖，周围有人在岸上看着我</p>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">
+                <span class="text-xs font-medium text-on-surface">初</span>
+              </div>
+            </div>
+
+            <!-- 消息-AI-追问细节 -->
+            <div class="flex gap-2.5">
+              <div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                <i data-lucide="moon" class="w-3.5 h-3.5 text-primary"></i>
+              </div>
+              <div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">
+                <p class="text-sm text-on-surface leading-relaxed">水在梦境中通常象征情感与潜意识。您在梦中游泳时的情绪是轻松还是紧张？岸边的人您认识吗？</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 输入框 + 发送按钮 -->
+          <div class="px-4 py-3 border-t border-outline-variant/15">
+            <div class="flex gap-2">
+              <input id="chat-input" type="text" placeholder="继续描述您的梦境细节…" class="flex-1 bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors"/>
+              <button id="btn-send" class="bg-primary text-on-primary px-3 py-2 rounded-md text-sm font-medium hover:opacity-90 active:scale-[0.98] transition-all inline-flex items-center gap-1.5 shrink-0">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                发送
+              </button>
+            </div>
+            <!-- 生成报告按钮 -->
+            <button id="btn-generate-report" class="w-full mt-2.5 bg-surface-container-high text-on-surface border-none rounded-md py-2 text-sm font-medium hover:bg-surface-container-highest active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+              <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+              生成解梦报告
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 算法匹配结果展示区（右侧约55%） -->
+      <div class="flex-1 min-w-0">
+        <div class="bg-surface rounded-lg shadow-card p-5 h-full flex flex-col">
+          <!-- 区域标题 -->
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="search" class="w-4 h-4 text-primary"></i>
+            <h2 class="text-base font-semibold text-on-surface">解梦引擎匹配结果</h2>
+          </div>
+
+          <!-- 匹配关键词标签 -->
+          <div class="mb-4">
+            <p class="text-xs text-on-surface-variant mb-2">已匹配关键词</p>
+            <div class="flex flex-wrap gap-2">
+              <!-- 关键词标签-水 -->
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                <i data-lucide="droplets" class="w-3 h-3"></i>水
+              </span>
+              <!-- 关键词标签-游泳 -->
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                <i data-lucide="waves" class="w-3 h-3"></i>游泳
+              </span>
+              <!-- 关键词标签-温暖 -->
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                <i data-lucide="thermometer-sun" class="w-3 h-3"></i>温暖
+              </span>
+              <!-- 关键词标签-观望 -->
+              <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                <i data-lucide="eye" class="w-3 h-3"></i>观望
+              </span>
+            </div>
+          </div>
+
+          <!-- 分割线 -->
+          <div class="border-t border-outline-variant/15 mb-4"></div>
+
+          <!-- 解梦条目列表 -->
+          <div class="flex-1 overflow-y-auto space-y-3">
+            <p class="text-xs text-on-surface-variant mb-1">典籍匹配条目（共 3 条）</p>
+
+            <!-- 解梦条目1-梦见水 -->
+            <div class="bg-surface-container-lowest rounded-md p-3.5 border border-outline-variant/10">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-on-surface">梦见水</span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">吉</span>
+                </div>
+                <span class="text-xs text-on-surface-variant">主财源</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">水流清澈者运势亨通。《周公解梦》曰：「清水吉，浊水凶。」梦中水清而暖，主近期财运旺盛，事业顺遂。</p>
+            </div>
+
+            <!-- 解梦条目2-梦见游泳 -->
+            <div class="bg-surface-container-lowest rounded-md p-3.5 border border-outline-variant/10">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-on-surface">梦见游泳</span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">中吉</span>
+                </div>
+                <span class="text-xs text-on-surface-variant">主奋斗</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">顺水而行事半功倍。游泳主进取与拼搏，水中自如者主才能发挥顺利，逆水则需防阻力。梦中自在游泳，主事业有成。</p>
+            </div>
+
+            <!-- 解梦条目3-梦见温暖 -->
+            <div class="bg-surface-container-lowest rounded-md p-3.5 border border-outline-variant/10">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-on-surface">梦见温暖</span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">吉</span>
+                </div>
+                <span class="text-xs text-on-surface-variant">主安定</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">内心平和生活顺遂。梦中感受到温暖，主内心安定、情感和谐。温暖之水包裹全身，象征被爱与安全感所环绕。</p>
+            </div>
+
+            <!-- 解梦条目4-梦见被注视 -->
+            <div class="bg-surface-container-lowest rounded-md p-3.5 border border-outline-variant/10">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-semibold text-on-surface">梦见被注视</span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">中性</span>
+                </div>
+                <span class="text-xs text-on-surface-variant">主关注</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">岸上有人观望，主外界对己之关注。若观者为善意之人，主得贵人相助；若陌生人，需留意近期社交关系变化。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 报告展示区（全宽） -->
+    <section class="mb-10">
+      <div class="bg-surface rounded-lg shadow-card p-5">
+        <!-- 区域标题 -->
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="scroll-text" class="w-4 h-4 text-primary"></i>
+          <h2 class="text-base font-semibold text-on-surface">AI 综合解读报告</h2>
+          <span class="text-xs text-on-surface-variant ml-1">基于典籍匹配结果生成四版解读</span>
+        </div>
+
+        <!-- 四版报告 Tab -->
+        <div class="flex gap-1 mb-5 border-b border-outline-variant/15">
+          <!-- Tab-偏听偏信版 -->
+          <button class="report-tab active px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary -mb-px transition-colors" data-tab="believer">
+            偏听偏信
+          </button>
+          <!-- Tab-偏中式版 -->
+          <button class="report-tab px-4 py-2 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface -mb-px transition-colors" data-tab="chinese">
+            偏中式
+          </button>
+          <!-- Tab-偏西式版 -->
+          <button class="report-tab px-4 py-2 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface -mb-px transition-colors" data-tab="western">
+            偏西式
+          </button>
+          <!-- Tab-民主投票版 -->
+          <button class="report-tab px-4 py-2 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface -mb-px transition-colors" data-tab="vote">
+            民主投票
+          </button>
+        </div>
+
+        <!-- 报告内容区 -->
+        <div id="report-content">
+
+          <!-- ============ 偏听偏信版 ============ -->
+          <div class="report-panel" data-panel="believer">
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-3 mb-5">
+              <!-- 评分-财运 -->
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">财运</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">92</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 92%"></div>
+                </div>
+              </div>
+              <!-- 评分-事业 -->
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">事业</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">85</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+              <!-- 评分-感情 -->
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">感情</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-warning">78</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 78%"></div>
+                </div>
+              </div>
+              <!-- 评分-健康 -->
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">健康</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">88</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 88%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 象征解读 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">象征解读</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">水中游泳乃大吉之兆！清澈温水象征财源滚滚而来，游泳姿态代表您正在主动把握机遇。岸上观望之人，正是即将出现在您身边的贵人。此梦预示近期财运爆发、事业通达，一切努力终将获得丰厚回报。</p>
+            </div>
+
+            <!-- 心理分析 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="brain" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">心理分析</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">梦境中的温暖清水反映您内心深处的安全感与自信。自在游泳表明您对当前生活状态掌控力强，潜意识中充满积极能量。岸边注视者代表您渴望被认可的心理需求，同时也暗示外界对您的关注度正在上升。</p>
+            </div>
+
+            <!-- 吉凶判断 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="scale" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">吉凶判断</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-sm font-bold bg-success/15 text-success">大吉</span>
+                <span class="text-sm text-on-surface-variant">水清且暖、游泳自如、有贵人观照——三吉叠加，运势极佳</span>
+              </div>
+            </div>
+
+            <!-- 建议 -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">建议</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">此乃十年难遇之吉梦，务必把握良机。近期可大胆推进事业计划，投资理财方面将有意外收获。社交场合中多留意主动靠近您的人，他们很可能是梦中的"贵人"。同时保持谦逊心态，让温暖正能量持续流淌。</p>
+            </div>
+          </div>
+
+          <!-- ============ 偏中式版 ============ -->
+          <div class="report-panel hidden" data-panel="chinese">
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-3 mb-5">
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">财运</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">88</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 88%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">事业</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">82</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 82%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">感情</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-warning">75</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">健康</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">85</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 象征解读 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">象征解读</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">《周公解梦》载：「梦见在清水中沐浴者，主去旧迎新，大吉。」水在五行中属坎，坎为水、为险、为通。您在温暖清水中游泳，坎卦变为吉象——水流通畅则运势通达。岸上观望之人，从紫微斗数看对应「天魁星」，主贵人扶持。</p>
+            </div>
+
+            <!-- 心理分析 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="brain" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">心理分析</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">从阴阳五行角度，水主肾、主智、主恐。梦中温水舒适，说明肾气充盈、心智清明。游泳为主动入水之象，表明您正积极面对内心深处的情感波动。岸边注视者属「外阳内阴」之象，代表外界阳气（社会关系）对您的关注与期待。</p>
+            </div>
+
+            <!-- 吉凶判断 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="scale" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">吉凶判断</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-sm font-bold bg-success/15 text-success">吉</span>
+                <span class="text-sm text-on-surface-variant">清水游泳主吉，坎水得位、五行流通顺畅</span>
+              </div>
+            </div>
+
+            <!-- 建议 -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">建议</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">从八字命理看，近期宜动不宜静，可主动出击把握机遇。水旺之时注意木之生发——多接触绿色植物、东方方位有利。社交方面贵人星动，可适当参加聚会。西方星座理论认为水象征情感流动，可作为参考但以中式命理判断为主。</p>
+            </div>
+          </div>
+
+          <!-- ============ 偏西式版 ============ -->
+          <div class="report-panel hidden" data-panel="western">
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-3 mb-5">
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">财运</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">80</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 80%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">事业</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">78</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 78%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">感情</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">86</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 86%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">健康</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">84</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 84%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 象征解读 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">象征解读</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">在荣格分析心理学中，水是集体潜意识的原型象征，代表深层情感世界与直觉力量。梦中在清澈温水中游泳，表明您正在与潜意识建立积极连接——这是一次自我整合的旅程。岸边注视者对应荣格所说的「阿尼玛/阿尼姆斯」投射，代表您内在异性特质的觉醒与外部投射。</p>
+            </div>
+
+            <!-- 心理分析 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="brain" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">心理分析</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">从弗洛伊德精神分析视角，水是情感与无意识的经典意象。自在游泳意味着您对情感涌动有良好的驾驭能力，温水则暗示舒适的情感状态。被注视感反映了「超我」的审视——您在意他人对自己情感表达的评价。整体而言，此梦显示心理状态健康，自我与潜意识关系和谐。</p>
+            </div>
+
+            <!-- 吉凶判断 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="scale" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">吉凶判断</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-sm font-bold bg-success/15 text-success">积极</span>
+                <span class="text-sm text-on-surface-variant">心理整合良好，潜意识能量顺畅流动，属积极心理信号</span>
+              </div>
+            </div>
+
+            <!-- 建议 -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">建议</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">建议通过自由书写或梦境日记持续关注潜意识信号。当前是进行创造性表达（绘画、音乐、写作）的好时机——潜意识门户开放，灵感将如清泉涌出。在感情关系中，您处于开放且自信的状态，适合深入沟通。中式解梦提到的财运之说可作为文化参考。</p>
+            </div>
+          </div>
+
+          <!-- ============ 民主投票版 ============ -->
+          <div class="report-panel hidden" data-panel="vote">
+            <!-- 投票汇总 -->
+            <div class="bg-surface-container-lowest rounded-md p-4 mb-5 border border-outline-variant/10">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="vote" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">多流派投票汇总</h3>
+              </div>
+              <div class="space-y-2.5">
+                <!-- 投票-财运 -->
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-medium text-on-surface w-10 shrink-0">财运</span>
+                  <div class="flex-1 h-5 bg-surface-container-high rounded-full overflow-hidden flex">
+                    <div class="h-full bg-success flex items-center justify-center text-xs text-on-primary" style="width: 45%">吉</div>
+                    <div class="h-full bg-warning flex items-center justify-center text-xs text-on-primary" style="width: 35%">中</div>
+                    <div class="h-full bg-error/70 flex items-center justify-center text-xs text-on-primary" style="width: 20%">凶</div>
+                  </div>
+                  <span class="text-xs text-on-surface-variant shrink-0">多数：吉</span>
+                </div>
+                <!-- 投票-事业 -->
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-medium text-on-surface w-10 shrink-0">事业</span>
+                  <div class="flex-1 h-5 bg-surface-container-high rounded-full overflow-hidden flex">
+                    <div class="h-full bg-success flex items-center justify-center text-xs text-on-primary" style="width: 50%">吉</div>
+                    <div class="h-full bg-warning flex items-center justify-center text-xs text-on-primary" style="width: 30%">中</div>
+                    <div class="h-full bg-error/70 flex items-center justify-center text-xs text-on-primary" style="width: 20%">凶</div>
+                  </div>
+                  <span class="text-xs text-on-surface-variant shrink-0">多数：吉</span>
+                </div>
+                <!-- 投票-感情 -->
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-medium text-on-surface w-10 shrink-0">感情</span>
+                  <div class="flex-1 h-5 bg-surface-container-high rounded-full overflow-hidden flex">
+                    <div class="h-full bg-success flex items-center justify-center text-xs text-on-primary" style="width: 35%">吉</div>
+                    <div class="h-full bg-warning flex items-center justify-center text-xs text-on-primary" style="width: 45%">中</div>
+                    <div class="h-full bg-error/70 flex items-center justify-center text-xs text-on-primary" style="width: 20%">凶</div>
+                  </div>
+                  <span class="text-xs text-on-surface-variant shrink-0">多数：中</span>
+                </div>
+                <!-- 投票-健康 -->
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-medium text-on-surface w-10 shrink-0">健康</span>
+                  <div class="flex-1 h-5 bg-surface-container-high rounded-full overflow-hidden flex">
+                    <div class="h-full bg-success flex items-center justify-center text-xs text-on-primary" style="width: 55%">吉</div>
+                    <div class="h-full bg-warning flex items-center justify-center text-xs text-on-primary" style="width: 30%">中</div>
+                    <div class="h-full bg-error/70 flex items-center justify-center text-xs text-on-primary" style="width: 15%">凶</div>
+                  </div>
+                  <span class="text-xs text-on-surface-variant shrink-0">多数：吉</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 综合评分 -->
+            <div class="grid grid-cols-4 gap-3 mb-5">
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">财运</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">83</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 83%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">事业</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">80</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 80%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">感情</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-warning">76</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 76%"></div>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-md p-3 text-center border border-outline-variant/10">
+                <p class="text-xs text-on-surface-variant mb-1.5">健康</p>
+                <div class="flex items-end justify-center gap-0.5">
+                  <span class="text-xl font-bold text-success">85</span>
+                  <span class="text-xs text-on-surface-variant mb-0.5">/100</span>
+                </div>
+                <div class="mt-1.5 h-1 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 象征解读 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">象征解读</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">综合中式命理与西方心理学两大流派投票：多数流派认同水象征情感与潜意识。中式侧重「水主财」的物质层面解读，西方侧重「水即情感世界」的心理层面解读。两者结合来看，此梦既预示外在财运亨通，也反映内在情感健康。岸上观望之人，两派一致认为代表外界关注——贵人（中式）与超我投射（西式）并行不悖。</p>
+            </div>
+
+            <!-- 心理分析 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="brain" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">心理分析</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">投票结果：3 票认为心理状态积极，1 票认为需关注外界评价压力。综合来看，您当前心理状态整体健康，对情感有良好驾驭力。但也有观点认为，岸边注视者可能暗示您过于在意他人目光，建议在保持开放的同时注意边界感。</p>
+            </div>
+
+            <!-- 吉凶判断 -->
+            <div class="mb-4">
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="scale" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">吉凶判断</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-1 rounded-sm text-sm font-bold bg-success/15 text-success">偏吉</span>
+                <span class="text-sm text-on-surface-variant">4 票中 3 票判定为吉，1 票判定为中性——多数派采信「吉」</span>
+              </div>
+            </div>
+
+            <!-- 建议 -->
+            <div>
+              <div class="flex items-center gap-1.5 mb-2">
+                <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">建议</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">综合各流派建议：近期宜把握机遇、主动出击（多数派主张），同时保持谦逊与内在觉察（少数派补充）。可适度参加社交活动留意贵人，但不必过度在意他人评价。感情方面投票偏中性，建议顺其自然、不强求。也有观点认为可尝试创造性表达来疏导潜意识能量。</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 重新输入按钮 -->
+        <div class="mt-5 pt-4 border-t border-outline-variant/15 flex justify-center">
+          <button id="btn-reset" class="bg-surface-container text-on-surface border-none px-5 py-2 rounded-md text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center gap-2">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+            重新输入梦境
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function() {
+      // 报告 Tab 切换
+      $('.report-tab').on('click', function() {
+        var tabName = $(this).data('tab');
+
+        // 更新 Tab 按钮状态
+        $('.report-tab').removeClass('active text-primary border-primary');
+        $('.report-tab').addClass('text-on-surface-variant border-transparent');
+        $('.report-tab').removeClass('text-on-surface-variant border-transparent hover:text-on-surface');
+
+        $(this).addClass('active text-primary border-primary');
+        $(this).removeClass('text-on-surface-variant border-transparent hover:text-on-surface');
+
+        // 切换面板
+        $('.report-panel').addClass('hidden');
+        $('.report-panel[data-panel="' + tabName + '"]').removeClass('hidden');
+
+        // 重新渲染图标（面板内可能有新图标）
+        lucide.createIcons();
+      });
+
+      // 发送消息
+      $('#btn-send').on('click', function() {
+        var text = $('#chat-input').val().trim();
+        if (!text) return;
+
+        // 添加用户消息
+        var userMsg = '<div class="flex gap-2.5 justify-end">' +
+          '<div class="bg-primary text-on-primary rounded-lg rounded-tr-sm px-3.5 py-2.5 max-w-[85%]">' +
+          '<p class="text-sm leading-relaxed">' + $('<span>').text(text).html() + '</p>' +
+          '</div>' +
+          '<div class="w-7 h-7 rounded-full bg-surface-container-high flex items-center justify-center shrink-0 mt-0.5">' +
+          '<span class="text-xs font-medium text-on-surface">初</span>' +
+          '</div>' +
+          '</div>';
+        $('#chat-messages').append(userMsg);
+
+        // 清空输入框
+        $('#chat-input').val('');
+
+        // 模拟 AI 回复
+        setTimeout(function() {
+          var aiReply = '<div class="flex gap-2.5">' +
+            '<div class="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">' +
+            '<i data-lucide="moon" class="w-3.5 h-3.5 text-primary"></i>' +
+            '</div>' +
+            '<div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">' +
+            '<p class="text-sm text-on-surface leading-relaxed">感谢您补充的细节。梦境中的细节越丰富，解读越精准。让我结合这些信息为您匹配典籍中的解梦条目，稍候可点击"生成解梦报告"获取完整解读。</p>' +
+            '</div>' +
+            '</div>';
+          $('#chat-messages').append(aiReply);
+          $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+          lucide.createIcons();
+        }, 800);
+
+        // 滚动到底部
+        $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+      });
+
+      // 输入框按 Enter 发送
+      $('#chat-input').on('keypress', function(e) {
+        if (e.which === 13) {
+          $('#btn-send').click();
+        }
+      });
+
+      // 生成报告按钮
+      // 后续完整实现：
+      // 1. 收集对话中的梦境关键词，调用解梦引擎进行匹配
+      // 2. 引擎返回匹配条目后更新右侧匹配结果区
+      // 3. 调用 AI API 并行生成 4 版报告（偏听偏信/偏中式/偏西式/民主投票）
+      // 4. 流式渲染报告内容到对应面板
+      // 5. 报告生成完成后自动滚动到报告区
+      $('#btn-generate-report').on('click', function() {
+        // 滚动到报告区
+        $('html, body').animate({
+          scrollTop: $('#report-content').offset().top - 100
+        }, 600);
+      });
+
+      // 重新输入按钮
+      // 后续完整实现：
+      // 1. 清空对话消息，仅保留 AI 初始问候
+      // 2. 清空输入框内容
+      // 3. 重置右侧匹配结果区
+      // 4. 隐藏报告区，重置 Tab 到偏听偏信版
+      // 5. 滚动回对话区顶部
+      $('#btn-reset').on('click', function() {
+        $('html, body').animate({
+          scrollTop: 0
+        }, 600);
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

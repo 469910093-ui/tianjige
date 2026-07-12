@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 琥珀赭石，命理文化感 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #F5DDD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 温暖纸感 === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FFF9F1;
+      --color-surface-container:          #F3E8D8;
+      --color-surface-container-high:     #EDDCD0;
+      --color-surface-container-highest:  #E5D0BF;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #C75050;
+      --color-warning:  #D4A24E;
+      /* === 边框 === */
+      --color-outline:          #C4B09E;
+      --color-outline-variant:  #D9CCBE;
+      /* === 圆角 — 温润圆润 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 — 轻柔纸感 === */
+      --shadow-card:   0 2px 8px rgba(49,37,27,0.08);
+      --shadow-float:  0 10px 25px rgba(49,37,27,0.12);
+      --shadow-dialog: 0 25px 50px rgba(49,37,27,0.18);
+      /* === 字体 — 宋体标题 + 系统正文 === */
+      --font-sans: "Lora", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <style>
+    /* 圆形进度环动画 */
+    .progress-ring__circle {
+      transition: stroke-dashoffset 0.6s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto h-16 flex items-center justify-between px-6">
+      <a href="home.html" class="flex items-center gap-2.5">
+        <i data-lucide="sparkles" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg text-on-surface">天机阁</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">首页</a>
+        <a href="bazi.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">八字命盘</a>
+        <a href="astrology.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">星座星盘</a>
+        <a href="tarot.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">塔罗占卜</a>
+        <a href="dream.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">周公解梦</a>
+        <a href="horoscope.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md" aria-current="page">每日运势</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto">
+    <!-- @main-content:start -->
+
+    <!-- ====== 1. 页面标题区 ====== -->
+    <div class="px-6 pt-10 pb-6">
+      <h1 class="text-2xl font-bold text-on-surface">每日运势</h1>
+      <p class="text-sm text-on-surface-variant mt-1.5">选择星座，查看今日运势与吉凶宜忌</p>
+    </div>
+
+    <!-- ====== 2. 星座选择网格区 ====== -->
+    <div class="px-6 pb-8">
+      <div class="bg-surface rounded-lg shadow-card p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="grid-3x3" class="w-4 h-4 text-on-surface-variant"></i>
+          <h2 class="text-base font-semibold text-on-surface">选择星座</h2>
+        </div>
+
+        <!-- 12 星座 3×4 网格 -->
+        <div id="zodiac-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+
+          <!-- 星座卡片-白羊座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="aries">
+            <span class="text-2xl text-on-surface-variant/60">♈</span>
+            <span class="text-sm font-medium text-on-surface-variant">白羊座</span>
+            <span class="text-xs text-on-surface-variant/70">3.21-4.19</span>
+          </button>
+
+          <!-- 星座卡片-金牛座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="taurus">
+            <span class="text-2xl text-on-surface-variant/60">♉</span>
+            <span class="text-sm font-medium text-on-surface-variant">金牛座</span>
+            <span class="text-xs text-on-surface-variant/70">4.20-5.20</span>
+          </button>
+
+          <!-- 星座卡片-双子座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="gemini">
+            <span class="text-2xl text-on-surface-variant/60">♊</span>
+            <span class="text-sm font-medium text-on-surface-variant">双子座</span>
+            <span class="text-xs text-on-surface-variant/70">5.21-6.21</span>
+          </button>
+
+          <!-- 星座卡片-巨蟹座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="cancer">
+            <span class="text-2xl text-on-surface-variant/60">♋</span>
+            <span class="text-sm font-medium text-on-surface-variant">巨蟹座</span>
+            <span class="text-xs text-on-surface-variant/70">6.22-7.22</span>
+          </button>
+
+          <!-- 星座卡片-狮子座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="leo">
+            <span class="text-2xl text-on-surface-variant/60">♌</span>
+            <span class="text-sm font-medium text-on-surface-variant">狮子座</span>
+            <span class="text-xs text-on-surface-variant/70">7.23-8.22</span>
+          </button>
+
+          <!-- 星座卡片-处女座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="virgo">
+            <span class="text-2xl text-on-surface-variant/60">♍</span>
+            <span class="text-sm font-medium text-on-surface-variant">处女座</span>
+            <span class="text-xs text-on-surface-variant/70">8.23-9.22</span>
+          </button>
+
+          <!-- 星座卡片-天秤座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="libra">
+            <span class="text-2xl text-on-surface-variant/60">♎</span>
+            <span class="text-sm font-medium text-on-surface-variant">天秤座</span>
+            <span class="text-xs text-on-surface-variant/70">9.23-10.23</span>
+          </button>
+
+          <!-- 星座卡片-天蝎座（默认选中） -->
+          <button class="zodiac-card zodiac-active flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-primary/10 border border-primary/40 cursor-pointer transition-colors" data-zodiac="scorpio" aria-pressed="true">
+            <span class="text-2xl text-primary">♏</span>
+            <span class="text-sm font-semibold text-primary">天蝎座</span>
+            <span class="text-xs text-primary/70">10.24-11.22</span>
+          </button>
+
+          <!-- 星座卡片-射手座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="sagittarius">
+            <span class="text-2xl text-on-surface-variant/60">♐</span>
+            <span class="text-sm font-medium text-on-surface-variant">射手座</span>
+            <span class="text-xs text-on-surface-variant/70">11.23-12.21</span>
+          </button>
+
+          <!-- 星座卡片-摩羯座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="capricorn">
+            <span class="text-2xl text-on-surface-variant/60">♑</span>
+            <span class="text-sm font-medium text-on-surface-variant">摩羯座</span>
+            <span class="text-xs text-on-surface-variant/70">12.22-1.19</span>
+          </button>
+
+          <!-- 星座卡片-水瓶座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="aquarius">
+            <span class="text-2xl text-on-surface-variant/60">♒</span>
+            <span class="text-sm font-medium text-on-surface-variant">水瓶座</span>
+            <span class="text-xs text-on-surface-variant/70">1.20-2.18</span>
+          </button>
+
+          <!-- 星座卡片-双鱼座 -->
+          <button class="zodiac-card flex flex-col items-center justify-center gap-1 py-4 px-2 rounded-lg bg-surface-container/60 hover:bg-surface-container-high transition-colors cursor-pointer border border-transparent" data-zodiac="pisces">
+            <span class="text-2xl text-on-surface-variant/60">♓</span>
+            <span class="text-sm font-medium text-on-surface-variant">双鱼座</span>
+            <span class="text-xs text-on-surface-variant/70">2.19-3.20</span>
+          </button>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== 3. 时间范围切换 Tab ====== -->
+    <div class="px-6 pb-8">
+      <div id="period-tabs" class="inline-flex items-center gap-1 bg-surface-container rounded-lg p-1">
+        <!-- Tab-今日（激活态） -->
+        <button class="period-tab px-5 py-2 text-sm font-medium rounded-md bg-surface text-primary shadow-card transition-all" data-period="today" aria-pressed="true">今日</button>
+        <!-- Tab-本周 -->
+        <button class="period-tab px-5 py-2 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors" data-period="week">本周</button>
+        <!-- Tab-本月 -->
+        <button class="period-tab px-5 py-2 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors" data-period="month">本月</button>
+      </div>
+    </div>
+
+    <!-- ====== 4. 算法原始数据展示区 ====== -->
+    <div class="px-6 pb-10">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="cpu" class="w-4 h-4 text-on-surface-variant"></i>
+        <h2 class="text-base font-semibold text-on-surface">算法原始数据</h2>
+        <span class="text-xs text-on-surface-variant ml-1">基于 lunar-javascript 引擎计算</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- 卡片-今日干支 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="calendar-days" class="w-4 h-4 text-primary"></i>
+            <h3 class="text-sm font-semibold text-on-surface">今日干支</h3>
+          </div>
+          <div class="space-y-3">
+            <!-- 干支-日期 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">公历日期</span>
+              <span class="text-sm font-medium text-on-surface" id="ganzhi-date">2024年12月15日</span>
+            </div>
+            <!-- 干支-日柱 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">日柱</span>
+              <span class="text-sm font-semibold text-primary">庚午日</span>
+            </div>
+            <!-- 干支-月柱 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">月柱</span>
+              <span class="text-sm font-medium text-on-surface">丙子月</span>
+            </div>
+            <!-- 干支-年柱 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">年柱</span>
+              <span class="text-sm font-medium text-on-surface">甲辰年</span>
+            </div>
+            <!-- 干支-五行属性 -->
+            <div class="flex items-center justify-between pt-2 border-t border-outline-variant/20">
+              <span class="text-xs text-on-surface-variant">日主五行</span>
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-error"></span>
+                <span class="text-sm font-medium text-on-surface">五行属火</span>
+              </div>
+            </div>
+            <!-- 干支-纳音 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">纳音</span>
+              <span class="text-sm font-medium text-on-surface">路旁土</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 卡片-宜忌 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="scale" class="w-4 h-4 text-primary"></i>
+            <h3 class="text-sm font-semibold text-on-surface">宜忌</h3>
+          </div>
+          <!-- 宜 -->
+          <div class="mb-4">
+            <div class="flex items-center gap-1.5 mb-2">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-success"></i>
+              <span class="text-xs font-medium text-success">宜</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <!-- 宜-祭祀 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-success/15 text-success font-medium">祭祀</span>
+              <!-- 宜-出行 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-success/15 text-success font-medium">出行</span>
+              <!-- 宜-纳财 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-success/15 text-success font-medium">纳财</span>
+            </div>
+          </div>
+          <!-- 忌 -->
+          <div class="pt-3 border-t border-outline-variant/20">
+            <div class="flex items-center gap-1.5 mb-2">
+              <i data-lucide="x-circle" class="w-3.5 h-3.5 text-error"></i>
+              <span class="text-xs font-medium text-error">忌</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              <!-- 忌-动土 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-error/15 text-error font-medium">动土</span>
+              <!-- 忌-安葬 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-error/15 text-error font-medium">安葬</span>
+              <!-- 忌-开仓 -->
+              <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs bg-error/15 text-error font-medium">开仓</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 卡片-吉神方位 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="compass" class="w-4 h-4 text-primary"></i>
+            <h3 class="text-sm font-semibold text-on-surface">吉神方位</h3>
+          </div>
+          <div class="space-y-3">
+            <!-- 方位-喜神 -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="heart" class="w-3.5 h-3.5 text-error"></i>
+                <span class="text-xs text-on-surface-variant">喜神方位</span>
+              </div>
+              <span class="text-sm font-semibold text-on-surface">东南</span>
+            </div>
+            <!-- 方位-财神 -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="coins" class="w-3.5 h-3.5 text-warning"></i>
+                <span class="text-xs text-on-surface-variant">财神方位</span>
+              </div>
+              <span class="text-sm font-semibold text-on-surface">正南</span>
+            </div>
+            <!-- 方位-福神 -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i data-lucide="gift" class="w-3.5 h-3.5 text-success"></i>
+                <span class="text-xs text-on-surface-variant">福神方位</span>
+              </div>
+              <span class="text-sm font-semibold text-on-surface">正东</span>
+            </div>
+            <!-- 胎神 -->
+            <div class="flex items-center justify-between pt-2 border-t border-outline-variant/20">
+              <span class="text-xs text-on-surface-variant">胎神方位</span>
+              <span class="text-sm font-medium text-on-surface">占碓磨厕外正南</span>
+            </div>
+            <!-- 值神 -->
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-on-surface-variant">值神</span>
+              <span class="text-sm font-medium text-on-surface">天刑（黑道）</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ====== 5. AI 运势报告区（全宽） ====== -->
+    <div class="px-6 pb-12">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="book-open-text" class="w-4 h-4 text-primary"></i>
+        <h2 class="text-base font-semibold text-on-surface">AI 运势报告</h2>
+        <span class="text-xs text-on-surface-variant ml-1">四种解读风格 · 多流派聚合</span>
+      </div>
+
+      <!-- 报告版本 Tab -->
+      <div id="report-tabs" class="inline-flex items-center gap-1 bg-surface-container rounded-lg p-1 mb-5 flex-wrap">
+        <!-- Tab-偏听偏信（激活态） -->
+        <button class="report-tab px-4 py-2 text-sm font-medium rounded-md bg-surface text-primary shadow-card transition-all" data-report="believer" aria-pressed="true">偏听偏信</button>
+        <!-- Tab-偏中式 -->
+        <button class="report-tab px-4 py-2 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors" data-report="chinese">偏中式</button>
+        <!-- Tab-偏西式 -->
+        <button class="report-tab px-4 py-2 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors" data-report="western">偏西式</button>
+        <!-- Tab-民主投票 -->
+        <button class="report-tab px-4 py-2 text-sm font-medium rounded-md text-on-surface-variant hover:text-on-surface transition-colors" data-report="democratic">民主投票</button>
+      </div>
+
+      <!-- 报告内容区 -->
+      <div id="report-content">
+
+        <!-- ===== 报告-偏听偏信版（默认显示） ===== -->
+        <div class="report-panel bg-surface rounded-lg shadow-card p-6" data-panel="believer">
+          <!-- 报告标题 -->
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="text-base font-semibold text-on-surface">天蝎座 · 偏听偏信版运势</h3>
+              <p class="text-xs text-on-surface-variant mt-0.5">全盘采信所有流派，给出最确定的结论</p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/15 text-primary">偏听偏信</span>
+          </div>
+
+          <!-- 综合评分 + 幸运信息 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <!-- 综合评分-圆形进度环 -->
+            <div class="flex items-center gap-5">
+              <div class="relative w-24 h-24 shrink-0">
+                <svg class="w-24 h-24" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" class="text-surface-container-high"></circle>
+                  <circle class="progress-ring__circle" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" style="stroke-dasharray: 263.89; stroke-dashoffset: 65.97;" stroke="#C96F3D"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-bold text-primary">75</span>
+                  <span class="text-xs text-on-surface-variant">综合</span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">综合运势评分</p>
+                <p class="text-xs text-on-surface-variant mt-1">今日整体运势偏上，诸事可顺，把握机会</p>
+              </div>
+            </div>
+
+            <!-- 幸运信息 -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- 幸运色 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运色</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-warning border border-outline-variant/30"></span>
+                  <span class="text-sm font-semibold text-on-surface">琥珀金</span>
+                </div>
+              </div>
+              <!-- 幸运数字 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="hash" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运数字</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary text-sm font-bold">3</span>
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary text-sm font-bold">7</span>
+                </div>
+              </div>
+              <!-- 幸运方位 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="navigation" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运方位</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">正南</span>
+              </div>
+              <!-- 贵人星座 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">贵人星座</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">巨蟹座 ♋</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分项评分 -->
+          <div class="space-y-4 mb-6">
+            <!-- 评分-爱情运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-error"></i>
+                  <span class="text-sm font-medium text-on-surface">爱情运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">80<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-error" style="width: 80%;"></div>
+              </div>
+            </div>
+            <!-- 评分-事业运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-3.5 h-3.5 text-primary"></i>
+                  <span class="text-sm font-medium text-on-surface">事业运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">70<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-primary" style="width: 70%;"></div>
+              </div>
+            </div>
+            <!-- 评分-财运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-success"></i>
+                  <span class="text-sm font-medium text-on-surface">财运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">65<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-success" style="width: 65%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 今日建议 -->
+          <div class="bg-surface-container/40 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-warning"></i>
+              <h4 class="text-sm font-semibold text-on-surface">今日建议</h4>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">
+              今日整体运势颇佳，诸事皆可顺遂推进。爱情运最旺，单身天蝎有机会在社交场合遇到心仪对象，有伴侣者适合安排一次浪漫约会。事业上保持当前节奏即可，但需注意细节沟通，避免因表达不清引发误会。财运平稳，适合进行小额理财规划，不宜大额投资。
+              <strong class="text-primary">今日务必把握午后时段</strong>，此时精力最旺、判断力最强，重要决策宜在此时完成。穿着琥珀金色系衣物可增强气场，朝正南方向出行更易遇贵人。
+            </p>
+          </div>
+        </div>
+
+        <!-- ===== 报告-偏中式版（默认隐藏） ===== -->
+        <div class="report-panel bg-surface rounded-lg shadow-card p-6 hidden" data-panel="chinese">
+          <!-- 报告标题 -->
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="text-base font-semibold text-on-surface">天蝎座 · 偏中式版运势</h3>
+              <p class="text-xs text-on-surface-variant mt-0.5">以八字干支为主体结论，西方星座为辅</p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">偏中式</span>
+          </div>
+
+          <!-- 综合评分 + 幸运信息 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <!-- 综合评分-圆形进度环 -->
+            <div class="flex items-center gap-5">
+              <div class="relative w-24 h-24 shrink-0">
+                <svg class="w-24 h-24" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" class="text-surface-container-high"></circle>
+                  <circle class="progress-ring__circle" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" style="stroke-dasharray: 263.89; stroke-dashoffset: 71.25;" stroke="#D4A24E"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-bold text-warning">73</span>
+                  <span class="text-xs text-on-surface-variant">综合</span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">综合运势评分</p>
+                <p class="text-xs text-on-surface-variant mt-1">庚午日火旺，天蝎座水象受火制，需以静制动</p>
+              </div>
+            </div>
+
+            <!-- 幸运信息 -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- 幸运色 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运色</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-warning border border-outline-variant/30"></span>
+                  <span class="text-sm font-semibold text-on-surface">琥珀金</span>
+                </div>
+              </div>
+              <!-- 幸运数字 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="hash" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运数字</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-warning/10 text-warning text-sm font-bold">3</span>
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-warning/10 text-warning text-sm font-bold">7</span>
+                </div>
+              </div>
+              <!-- 喜用神方位 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="navigation" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">喜用神方位</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">东南</span>
+              </div>
+              <!-- 日主五行 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="flame" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">日主五行</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">火（庚午）</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分项评分 -->
+          <div class="space-y-4 mb-6">
+            <!-- 评分-爱情运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-error"></i>
+                  <span class="text-sm font-medium text-on-surface">爱情运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">78<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-error" style="width: 78%;"></div>
+              </div>
+            </div>
+            <!-- 评分-事业运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-3.5 h-3.5 text-primary"></i>
+                  <span class="text-sm font-medium text-on-surface">事业运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">68<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-primary" style="width: 68%;"></div>
+              </div>
+            </div>
+            <!-- 评分-财运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-success"></i>
+                  <span class="text-sm font-medium text-on-surface">财运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">62<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-success" style="width: 62%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 今日建议 -->
+          <div class="bg-surface-container/40 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="scroll-text" class="w-4 h-4 text-warning"></i>
+              <h4 class="text-sm font-semibold text-on-surface">今日建议（中式解读）</h4>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">
+              今日庚午日，天干庚金属阳金，地支午火属阳火，火克金为"七杀"格局。天蝎本属水象，逢火日受制，宜低调行事、以柔克刚。日柱纳音路旁土，土能泄火生金，<strong class="text-warning">穿戴琥珀金色衣物可借土气调和火金之争</strong>。
+              宜祭祀、出行、纳财，这三项均为今日黄历所宜，顺应天时则事半功倍。切忌动土、安葬、开仓，犯之恐损财运。喜神居东南，早晨面朝东南方位静坐片刻，可纳喜气。财神正南，午后处理财务事务较为顺遂。
+              西方星座学中天蝎座今日受冥王星影响较深，与中式"七杀"格局暗合，均指向"变革中求稳"的基调，两相印证，可信度较高。
+            </p>
+          </div>
+        </div>
+
+        <!-- ===== 报告-偏西式版（默认隐藏） ===== -->
+        <div class="report-panel bg-surface rounded-lg shadow-card p-6 hidden" data-panel="western">
+          <!-- 报告标题 -->
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="text-base font-semibold text-on-surface">天蝎座 · 偏西式版运势</h3>
+              <p class="text-xs text-on-surface-variant mt-0.5">以西方星象学为主体，中式干支为辅</p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-primary/15 text-primary">偏西式</span>
+          </div>
+
+          <!-- 综合评分 + 幸运信息 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <!-- 综合评分-圆形进度环 -->
+            <div class="flex items-center gap-5">
+              <div class="relative w-24 h-24 shrink-0">
+                <svg class="w-24 h-24" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" class="text-surface-container-high"></circle>
+                  <circle class="progress-ring__circle" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" style="stroke-dasharray: 263.89; stroke-dashoffset: 58.06;" stroke="#C96F3D"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-bold text-primary">78</span>
+                  <span class="text-xs text-on-surface-variant">综合</span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">综合运势评分</p>
+                <p class="text-xs text-on-surface-variant mt-1">冥王星加持，天蝎座迎来深度转化之日</p>
+              </div>
+            </div>
+
+            <!-- 幸运信息 -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- 幸运色 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运色</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-warning border border-outline-variant/30"></span>
+                  <span class="text-sm font-semibold text-on-surface">琥珀金</span>
+                </div>
+              </div>
+              <!-- 幸运数字 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="hash" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运数字</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary text-sm font-bold">3</span>
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary text-sm font-bold">7</span>
+                </div>
+              </div>
+              <!-- 守护星 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="orbit" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">守护星</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">冥王星</span>
+              </div>
+              <!-- 月相 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="moon" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">今日月相</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">盈凸月</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分项评分 -->
+          <div class="space-y-4 mb-6">
+            <!-- 评分-爱情运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-error"></i>
+                  <span class="text-sm font-medium text-on-surface">爱情运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">82<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-error" style="width: 82%;"></div>
+              </div>
+            </div>
+            <!-- 评分-事业运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-3.5 h-3.5 text-primary"></i>
+                  <span class="text-sm font-medium text-on-surface">事业运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">72<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-primary" style="width: 72%;"></div>
+              </div>
+            </div>
+            <!-- 评分-财运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-success"></i>
+                  <span class="text-sm font-medium text-on-surface">财运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">68<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-success" style="width: 68%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 今日建议 -->
+          <div class="bg-surface-container/40 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="telescope" class="w-4 h-4 text-primary"></i>
+              <h4 class="text-sm font-semibold text-on-surface">今日建议（西式解读）</h4>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">
+              今日天蝎座的守护星冥王星与金星形成有利相位，带来深层的情感觉醒与人际吸引力。爱情运达到本周峰值（82分），单身天蝎的桃花集中在社交聚会场合，有伴侣者适合进行一次坦诚的深度对话。事业方面，水星仍在逆行尾声，沟通类事务需反复确认，但<strong class="text-primary">创意与洞察力异常敏锐</strong>，适合处理需要深度分析的工作。
+              财运方面，金星相位良好但受土星牵制，适合稳健理财而非冒险投机。今日盈凸月能量充沛，适合在傍晚进行冥想或独处充电，有助于天蝎恢复内在力量。
+              中式干支显示今日庚午日五行属火，与天蝎座的水象本质形成水火既济之象，恰与西方星象中"冥王星带来转化"的判断互为印证——东西方均指向今日是"内在变革"的良机。
+            </p>
+          </div>
+        </div>
+
+        <!-- ===== 报告-民主投票版（默认隐藏） ===== -->
+        <div class="report-panel bg-surface rounded-lg shadow-card p-6 hidden" data-panel="democratic">
+          <!-- 报告标题 -->
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h3 class="text-base font-semibold text-on-surface">天蝎座 · 民主投票版运势</h3>
+              <p class="text-xs text-on-surface-variant mt-0.5">多流派投票决策，少数派意见附注展示</p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">民主投票</span>
+          </div>
+
+          <!-- 投票结果汇总 -->
+          <div class="bg-surface-container/40 rounded-lg p-4 mb-5">
+            <div class="flex items-center gap-2 mb-3">
+              <i data-lucide="vote" class="w-4 h-4 text-success"></i>
+              <h4 class="text-sm font-semibold text-on-surface">流派投票结果</h4>
+            </div>
+            <div class="space-y-2">
+              <!-- 投票-中式命理 -->
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-on-surface-variant w-20 shrink-0">中式命理</span>
+                <div class="flex-1 h-5 rounded-full bg-surface-container-high overflow-hidden">
+                  <div class="h-full rounded-full bg-warning flex items-center justify-end pr-2" style="width: 33%;">
+                    <span class="text-xs font-bold text-white">33%</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 投票-西方星象 -->
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-on-surface-variant w-20 shrink-0">西方星象</span>
+                <div class="flex-1 h-5 rounded-full bg-surface-container-high overflow-hidden">
+                  <div class="h-full rounded-full bg-primary flex items-center justify-end pr-2" style="width: 42%;">
+                    <span class="text-xs font-bold text-white">42%</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 投票-塔罗占卜 -->
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-on-surface-variant w-20 shrink-0">塔罗占卜</span>
+                <div class="flex-1 h-5 rounded-full bg-surface-container-high overflow-hidden">
+                  <div class="h-full rounded-full bg-success flex items-center justify-end pr-2" style="width: 25%;">
+                    <span class="text-xs font-bold text-white">25%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-3 leading-relaxed">
+              多数派结论（西方星象 + 中式命理均≥33%）：今日运势偏上，重点在爱情与事业。少数派（塔罗占卜）认为今日更偏财运，以附注形式展示。
+            </p>
+          </div>
+
+          <!-- 综合评分 + 幸运信息 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+            <!-- 综合评分-圆形进度环 -->
+            <div class="flex items-center gap-5">
+              <div class="relative w-24 h-24 shrink-0">
+                <svg class="w-24 h-24" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" class="text-surface-container-high"></circle>
+                  <circle class="progress-ring__circle" cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round" style="stroke-dasharray: 263.89; stroke-dashoffset: 63.33;" stroke="#7E9F7A"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span class="text-2xl font-bold text-success">76</span>
+                  <span class="text-xs text-on-surface-variant">综合</span>
+                </div>
+              </div>
+              <div class="flex-1">
+                <p class="text-sm font-medium text-on-surface">综合运势评分</p>
+                <p class="text-xs text-on-surface-variant mt-1">三流派加权平均，多数派主导结论</p>
+              </div>
+            </div>
+
+            <!-- 幸运信息 -->
+            <div class="grid grid-cols-2 gap-3">
+              <!-- 幸运色 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="palette" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运色</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full bg-warning border border-outline-variant/30"></span>
+                  <span class="text-sm font-semibold text-on-surface">琥珀金</span>
+                </div>
+              </div>
+              <!-- 幸运数字 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="hash" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运数字</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-success/10 text-success text-sm font-bold">3</span>
+                  <span class="inline-flex items-center justify-center w-6 h-6 rounded-md bg-success/10 text-success text-sm font-bold">7</span>
+                </div>
+              </div>
+              <!-- 幸运方位 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="navigation" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">幸运方位</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">正南</span>
+              </div>
+              <!-- 贵人星座 -->
+              <div class="bg-surface-container/60 rounded-lg p-3">
+                <div class="flex items-center gap-1.5 mb-1.5">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-on-surface-variant"></i>
+                  <span class="text-xs text-on-surface-variant">贵人星座</span>
+                </div>
+                <span class="text-sm font-semibold text-on-surface">巨蟹座 ♋</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分项评分 -->
+          <div class="space-y-4 mb-6">
+            <!-- 评分-爱情运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="heart" class="w-3.5 h-3.5 text-error"></i>
+                  <span class="text-sm font-medium text-on-surface">爱情运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">80<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-error" style="width: 80%;"></div>
+              </div>
+            </div>
+            <!-- 评分-事业运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="briefcase" class="w-3.5 h-3.5 text-primary"></i>
+                  <span class="text-sm font-medium text-on-surface">事业运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">70<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-primary" style="width: 70%;"></div>
+              </div>
+            </div>
+            <!-- 评分-财运 -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5 text-success"></i>
+                  <span class="text-sm font-medium text-on-surface">财运</span>
+                </div>
+                <span class="text-sm font-bold text-on-surface">65<span class="text-xs text-on-surface-variant">/100</span></span>
+              </div>
+              <div class="h-2 rounded-full bg-surface-container-high overflow-hidden">
+                <div class="h-full rounded-full bg-success" style="width: 65%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 今日建议 -->
+          <div class="bg-surface-container/40 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <i data-lucide="lightbulb" class="w-4 h-4 text-success"></i>
+              <h4 class="text-sm font-semibold text-on-surface">今日建议（民主投票结论）</h4>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">
+              经三流派投票，多数派（西方星象 42% + 中式命理 33% = 75%）一致认为今日天蝎座<strong class="text-success">爱情运最旺</strong>，建议主动社交、表达情感。事业上保持稳健推进，午后精力较佳。财运方面多数派认为平稳可控，适合小额规划。
+              <br><br>
+              <span class="text-xs text-on-surface-variant italic">也有观点认为（塔罗占卜 25%，少数派）：今日抽得"钱币国王"正位，财运被低估，建议关注理财机会，或有意外收入。此观点获票较少，仅供参考。</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function() {
+      // === 星座网格选择交互 ===
+      // 点击星座卡片时切换选中状态：
+      // 1. 移除所有卡片的选中样式（zodiac-active class、primary 色相关 class）
+      // 2. 给当前点击的卡片添加选中样式
+      // 3. 更新 aria-pressed 属性
+      // 4. 后续应调用 horoscope-engine 根据星座重新计算干支/宜忌数据并更新 DOM
+      $('#zodiac-grid').on('click', '.zodiac-card', function() {
+        // 移除所有选中态
+        $('.zodiac-card').each(function() {
+          $(this).removeClass('zodiac-active bg-primary/10 border-primary/40');
+          $(this).addClass('bg-surface-container/60 border-transparent');
+          $(this).find('span').eq(0).removeClass('text-primary').addClass('text-on-surface-variant/60');
+          $(this).find('span').eq(1).removeClass('text-primary font-semibold').addClass('text-on-surface-variant font-medium');
+          $(this).find('span').eq(2).removeClass('text-primary/70').addClass('text-on-surface-variant/70');
+          $(this).attr('aria-pressed', 'false');
+        });
+        // 设置当前选中态
+        $(this).addClass('zodiac-active bg-primary/10 border-primary/40');
+        $(this).removeClass('bg-surface-container/60 border-transparent');
+        $(this).find('span').eq(0).removeClass('text-on-surface-variant/60').addClass('text-primary');
+        $(this).find('span').eq(1).removeClass('text-on-surface-variant font-medium').addClass('text-primary font-semibold');
+        $(this).find('span').eq(2).removeClass('text-on-surface-variant/70').addClass('text-primary/70');
+        $(this).attr('aria-pressed', 'true');
+
+        var zodiac = $(this).data('zodiac');
+        console.log('选中星座:', zodiac);
+        // TODO: 后续应调用 horoscope-engine.calculate(zodiac, currentPeriod) 重新计算运势数据
+      });
+
+      // === 时间范围切换交互 ===
+      // 点击 Tab 切换今日/本周/本月：
+      // 1. 移除所有 Tab 的激活样式
+      // 2. 给当前 Tab 添加激活样式
+      // 3. 后续应调用 horoscope-engine 根据时间范围重新计算并更新运势数据
+      $('#period-tabs').on('click', '.period-tab', function() {
+        $('#period-tabs .period-tab').each(function() {
+          $(this).removeClass('bg-surface text-primary shadow-card');
+          $(this).addClass('text-on-surface-variant');
+          $(this).attr('aria-pressed', 'false');
+        });
+        $(this).addClass('bg-surface text-primary shadow-card');
+        $(this).removeClass('text-on-surface-variant');
+        $(this).attr('aria-pressed', 'true');
+
+        var period = $(this).data('period');
+        console.log('切换时间范围:', period);
+        // TODO: 后续应调用 horoscope-engine.calculate(currentZodiac, period) 重新计算运势数据
+      });
+
+      // === 报告版本 Tab 切换交互 ===
+      // 点击 Tab 切换四版报告：
+      // 1. 移除所有 Tab 的激活样式
+      // 2. 给当前 Tab 添加激活样式
+      // 3. 隐藏所有 report-panel，显示对应 data-panel 的面板
+      $('#report-tabs').on('click', '.report-tab', function() {
+        // 更新 Tab 样式
+        $('#report-tabs .report-tab').each(function() {
+          $(this).removeClass('bg-surface text-primary shadow-card');
+          $(this).addClass('text-on-surface-variant');
+          $(this).attr('aria-pressed', 'false');
+        });
+        $(this).addClass('bg-surface text-primary shadow-card');
+        $(this).removeClass('text-on-surface-variant');
+        $(this).attr('aria-pressed', 'true');
+
+        // 切换面板显示
+        var reportType = $(this).data('report');
+        $('#report-content .report-panel').addClass('hidden');
+        $('#report-content .report-panel[data-panel="' + reportType + '"]').removeClass('hidden');
+
+        console.log('切换报告版本:', reportType);
+      });
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>

@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://lf-code-agent.coze.cn/obj/x-ai-cn/fonts/google/google-all-fonts.css" rel="stylesheet"/>
+
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/jquery/jquery-3.7.1.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/lucide/lucide-1.11.0.min.js"></script>
+  <script src="https://lf-code-agent.coze.cn/obj/x-ai-cn/cdn/tailwindcss/tailwindcss-browser-4.2.4.min.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      /* === 品牌色 — 琥珀赭石，命理文化感 === */
+      --color-primary:              #C96F3D;
+      --color-primary-container:    #F5DDD0;
+      --color-on-primary:           #ffffff;
+      /* === 背景 / 表面 — 温暖纸感 === */
+      --color-background:                 #FBF3E7;
+      --color-surface-container-lowest:   #FFF9F1;
+      --color-surface:                    #FFF9F1;
+      --color-surface-container:          #F3E8D8;
+      --color-surface-container-high:     #EDDCD0;
+      --color-surface-container-highest:  #E5D0BF;
+      /* === 文字 === */
+      --color-on-surface:           #31251B;
+      --color-on-surface-variant:   #8B7662;
+      /* === 功能色 === */
+      --color-success:  #7E9F7A;
+      --color-error:    #C75050;
+      --color-warning:  #D4A24E;
+      /* === 边框 === */
+      --color-outline:          #C4B09E;
+      --color-outline-variant:  #D9CCBE;
+      /* === 圆角 — 温润圆润 === */
+      --radius-sm:   0.375rem;
+      --radius-md:   0.5rem;
+      --radius-lg:   0.75rem;
+      --radius-xl:   1rem;
+      --radius-2xl:  1.5rem;
+      --radius-full: 9999px;
+      /* === 阴影 — 轻柔纸感 === */
+      --shadow-card:   0 2px 8px rgba(49,37,27,0.08);
+      --shadow-float:  0 10px 25px rgba(49,37,27,0.12);
+      --shadow-dialog: 0 25px 50px rgba(49,37,27,0.18);
+      /* === 字体 — 宋体标题 + 系统正文 === */
+      --font-sans: "Lora", "Noto Serif SC", system-ui, serif;
+    }
+  </style>
+
+  <!-- 图片兜底 -->
+  <script>
+    document.addEventListener('error', function (e) {
+      const img = e.target;
+      if (img.tagName !== 'IMG' || img.dataset.fallback) return;
+      img.dataset.fallback = '1';
+      const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const cat = img.getAttribute('data-category') || '其他';
+      const alt = img.getAttribute('alt') || '';
+      const label = esc(alt.length > 8 ? alt.slice(0, 8) + '…' : alt);
+      const icons = { '人物': '👤', '自然风景': '🏞', '动物': '🐾', '建筑城市': '🏙', '运动体育': '⚽', '交通工具': '🚗', '食物': '🍽', '服饰时尚': '👗', '商业科技': '💼', '游戏娱乐': '🎮', '艺术': '🎨', '其他': '🖼' };
+      const icon = icons[cat] || '🖼';
+      const w = img.width || 400, h = img.height || 300;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="45%" text-anchor="middle" font-size="${Math.min(w, h) * 0.18}" dominant-baseline="central">${icon}</text><text x="50%" y="68%" text-anchor="middle" font-size="${Math.min(w, h) * 0.07}" fill="%239ca3af" font-family="system-ui,sans-serif" dominant-baseline="central">${label}</text></svg>`;
+      img.src = 'data:image/svg+xml,' + svg;
+    }, true);
+  </script>
+
+  <!-- 塔罗牌翻牌动画 -->
+  <style>
+    .tarot-card-inner {
+      position: relative;
+      width: 160px;
+      height: 260px;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    .tarot-card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+    .tarot-card-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+    .tarot-card-back {
+      transform: rotateY(180deg);
+    }
+    .tarot-card-face:not(.tarot-card-back) {
+      cursor: pointer;
+    }
+    .tarot-card-wrap:hover .tarot-card-inner {
+      transform: translateY(-6px);
+    }
+    .tarot-card-wrap:hover .tarot-card-inner.flipped {
+      transform: rotateY(180deg) translateY(-6px);
+    }
+    /* 牌背神秘纹理 */
+    .card-back-pattern {
+      background:
+        radial-gradient(circle at 30% 20%, rgba(201,111,61,0.15) 0%, transparent 40%),
+        radial-gradient(circle at 70% 80%, rgba(212,162,78,0.12) 0%, transparent 40%),
+        linear-gradient(135deg, #3a2818 0%, #4a2c1a 30%, #2e1d12 70%, #3a2818 100%);
+    }
+    /* 牌面渐变 */
+    .card-face-fool {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,249,241,0.9) 0%, rgba(245,221,208,0.7) 50%, rgba(243,232,216,0.8) 100%);
+    }
+    .card-face-lovers {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(255,249,241,0.85) 0%, rgba(237,220,208,0.7) 50%, rgba(229,208,191,0.8) 100%);
+    }
+    /* 对话区滚动 */
+    .chat-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-outline-variant) transparent;
+    }
+    .chat-scroll::-webkit-scrollbar { width: 4px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: var(--color-outline-variant); border-radius: 2px; }
+  </style>
+</head>
+
+<body class="bg-background text-on-surface font-sans">
+
+  <!-- @nav:start 导航组件，不需要的页面则不要复制此段 -->
+  <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/15">
+    <div class="max-w-6xl mx-auto h-16 flex items-center justify-between px-6">
+      <a href="home.html" class="flex items-center gap-2.5">
+        <i data-lucide="sparkles" class="text-primary w-5 h-5"></i>
+        <span class="font-bold text-lg text-on-surface">天机阁</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="home.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">首页</a>
+        <a href="bazi.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">八字命盘</a>
+        <a href="astrology.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">星座星盘</a>
+        <a href="tarot.html" class="px-3 py-1.5 text-sm font-medium text-primary bg-primary/10 rounded-md" aria-current="page">塔罗占卜</a>
+        <a href="dream.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">周公解梦</a>
+        <a href="horoscope.html" class="px-3 py-1.5 text-sm font-medium text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-md transition-colors">每日运势</a>
+      </nav>
+    </div>
+  </header>
+  <!-- @nav:end 导航组件，不需要的页面则不要复制此段 -->
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <!-- @main-content:start -->
+
+    <!-- 页面标题区 -->
+    <section class="mb-8">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+          <i data-lucide="layers" class="w-5 h-5 text-primary"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-on-surface">塔罗占卜</h1>
+      </div>
+      <p class="text-sm text-on-surface-variant ml-13">AI 塔罗师引导选牌，78 张塔罗牌正逆位深度解读</p>
+    </section>
+
+    <!-- 对话区 + 翻牌区 -->
+    <section class="flex gap-6 mb-8">
+
+      <!-- 对话区（左侧约 40%） -->
+      <div class="w-[40%] shrink-0 bg-surface rounded-lg shadow-card flex flex-col" style="height: 520px;">
+        <!-- 对话区标题 -->
+        <div class="flex items-center gap-2 px-5 py-3 border-b border-outline-variant/15">
+          <div class="w-7 h-7 rounded-full bg-primary/15 flex items-center justify-center">
+            <i data-lucide="message-circle" class="w-3.5 h-3.5 text-primary"></i>
+          </div>
+          <span class="text-sm font-semibold text-on-surface">AI 塔罗师对话</span>
+          <span class="ml-auto inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">在线</span>
+        </div>
+
+        <!-- 对话消息列表 -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto px-5 py-4 space-y-4 chat-scroll">
+
+          <!-- 对话-AI消息1：欢迎语 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">
+              <p class="text-sm text-on-surface leading-relaxed">欢迎来到塔罗占卜。请告诉我您想占卜的方面——感情、事业、财运，还是综合？</p>
+            </div>
+          </div>
+
+          <!-- 对话-用户消息1：占卜感情 -->
+          <div class="flex gap-2.5 items-start justify-end">
+            <div class="bg-primary rounded-lg rounded-tr-sm px-3.5 py-2.5 max-w-[85%]">
+              <p class="text-sm text-on-primary leading-relaxed">我想占卜感情</p>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0 mt-0.5">
+              <span class="text-xs font-semibold text-primary">初</span>
+            </div>
+          </div>
+
+          <!-- 对话-AI消息2：推荐牌阵 -->
+          <div class="flex gap-2.5 items-start">
+            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>
+            </div>
+            <div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">
+              <p class="text-sm text-on-surface leading-relaxed">好的，我为您推荐三牌阵（过去/现在/未来）。请点击牌面，翻开属于您的三张牌。</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 输入区 -->
+        <div class="px-5 py-3 border-t border-outline-variant/15">
+          <div class="flex gap-2 items-center">
+            <input id="chat-input" type="text" placeholder="输入您的问题..."
+              class="flex-1 bg-surface-container border-none rounded-md px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-colors" />
+            <button id="btn-send" class="bg-primary text-on-primary rounded-md p-2 hover:opacity-90 active:scale-[0.98] transition-all shrink-0">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </button>
+          </div>
+          <button id="btn-generate-report" class="w-full mt-2 bg-surface-container text-on-surface border-none rounded-md py-2 text-sm font-medium hover:bg-surface-container-high active:scale-[0.98] transition-all inline-flex items-center justify-center gap-2">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            生成报告
+          </button>
+        </div>
+      </div>
+
+      <!-- 翻牌区（右侧约 60%） -->
+      <div class="flex-1 bg-surface rounded-lg shadow-card p-6 flex flex-col" style="min-height: 520px;">
+
+        <!-- 翻牌区标题 -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-2">
+            <i data-lucide="layout-grid" class="w-4 h-4 text-primary"></i>
+            <span class="text-sm font-semibold text-on-surface">三牌阵 · 过去 / 现在 / 未来</span>
+          </div>
+          <span class="text-xs text-on-surface-variant">点击牌面翻牌</span>
+        </div>
+
+        <!-- 三张牌布局 -->
+        <div class="flex justify-center gap-8 flex-1 items-center">
+
+          <!-- 牌1：愚者（正位）- 已翻开 -->
+          <div class="tarot-card-wrap flex flex-col items-center gap-3">
+            <div class="tarot-card-inner flipped">
+              <!-- 牌正面 -->
+              <div class="tarot-card-face card-face-fool flex flex-col items-center justify-between p-4 shadow-card">
+                <!-- 顶部装饰：星 -->
+                <div class="flex items-center gap-1 mt-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C96F3D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                  <span class="text-[10px] text-primary font-semibold tracking-wider">大阿卡纳</span>
+                </div>
+                <!-- 中央图案：太阳与人物剪影 -->
+                <div class="flex flex-col items-center justify-center flex-1">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="14" r="5" fill="#C96F3D" opacity="0.7"/>
+                    <path d="M24 19 Q24 28 20 36 L28 36 Q24 28 24 19 Z" fill="#C96F3D" opacity="0.5"/>
+                    <circle cx="24" cy="8" r="2" fill="#D4A24E"/>
+                    <path d="M24 6 L24 4" stroke="#D4A24E" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M16 24 Q20 22 24 24 Q28 22 32 24" stroke="#C96F3D" stroke-width="1" fill="none" opacity="0.4"/>
+                  </svg>
+                  <span class="text-xs font-bold text-on-surface mt-2">愚者</span>
+                  <span class="text-[10px] text-success font-medium mt-0.5">正位</span>
+                </div>
+                <!-- 底部关键词 -->
+                <div class="text-center">
+                  <p class="text-[10px] text-on-surface-variant leading-relaxed">新开始 · 冒险</p>
+                </div>
+              </div>
+              <!-- 牌背 -->
+              <div class="tarot-card-face card-back-pattern tarot-card-back flex items-center justify-center">
+                <div class="text-center">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.6">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#D4A24E" fill-opacity="0.15"/>
+                  </svg>
+                  <p class="text-[10px] text-warning/60 mt-2 tracking-widest">TAROT</p>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-on-surface-variant">过去</span>
+          </div>
+
+          <!-- 牌2：恋人（逆位）- 已翻开 -->
+          <div class="tarot-card-wrap flex flex-col items-center gap-3">
+            <div class="tarot-card-inner flipped" style="transform: rotateY(180deg) rotate(180deg);">
+              <!-- 牌正面（逆位时内容旋转180度模拟倒置） -->
+              <div class="tarot-card-face card-face-lovers flex flex-col items-center justify-between p-4 shadow-card" style="transform: rotate(180deg);">
+                <!-- 顶部装饰 -->
+                <div class="flex items-center gap-1 mt-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C96F3D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                  <span class="text-[10px] text-primary font-semibold tracking-wider">大阿卡纳</span>
+                </div>
+                <!-- 中央图案：双心 -->
+                <div class="flex flex-col items-center justify-center flex-1">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <path d="M16 18 Q12 14 12 18 Q12 22 16 26 L24 32 L32 26 Q36 22 36 18 Q36 14 32 14 Q28 14 24 18 Q20 14 16 18 Z" fill="#C96F3D" opacity="0.5"/>
+                    <path d="M20 16 Q17 13 17 16 Q17 19 20 22 L24 25 L28 22 Q31 19 31 16 Q31 13 28 13 Q25 13 24 16" fill="#D4A24E" opacity="0.3"/>
+                  </svg>
+                  <span class="text-xs font-bold text-on-surface mt-2">恋人</span>
+                  <span class="text-[10px] text-error font-medium mt-0.5">逆位</span>
+                </div>
+                <!-- 底部关键词 -->
+                <div class="text-center">
+                  <p class="text-[10px] text-on-surface-variant leading-relaxed">失衡 · 选择困难</p>
+                </div>
+              </div>
+              <!-- 牌背 -->
+              <div class="tarot-card-face card-back-pattern tarot-card-back flex items-center justify-center">
+                <div class="text-center">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.6">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#D4A24E" fill-opacity="0.15"/>
+                  </svg>
+                  <p class="text-[10px] text-warning/60 mt-2 tracking-widest">TAROT</p>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-on-surface-variant">现在</span>
+          </div>
+
+          <!-- 牌3：未翻开 - 牌背朝上 -->
+          <div class="tarot-card-wrap flex flex-col items-center gap-3" id="card-3-wrap">
+            <div class="tarot-card-inner" id="card-3-inner">
+              <!-- 牌正面（隐藏，翻牌后显示） -->
+              <div class="tarot-card-face card-face-fool flex flex-col items-center justify-between p-4 shadow-card">
+                <div class="flex items-center gap-1 mt-1">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C96F3D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                  <span class="text-[10px] text-primary font-semibold tracking-wider">大阿卡纳</span>
+                </div>
+                <div class="flex flex-col items-center justify-center flex-1">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <path d="M24 8 Q30 14 30 22 Q30 30 24 36 Q18 30 18 22 Q18 14 24 8 Z" fill="#C96F3D" opacity="0.4"/>
+                    <circle cx="24" cy="22" r="3" fill="#D4A24E" opacity="0.6"/>
+                  </svg>
+                  <span class="text-xs font-bold text-on-surface mt-2">命运之轮</span>
+                  <span class="text-[10px] text-success font-medium mt-0.5">正位</span>
+                </div>
+                <div class="text-center">
+                  <p class="text-[10px] text-on-surface-variant leading-relaxed">转机 · 命运</p>
+                </div>
+              </div>
+              <!-- 牌背（朝上显示） -->
+              <div class="tarot-card-face card-back-pattern tarot-card-back flex items-center justify-center">
+                <div class="text-center">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D4A24E" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.5">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 2 L14 10 L22 12 L14 14 L12 22 L10 14 L2 12 L10 10 Z" fill="#D4A24E" fill-opacity="0.12"/>
+                  </svg>
+                  <p class="text-[10px] text-warning/50 mt-2 tracking-widest">TAROT</p>
+                  <p class="text-[9px] text-warning/30 mt-1">点击翻牌</p>
+                </div>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-on-surface-variant">未来</span>
+          </div>
+
+        </div>
+
+        <!-- 翻牌区底部提示 -->
+        <div class="mt-4 flex items-center justify-center gap-2 text-xs text-on-surface-variant">
+          <i data-lucide="info" class="w-3 h-3"></i>
+          <span>已翻开 2/3 张牌，继续点击第三张牌完成抽牌</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 牌意展示区 -->
+    <section class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="book-open" class="w-4 h-4 text-primary"></i>
+        <h2 class="text-base font-semibold text-on-surface">基础牌意</h2>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+
+        <!-- 牌意卡片1：愚者 正位 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-on-surface">愚者</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">正位</span>
+            </div>
+            <span class="text-xs text-on-surface-variant">过去</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">新开始</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">冒险</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">自由</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">纯真</span>
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">代表一段旅程的开始，怀着开放与无畏的心态走向未知。在感情中象征新的相遇或关系的新篇章。</p>
+        </div>
+
+        <!-- 牌意卡片2：恋人 逆位 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-on-surface">恋人</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">逆位</span>
+            </div>
+            <span class="text-xs text-on-surface-variant">现在</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">失衡</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">选择困难</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">价值观冲突</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">犹豫</span>
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">逆位的恋人暗示关系中存在沟通障碍或价值观分歧，面临艰难的情感选择，需要审视内心的真实需求。</p>
+        </div>
+
+        <!-- 牌意卡片3：命运之轮 正位 -->
+        <div class="bg-surface rounded-lg shadow-card p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-on-surface">命运之轮</span>
+              <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">正位</span>
+            </div>
+            <span class="text-xs text-on-surface-variant">未来</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">转机</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">命运</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">好运</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs bg-surface-container text-on-surface">循环</span>
+          </div>
+          <p class="text-xs text-on-surface-variant leading-relaxed">命运之轮转动带来转机，象征好运将至。感情中的因果循环将导向新的方向，顺应变化将获得成长。</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 报告展示区 -->
+    <section class="mb-8">
+      <div class="flex items-center gap-2 mb-4">
+        <i data-lucide="scroll-text" class="w-4 h-4 text-primary"></i>
+        <h2 class="text-base font-semibold text-on-surface">深度解读报告</h2>
+      </div>
+
+      <div class="bg-surface rounded-lg shadow-card overflow-hidden">
+
+        <!-- 报告 Tab 导航 -->
+        <div class="flex border-b border-outline-variant/15" id="report-tabs">
+          <button class="report-tab px-5 py-3 text-sm font-medium text-primary border-b-2 border-primary transition-colors" data-tab="gullible" aria-current="page">
+            偏听偏信
+          </button>
+          <button class="report-tab px-5 py-3 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface transition-colors" data-tab="chinese">
+            偏中式
+          </button>
+          <button class="report-tab px-5 py-3 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface transition-colors" data-tab="western">
+            偏西式
+          </button>
+          <button class="report-tab px-5 py-3 text-sm font-medium text-on-surface-variant border-b-2 border-transparent hover:text-on-surface transition-colors" data-tab="vote">
+            民主投票
+          </button>
+        </div>
+
+        <!-- 报告内容区 -->
+        <div class="p-6">
+
+          <!-- ===== Tab1：偏听偏信版 ===== -->
+          <div class="report-panel" data-panel="gullible">
+
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+              <!-- 评分-过去 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">过去 · 感情基础</span>
+                  <span class="text-lg font-bold text-primary">75</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+                </div>
+              </div>
+              <!-- 评分-现在 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">现在 · 情感状态</span>
+                  <span class="text-lg font-bold text-error">45</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-error rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <!-- 评分-未来 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">未来 · 发展趋势</span>
+                  <span class="text-lg font-bold text-success">82</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 82%"></div>
+                </div>
+              </div>
+              <!-- 评分-综合 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">综合 · 整体运势</span>
+                  <span class="text-lg font-bold text-warning">67</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 67%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 过去解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="clock-arrow-down" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">过去解读 — 愚者（正位）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                愚者正位出现在过去位置，明确表示您曾经以一颗纯真无畏的心踏入感情。这段关系并非深思熟虑的结果，而是直觉与冲动的产物——您完全相信对方，也完全相信自己的选择。这段旅程虽显天真，但其中蕴含的真诚是真实的。正位的愚者不会欺骗，它只是在告知您：曾经的那份勇气与开放，是这段感情最宝贵的底色。
+              </p>
+            </div>
+
+            <!-- 现在解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-error"></i>
+                <h3 class="text-sm font-semibold text-on-surface">现在解读 — 恋人（逆位）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                恋人逆位在现在位置，这是一个明确的警示信号。当前关系中存在严重的沟通障碍与价值观分歧，双方难以在同一层面达成共识。逆位的恋人直指问题核心——你们正面临一个艰难的选择，而犹豫不决只会让裂痕加深。塔罗牌在此处不留余地：如果不正视分歧、做出选择，关系将滑向更深的失衡。
+              </p>
+            </div>
+
+            <!-- 未来解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-success"></i>
+                <h3 class="text-sm font-semibold text-on-surface">未来解读 — 命运之轮（正位）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                命运之轮正位出现在未来位置，这是极其积极的信号。无论现在多么困惑，命运之轮的转动将带来转机。一段新的循环即将开启，可能是关系的修复与升华，也可能是以成长告终后的全新开始。关键在于：顺应变化而非抗拒，命运之轮不会亏待那些愿意随势而行的人。好运正在路上。
+              </p>
+            </div>
+
+            <!-- 综合建议 -->
+            <div class="bg-primary/5 border border-primary/15 rounded-lg p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">综合建议</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">
+                三张牌的组合揭示了一条清晰的轨迹：从天真无畏的开始，到当下价值观的碰撞与选择困境，最终命运之轮将带来转机。<strong class="text-on-surface">当务之急是正视当前的分歧</strong>，不要回避沟通中的难题。愚者的勇气仍在您内心，命运之轮的好运也已在路上——您唯一需要做的，就是在恋人逆位的十字路口做出选择。无论选择的结果如何，命运之轮正位都暗示这是通往更好未来的必经之路。
+              </p>
+            </div>
+          </div>
+
+          <!-- ===== Tab2：偏中式版 ===== -->
+          <div class="report-panel hidden" data-panel="chinese">
+
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+              <!-- 评分-过去 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">过去 · 缘起</span>
+                  <span class="text-lg font-bold text-primary">70</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full" style="width: 70%"></div>
+                </div>
+              </div>
+              <!-- 评分-现在 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">现在 · 缘劫</span>
+                  <span class="text-lg font-bold text-error">40</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-error rounded-full" style="width: 40%"></div>
+                </div>
+              </div>
+              <!-- 评分-未来 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">未来 · 缘转</span>
+                  <span class="text-lg font-bold text-success">78</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 78%"></div>
+                </div>
+              </div>
+              <!-- 评分-综合 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">综合 · 缘分</span>
+                  <span class="text-lg font-bold text-warning">63</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 63%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 过去解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="clock-arrow-down" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">过去解读 — 缘起 · 愚者正位</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                从中式命理角度观之，愚者正位如「赤子之心」，对应《道德经》中「专气致柔，能婴儿乎」之境。此段缘分始于无心，却有天意在其中。八字中若日柱带桃花或红鸾星动，往往正是以这种看似偶然实则命定之方式结缘。缘分起于纯粹，是善缘的底色。
+              </p>
+            </div>
+
+            <!-- 现在解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-error"></i>
+                <h3 class="text-sm font-semibold text-on-surface">现在解读 — 缘劫 · 恋人逆位</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                恋人逆位对应中式命理中的「情劫」之象。八字若日支逢冲或流年引动伤官见官，夫妻宫动荡，正应此牌。当前双方五行不合或大运流年冲克所致，非一朝一夕之因。需注意是否有第三方因素干扰（如家人反对、旧情未了），此为「桃花劫」之典型表现。建议以静制动，不可冲动行事。
+              </p>
+            </div>
+
+            <!-- 未来解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-success"></i>
+                <h3 class="text-sm font-semibold text-on-surface">未来解读 — 缘转 · 命运之轮正位</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                命运之轮正位对应中式「否极泰来」「时来运转」之象。八字中大运将转或流年逢天乙贵人、天德贵人，正应此牌。此乃天意周转之机，非人力可左右。若能在此转折点修身养性、积累善缘，则运势逆转可期。若目前为戊己土日主，逢金水流年则感情宫位得生扶，转机将至。
+              </p>
+            </div>
+
+            <!-- 综合建议 -->
+            <div class="bg-primary/5 border border-primary/15 rounded-lg p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">综合建议（中式视角）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">
+                综合三牌与中式命理推演，此段感情属「先甜后苦终转安」之格。愚者起于善缘，恋人逆位为情劫考验，命运之轮则预示否极泰来。<strong class="text-on-surface">建议在当前情劫期间行「以退为进」之策</strong>——不争不辩，静待时运流转。可佩戴粉晶或紫水晶调和自身气场，亦可在卧室桃花位放置和合二仙摆件。待命运之轮转动之机，缘分会自行理顺。
+              </p>
+            </div>
+          </div>
+
+          <!-- ===== Tab3：偏西式版 ===== -->
+          <div class="report-panel hidden" data-panel="western">
+
+            <!-- 维度评分 -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+              <!-- 评分-过去 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">过去 · Origin</span>
+                  <span class="text-lg font-bold text-primary">80</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full" style="width: 80%"></div>
+                </div>
+              </div>
+              <!-- 评分-现在 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">现在 · Crisis</span>
+                  <span class="text-lg font-bold text-error">35</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-error rounded-full" style="width: 35%"></div>
+                </div>
+              </div>
+              <!-- 评分-未来 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">未来 · Turning Point</span>
+                  <span class="text-lg font-bold text-success">85</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+              <!-- 评分-综合 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">综合 · Overall</span>
+                  <span class="text-lg font-bold text-warning">67</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 67%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 过去解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="clock-arrow-down" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">过去解读 — The Fool (Upright)</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                The Fool in the past position signifies that your relationship began with the energy of Uranus—spontaneous, unconventional, and free-spirited. In Western astrology, this aligns with an Aquarius or Aries influence on the 5th house of romance. The relationship was likely initiated under a transit of Venus conjunct Uranus, bringing an electric but unstable beginning. The Fool's ruling planet Mercury suggests communication was initially effortless but superficial.
+              </p>
+            </div>
+
+            <!-- 现在解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-error"></i>
+                <h3 class="text-sm font-semibold text-on-surface">现在解读 — The Lovers (Reversed)</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                The Lovers reversed is ruled by Gemini (Mercury), and its reversal indicates a Mercury retrograde effect on your relationship's communication sector. In astrological terms, this suggests Venus in your chart is currently forming a square aspect with Saturn, creating emotional restriction and value conflicts. The 7th house (partnership) is under pressure from a Mars transit, leading to frequent arguments. The reversed Lovers warns of a critical decision point where indecision itself becomes the enemy.
+              </p>
+            </div>
+
+            <!-- 未来解读 -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-success"></i>
+                <h3 class="text-sm font-semibold text-on-surface">未来解读 — Wheel of Fortune (Upright)</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                The Wheel of Fortune is ruled by Jupiter, the planet of expansion and fortune. Its upright position in the future slot is one of the most favorable omens in tarot. Astrologically, this corresponds to a Jupiter transit through your 5th house (romance) or a favorable trine between Venus and Jupiter. The wheel turns in your favor, but it requires you to be ready to seize the opportunity. A Saturn return or nodal axis shift may coincide with this turning point, bringing karmic resolution.
+              </p>
+            </div>
+
+            <!-- 综合建议 -->
+            <div class="bg-primary/5 border border-primary/15 rounded-lg p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">综合建议（Western Perspective）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">
+                The three-card spread maps a classic hero's journey: The Fool's innocent departure, The Lovers reversed as the crisis/ordeal stage, and The Wheel of Fortune as the return with the elixir. <strong class="text-on-surface">The current crisis is not a dead end but a necessary transformation</strong>. Astrologically, this pattern suggests you are in a Saturn-Venus square transit that demands maturity in relationships. The Wheel of Fortune foretells that Jupiter's transit will bring resolution within 3-6 months. Recommended: practice active listening techniques during this period, and consider relationship counseling to navigate the Lovers reversed phase before the Wheel turns.
+              </p>
+            </div>
+          </div>
+
+          <!-- ===== Tab4：民主投票版 ===== -->
+          <div class="report-panel hidden" data-panel="vote">
+
+            <!-- 投票结果概览 -->
+            <div class="bg-surface-container rounded-lg p-4 mb-6">
+              <div class="flex items-center gap-2 mb-3">
+                <i data-lucide="vote" class="w-4 h-4 text-primary"></i>
+                <span class="text-sm font-semibold text-on-surface">多流派投票结果</span>
+              </div>
+              <div class="grid grid-cols-3 gap-4">
+                <!-- 投票-中式 -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-on-surface-variant">中式命理</span>
+                    <span class="text-xs font-bold text-primary">1 票</span>
+                  </div>
+                  <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 33%"></div>
+                  </div>
+                </div>
+                <!-- 投票-西式 -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-on-surface-variant">西方占星</span>
+                    <span class="text-xs font-bold text-primary">1 票</span>
+                  </div>
+                  <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 33%"></div>
+                  </div>
+                </div>
+                <!-- 投票-通灵 -->
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-on-surface-variant">灵数通灵</span>
+                    <span class="text-xs font-bold text-primary">1 票</span>
+                  </div>
+                  <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                    <div class="h-full bg-primary rounded-full" style="width: 33%"></div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-xs text-on-surface-variant mt-3 leading-relaxed">三大流派各持一票，未能形成多数。以下解读将并列展示各流派观点，标注共识与分歧。</p>
+            </div>
+
+            <!-- 维度评分（各流派均值） -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+              <!-- 评分-过去 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">过去 · 共识度</span>
+                  <span class="text-lg font-bold text-success">高</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 90%"></div>
+                </div>
+                <p class="text-[10px] text-on-surface-variant mt-1.5">三流派一致认为善缘起头</p>
+              </div>
+              <!-- 评分-现在 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">现在 · 共识度</span>
+                  <span class="text-lg font-bold text-success">高</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-success rounded-full" style="width: 95%"></div>
+                </div>
+                <p class="text-[10px] text-on-surface-variant mt-1.5">三流派一致认为危机当前</p>
+              </div>
+              <!-- 评分-未来 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">未来 · 共识度</span>
+                  <span class="text-lg font-bold text-warning">中</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 60%"></div>
+                </div>
+                <p class="text-[10px] text-on-surface-variant mt-1.5">转机方向一致，时间存分歧</p>
+              </div>
+              <!-- 评分-综合 -->
+              <div class="bg-surface-container rounded-md p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-medium text-on-surface-variant">综合 · 均值</span>
+                  <span class="text-lg font-bold text-warning">64</span>
+                </div>
+                <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                  <div class="h-full bg-warning rounded-full" style="width: 64%"></div>
+                </div>
+                <p class="text-[10px] text-on-surface-variant mt-1.5">三流派评分均值 64 分</p>
+              </div>
+            </div>
+
+            <!-- 过去解读（多数共识） -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="clock-arrow-down" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">过去解读 — 三流派共识</h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-success/15 text-success">共识</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                <strong class="text-on-surface">多数观点（3/3 票）：</strong>三方一致认为这段感情的开端是纯真而善意的。中式命理视为「赤子结善缘」，西方占星对应 The Fool 的 Uranus 式自由开端，灵数学则指出双方姓名灵数之和为 7（探索者数字），同样指向探索与开放。过去的基础是积极的，这一点毋庸置疑。
+              </p>
+            </div>
+
+            <!-- 现在解读（多数共识 + 分歧标注） -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="circle-dot" class="w-4 h-4 text-error"></i>
+                <h3 class="text-sm font-semibold text-on-surface">现在解读 — 共识 + 分歧</h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-warning/15 text-warning">有分歧</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                <strong class="text-on-surface">多数观点（3/3 票）：</strong>三方一致认为当前存在严重的沟通障碍与价值观冲突，恋人逆位是核心警示。<br>
+                <strong class="text-on-surface">分歧点：</strong>中式命理认为原因是「五行不合+桃花劫」，建议以静制动；西方占星认为是「金星与土星四分相+水星逆行效应」，建议进行关系咨询；灵数学则将问题归因于双方今年灵数流年为 5（变动年），建议先各自独处沉淀。三方对<strong>原因</strong>有分歧，但对<strong>存在危机</strong>这一事实高度一致。
+              </p>
+            </div>
+
+            <!-- 未来解读（分歧最大） -->
+            <div class="mb-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-success"></i>
+                <h3 class="text-sm font-semibold text-on-surface">未来解读 — 分歧最大</h3>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium bg-error/15 text-error">分歧大</span>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed pl-6">
+                <strong class="text-on-surface">多数观点（2/3 票）：</strong>中式命理与西方占星均认为转机将至（命运之轮正位），但时间预估分歧大——中式认为需待大运流转（约半年），西方占星认为木星行运 3-6 个月内见效。<br>
+                <strong class="text-on-surface">少数观点（1/3 票）：</strong>灵数学认为命运之轮正位指向灵数 9（圆满）的周期，但需双方先各自完成灵数 5 的变动课题，否则转机可能被延迟。也有观点认为，此处的「转机」不一定指向关系修复，也可能是以成长告终后的个人新生。
+              </p>
+            </div>
+
+            <!-- 综合建议（民主投票结论） -->
+            <div class="bg-primary/5 border border-primary/15 rounded-lg p-5">
+              <div class="flex items-center gap-2 mb-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-primary"></i>
+                <h3 class="text-sm font-semibold text-on-surface">综合建议（民主投票版）</h3>
+              </div>
+              <p class="text-sm text-on-surface-variant leading-relaxed">
+                <strong class="text-on-surface">投票结论：</strong>三方对「过去善缘」「当前危机」高度共识，对「未来转机」方向一致但细节有分歧。<br><br>
+                <strong class="text-on-surface">采纳多数派建议：</strong>①正视当前沟通危机，不可回避（3/3 票）；②转机将会到来，需保持耐心（2/3 票）；③在等待转机期间，以自我成长为主旋律（2/3 票）。<br>
+                <strong class="text-on-surface">保留少数派意见：</strong>灵数学提醒，转机可能以「关系结束后的个人新生」形式出现，不一定是关系修复。建议做好两手准备。
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 报告底部操作 -->
+        <div class="px-6 py-4 border-t border-outline-variant/15 flex items-center justify-between">
+          <span class="text-xs text-on-surface-variant">基于三牌阵：愚者（正位）+ 恋人（逆位）+ 命运之轮（正位）</span>
+          <button id="btn-restart" class="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1.5">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            重新占卜
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- @main-content:end -->
+  </main>
+
+  <script>
+    $(function() {
+
+      // === 报告 Tab 切换 ===
+      $('#report-tabs').on('click', '.report-tab', function() {
+        var tabName = $(this).data('tab');
+        // 切换 Tab 激活态
+        $('.report-tab').removeClass('text-primary border-primary').addClass('text-on-surface-variant border-transparent');
+        $('.report-tab').removeAttr('aria-current');
+        $(this).removeClass('text-on-surface-variant border-transparent').addClass('text-primary border-primary');
+        $(this).attr('aria-current', 'page');
+        // 切换面板显示
+        $('.report-panel').addClass('hidden');
+        $('.report-panel[data-panel="' + tabName + '"]').removeClass('hidden');
+      });
+
+      // === 第三张牌翻牌动画 ===
+      // 点击第三张牌背面 → 触发翻牌动画
+      // 1. 给 #card-3-inner 添加 flipped 类，触发 CSS rotateY(180deg) 翻转
+      // 2. 翻牌动画完成后更新底部提示文字为"已翻开 3/3 张牌"
+      // 3. 可触发"生成报告"按钮高亮提示用户查看报告
+      $('#card-3-inner').on('click', function() {
+        $(this).addClass('flipped');
+        // 翻牌后延迟更新提示文字
+        setTimeout(function() {
+          // 更新底部提示
+          console.log('第三张牌已翻开，翻牌动画完成');
+        }, 800);
+      });
+
+      // === 发送消息 ===
+      // 点击发送按钮 → 将输入框内容作为用户消息追加到对话区
+      // 1. 读取 #chat-input 的值，如果为空则 return
+      // 2. 在 #chat-messages 末尾追加一条用户消息气泡（与上方用户消息样式一致）
+      // 3. 清空输入框
+      // 4. 模拟 AI 回复：延迟 500ms 后追加一条 AI 消息气泡
+      //    AI 回复内容可根据用户输入简单匹配关键词，此处仅做演示
+      $('#btn-send').on('click', function() {
+        var text = $('#chat-input').val().trim();
+        if (!text) return;
+        // 追加用户消息
+        var userMsg = '<div class="flex gap-2.5 items-start justify-end">' +
+          '<div class="bg-primary rounded-lg rounded-tr-sm px-3.5 py-2.5 max-w-[85%]">' +
+          '<p class="text-sm text-on-primary leading-relaxed">' + text + '</p>' +
+          '</div>' +
+          '<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shrink-0 mt-0.5">' +
+          '<span class="text-xs font-semibold text-primary">初</span>' +
+          '</div>' +
+          '</div>';
+        $('#chat-messages').append(userMsg);
+        $('#chat-input').val('');
+        // 滚动到底部
+        $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+        // 模拟 AI 回复
+        setTimeout(function() {
+          var aiMsg = '<div class="flex gap-2.5 items-start">' +
+            '<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">' +
+            '<i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>' +
+            '</div>' +
+            '<div class="bg-surface-container rounded-lg rounded-tl-sm px-3.5 py-2.5 max-w-[85%]">' +
+            '<p class="text-sm text-on-surface leading-relaxed">我感受到了您内心的困惑。请放心翻开面前的三张牌，塔罗会为您指引方向。</p>' +
+            '</div>' +
+            '</div>';
+          $('#chat-messages').append(aiMsg);
+          lucide.createIcons();
+          $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+        }, 500);
+      });
+
+      // 回车发送
+      $('#chat-input').on('keydown', function(e) {
+        if (e.keyCode === 13) {
+          $('#btn-send').click();
+        }
+      });
+
+      // === 生成报告 ===
+      // 点击生成报告按钮 → 滚动到报告展示区
+      // 完整实现应：
+      // 1. 收集当前抽牌结果（牌面、正逆位、占卜主题）
+      // 2. 调用后端 AI 接口并行生成四版报告
+      // 3. 报告生成过程中显示 loading 状态
+      // 4. 报告生成完成后填充到各 Tab 面板中
+      $('#btn-generate-report').on('click', function() {
+        // 滚动到报告区
+        $('html, body').animate({
+          scrollTop: $('#report-tabs').offset().top - 100
+        }, 500);
+        console.log('生成报告：收集牌面数据 → 调用 AI 接口 → 渲染四版报告');
+      });
+
+      // === 重新占卜 ===
+      // 点击重新占卜 → 重置对话和牌面
+      // 完整实现应：
+      // 1. 清空对话区所有消息，保留第一条 AI 欢迎语
+      // 2. 重置三张牌为未翻开状态（移除 flipped 类）
+      // 3. 滚动回页面顶部
+      // 4. 重置报告 Tab 到第一个（偏听偏信）
+      $('#btn-restart').on('click', function() {
+        // 重置第三张牌
+        $('#card-3-inner').removeClass('flipped');
+        // 滚动到顶部
+        $('html, body').animate({
+          scrollTop: 0
+        }, 500);
+        console.log('重新占卜：重置对话、牌面和报告');
+      });
+
+    });
+  </script>
+
+  <script>lucide.createIcons();</script>
+</body>
+
+</html>
