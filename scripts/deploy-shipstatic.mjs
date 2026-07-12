@@ -13,8 +13,8 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
 const DOCS = path.join(ROOT, 'docs');
-const DOMAIN = 'fused-fog-x4f4urx';
-const PUBLIC_URL = `https://${DOMAIN}.shipstatic.com/`;
+const DOMAIN = 'tianjige.shipstatic.com';
+const PUBLIC_URL = `https://${DOMAIN}/`;
 
 const apiKey = (process.env.SHIP_API_KEY || '').trim();
 if (!apiKey) {

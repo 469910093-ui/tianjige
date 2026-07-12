@@ -1,36 +1,26 @@
 # 今天吃什么 · 天机食鉴
 
-## 正式对外链接（请用这个，不要换）
+## 正式对外链接（请用这个）
 
-**https://fused-fog-x4f4urx.shipstatic.com/**
+**https://tianjige.shipstatic.com/**
 
-> 边缘静态托管，不依赖本机开机。对外只发这一条，更新内容时**不换域名**。  
-> 未认领会约 3 天过期；认领后永久有效。
+> 平台固定域名，可反复更新内容且**不换链接**。仓南广场美食为百度评分榜快照兜底。
 
-### 认领永久（若还没做过）
+旧链接 `https://fused-fog-x4f4urx.shipstatic.com/` 是一次性部署快照，**无法覆盖更新**（已认领但不可变）。请把对外分享改为上面的 `tianjige.shipstatic.com`。
 
-1. 打开：  
-   **https://my.shipstatic.com/claim/097753667af2799a3fecee70ae87864fbc96fa1c6dd873a1328de188db1265d8**
-2. 注册 / 登录 ShipStatic（免费）→ 完成认领  
-3. 继续对外分享：  
-   **https://fused-fog-x4f4urx.shipstatic.com/**
-
-### 更新页面且不换链接（需要 API Key）
-
-1. 打开 [my.shipstatic.com](https://my.shipstatic.com) → Settings → 复制 `SHIP_API_KEY`  
-2. 发给我，或本地执行：
+### 更新页面（不换链接）
 
 ```powershell
 $env:SHIP_API_KEY="ship-你的key"
 node scripts/deploy-shipstatic.mjs
 ```
 
-脚本会把最新 `docs/` 挂到 **fused-fog-x4f4urx**，对外网址不变。
+脚本会把最新 `docs/` 挂到 **tianjige.shipstatic.com**。
 
 ### 不要再对外发
 
 - `*.trycloudflare.com`（临时隧道）
-- 其它 `*.shipstatic.com` 临时部署名（会过期、会换名）
+- 其它随机 `*.shipstatic.com` 部署名（除 `tianjige` 外）
 
 ### 备份
 
